@@ -16,11 +16,6 @@ const Members = [
     description: "Director I Operations",
   },
   {
-    image: "/about/sankar.webp",  
-    title: " Mr. Sankar Kaliaperumal",
-    description: "Director I Global",
-  },
-  {
     image: "/about/Sarat.jpg",
     title: "Mr. Sarat Kadambi",
     description: "Chief Operating Officer",
