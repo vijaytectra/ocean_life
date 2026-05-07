@@ -41,24 +41,9 @@ const Members = [
     description: "Senior Director I Marine",
   },
    {
-    image: "/about/Thanikaivel.jpg",
-    title: "Mr. Thanikaivel.S",
-    description: "Director MEP",
-  },
-   {
-    image: "/about/karpaga.jpg",
-    title: "Mr. Karpaga Ganesh",
-    description: "Director - Civil",
-  },
-   {
     image: "/about/balu.jpg",
     title: "Mr. Balu K",
     description: "Director - Civil",
-  },
-   {
-    image: "/about/raman.jpg",
-    title: "Mr. Raman Subbiah",
-    description: "Vice President - Projects",
   },
    {
     image: "/about/prabhu.jpg",
