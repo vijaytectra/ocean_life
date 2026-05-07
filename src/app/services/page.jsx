@@ -2,6 +2,7 @@ import ServicesGrid from "../../componentServices/ServicesGrid";
 import ServiceHeader from "../../componentServices/ServiceHeader";
 import React from "react";
 import Newsletter from "../../components/Newsletter";
+import LogoScroll from "../../components/LogoScroll";
 
 export const metadata = {
   title: "Civil Construction Services in Chennai - Ocean Lifespaces Pvt Ltd",
@@ -17,6 +18,9 @@ function Services() {
   return (
     <>
       <ServiceHeader />
+      <section style={{ backgroundColor: "#fff", padding: "40px 0" }}>
+        <LogoScroll />
+      </section>
       <ServicesGrid />
       <Newsletter />
     </>

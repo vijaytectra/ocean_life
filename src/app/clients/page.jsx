@@ -39,22 +39,20 @@ const Logos = [
   "/clients/35.webp",
 ];
 const OngoingLogos = [
-  "/clients/on1.webp",
-  "/clients/on2.webp",
-  "/clients/on3.webp",
-  "/clients/on4.webp",
   "/clients/on5.webp",
-  "/clients/on6.webp",
   "/clients/on7.webp",
-  "/clients/on8.webp",
-  "/clients/on9.webp",
-  "/clients/on10.webp",
   "/clients/on11.webp",
   "/clients/on12.webp",
-  "/clients/on13.webp",
-  "/clients/on14.webp",
-  "/clients/on15.webp",
-  "/clients/on16.webp",
+  "/logo/workday.jpeg",
+  "/logo/alldigi.svg",
+  "/logo/accenture.jpeg",
+  "/logo/rsp.jpeg",
+  "/logo/nametech.jpeg",
+  "/logo/IIT HYDERABAD.jpeg",
+  "/logo/sifi.webp",
+  "/logo/st_telemedia.webp",
+  "/logo/IRON MOUNTAIN.jpeg",
+  "/logo/CITY UNION BANK.jpeg",
 ];
 
 export const metadata = {

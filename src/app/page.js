@@ -8,6 +8,7 @@ import Image from "next/image";
 import Home from "../components/Home";
 import Styles from "./page.module.css";
 import ServiceSlider from "../components/ServiceSlider";
+import ServiceGrid from "../componentsAbout/ServiceGrid";
 import ProjectSlider from "../components/ProjectSlider";
 import NewsAndEvents from "../components/NewsAndEvents";
 import Transform from "../components/Transform";
@@ -182,7 +183,7 @@ function HomeMain() {
               </div>
             </div>
           </section>
-          <ServiceSlider />
+          <ServiceGrid />
           <ProjectSlider />
           <NewsAndEvents />
           <Transform />

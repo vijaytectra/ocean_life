@@ -1,88 +1,164 @@
 .serviceHead {
+  position: relative;
   width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  background-image: url("../../public/services/head-bg.webp");
+  padding: clamp(120px, 18vh, 18vh) 0 clamp(80px, 12vh, 12vh) 0;
+  background-image: url("/services/head-bg.webp");
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-}
-
-.mainRowServiceHead {
-  display: flex;
-  padding: clamp(60px, 6vw, 6vw) clamp(20px, 2vw, 2vw);
-  border-radius: clamp(10px, 1vw, 1vw);
-  position: relative;
-  z-index: 0;
+  background-color: #f0f2f5;
   overflow: hidden;
-  width: 85vw;
-  /* Restore original width visual */
 }
 
-.mainRowServiceHead:before {
-  content: "";
-  position: absolute;
-  background-color: #f4f6f7c7;
-  width: 100%;
-  /* Changed to 100% since parent has width */
-  height: 100%;
-  left: 0;
-  top: 0;
-  z-index: -1;
-  border-radius: clamp(10px, 1vw, 1vw);
+/* Removed ::before overlay as requested (remove opacity of bg) */
+
+.heroCard {
+  position: relative;
+  background: #ffffff; /* Solid white background instead of translucent */
+  border-radius: 30px;
+  padding: clamp(30px, 4vw, 4vw);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.rowServiceHead {
+.heroContent {
+  display: flex;
+  column-gap: 40px;
+  align-items: flex-start;
+}
+
+.leftCol {
+  flex: 0 0 30%;
   display: flex;
   flex-direction: column;
-  row-gap: clamp(12px, 1vh, 1vh);
-  width: 35%;
-  /* Adjusted balance */
-  flex-shrink: 0;
-  padding-right: 10px;
+  row-gap: 25px;
 }
 
-.rowServiceHead img {
+.title {
+  font-size: clamp(28px, 2.8vw, 2.8vw);
+  font-weight: 400;
+  color: #111;
+}
+
+.clientCard {
+  background: #fff;
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  width: fit-content;
+}
+
+.clientImage {
   width: 100%;
   height: auto;
-  object-fit: cover;
+  border-radius: 15px;
+}
+
+.description {
+  font-size: clamp(14px, 1.1vw, 1.1vw);
+  line-height: 1.6;
+  color: #444;
+}
+
+.rightCol {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.sliderWrapper {
+  width: 100%;
+}
+
+.sliderTrack {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  column-gap: 30px;
+}
+
+.slide {
+  flex: 0 0 calc(50% - 15px); /* Show 2 items as in image */
+}
+
+.slide a {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+}
+
+.imageBox {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.4 / 1;
   border-radius: 20px;
-  border: 2px solid #e8dddd;
+  overflow: hidden;
 }
 
-/* logo-scroll-css */
-.logoScroll {
-  padding: clamp(40px, 5vh, 5vh) 0;
+.slide h3 {
+  font-size: clamp(16px, 1.2vw, 1.2vw);
+  font-weight: 500;
+  color: #00376a;
 }
 
-/* media-query-css */
-@media only screen and (min-width: 1024px) {
-  .serviceHead {
-    padding-top: 13vh;
-  }
+.navArrows {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  column-gap: 15px;
 }
 
+.arrowBtn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #00376a;
+  color: #fff;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  font-size: 20px;
+  box-shadow: 0 4px 10px rgba(0, 55, 106, 0.2);
+}
+
+.arrowBtn:hover:not(.disabled) {
+  transform: scale(1.1);
+}
+
+.arrowBtn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* media queries */
 @media only screen and (max-width: 1024px) {
-
-  .mainRowServiceHead>div:nth-child(2),
-  .mainRowServiceHead:before {
-    display: none;
+  .heroContent {
+    flex-direction: column;
+    row-gap: 40px;
   }
-
-  .mainRowServiceHead {
-    background-color: #f4f6f7c7;
+  
+  .leftCol {
     width: 100%;
-    padding: clamp(20px, 2vw, 2vw);
   }
 
-  .rowServiceHead {
-    width: 100%;
-    padding-right: 0;
+  .navArrows {
+    position: relative;
+    bottom: 0;
+    right: 0;
+    justify-content: flex-end;
+    margin-top: 20px;
   }
+}
 
-  .serviceHead {
-    padding-bottom: 20px;
-    align-items: flex-end;
+@media only screen and (max-width: 767px) {
+  .slide {
+    flex: 0 0 100%;
+  }
+  
+  .heroCard {
+    padding: 20px;
   }
 }

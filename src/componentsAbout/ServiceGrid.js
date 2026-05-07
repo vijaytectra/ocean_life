@@ -1,11 +1,11 @@
 "use client";
-
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Styles from "./ServiceGrid.module.css";
 import Link from "next/link";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -60,8 +60,8 @@ const ServiceGrid = () => {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const heading1Ref = useRef(null);
-  const btnRef = useRef(null);
-  const columnRefs = useRef([]);
+  const sliderRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const context = gsap.context(() => {
@@ -69,91 +69,95 @@ const ServiceGrid = () => {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 80%",
-          end: "bottom 100%",
-          scrub: 1,
+          toggleActions: "play none none reverse",
         },
       });
 
-      // Animate heading
-      tl.from(headingRef.current, {
+      tl.from([heading1Ref.current, headingRef.current], {
+        opacity: 0,
+        y: 30,
+        duration: 0.8,
+        stagger: 0.2,
+      });
+
+      tl.from(sliderRef.current, {
         opacity: 0,
         y: 50,
         duration: 1,
-      });
-
-      tl.from(heading1Ref.current, {
-        opacity: 0,
-        y: 50,
-        duration: 1,
-      });
-
-      tl.from(btnRef.current, {
-        opacity: 0,
-        y: 50,
-        duration: 1,
-      });
-
-      // Staggered animation for service items
-      tl.from(
-        columnRefs.current,
-        {
-          opacity: 0,
-          y: 50,
-          duration: 0.5,
-          stagger: 0.2,
-        },
-        "-=0.5"
-      ); // Start column animation just after heading
+      }, "-=0.4");
     }, sectionRef);
 
-    return () => {
-      context.revert();
-    };
+    return () => context.revert();
   }, []);
+
+  const nextSlide = () => {
+    if (currentIndex < services.length - 3) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const prevSlide = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
 
   return (
     <section ref={sectionRef} className={Styles.serviceGridSection}>
       <div className="container">
-        <div className={Styles.rowServiceGrid}>
-          <div className={Styles.columnServiceGrid}>
+        <div className={Styles.headerRow}>
+          <div className={Styles.titleColumn}>
             <h4 ref={heading1Ref}>
               Redefining Excellence, Delivering Perfection
             </h4>
             <h2 ref={headingRef}>Our Services</h2>
           </div>
-          <div className={Styles.columnServiceGrid} ref={btnRef}>
-            <Link href="/services">
-              <button className="inner-blue-button">
-                <span>Read More</span>
-                <svg width="15px" height="10px" viewBox="0 0 13 10">
-                  <path d="M1,5 L11,5"></path>
-                  <polyline points="8 1 12 5 8 9"></polyline>
-                </svg>
+          <div className={Styles.navColumn}>
+            <div className={Styles.arrows}>
+              <button 
+                onClick={prevSlide} 
+                className={`${Styles.navButton} ${currentIndex === 0 ? Styles.disabled : ""}`}
+              >
+                <BsArrowLeft />
               </button>
+              <button 
+                onClick={nextSlide} 
+                className={`${Styles.navButton} ${currentIndex >= services.length - 3 ? Styles.disabled : ""}`}
+              >
+                <BsArrowRight />
+              </button>
+            </div>
+            <Link href="/services" className={Styles.learnMore}>
+              <span className={Styles.orangeCircle}>
+                <BsArrowRight />
+              </span>
+              <span>Learn More</span>
             </Link>
           </div>
         </div>
 
-        {/* Service Grid */}
-        <div className={Styles.gridContainer}>
-          {services.map((service, index) => (
-            <div
-              key={service.id}
-              className={Styles.gridItem}
-              ref={(el) => (columnRefs.current[index] = el)}
-            >
-              <Link href={service.link}>
-                <Image
-                  width={500}
-                  height={200}
-                  src={service.imgSrc}
-                  alt={service.title}
-                  className={Styles.serviceImage}
-                />
-                <h3>{service.title}</h3>
-              </Link>
-            </div>
-          ))}
+        <div className={Styles.sliderWrapper} ref={sliderRef}>
+          <div 
+            className={Styles.sliderTrack} 
+            style={{ transform: `translateX(-${currentIndex * (100 / 3)}%)` }}
+          >
+            {services.map((service) => (
+              <div key={service.id} className={Styles.sliderItem}>
+                <Link href={service.link}>
+                  <div className={Styles.imageContainer}>
+                    <Image
+                      width={500}
+                      height={350}
+                      src={service.imgSrc}
+                      alt={service.title}
+                      className={Styles.serviceImage}
+                    />
+                  </div>
+                  <h3>{service.title}</h3>
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

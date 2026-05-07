@@ -1,72 +1,171 @@
 .serviceGridSection {
-  padding: clamp(40px, 5vh, 5vh) 0;
+  padding: clamp(60px, 8vh, 8vh) 0;
   position: relative;
-  background-image: url("../../public/homeServiceBg.webp");
-  background-repeat: no-repeat;
-  background-position: left bottom;
-  background-blend-mode: lighten;
+  background-color: #00376a; /* Dark blue background like the image */
+  color: #fff;
+  overflow: hidden;
 }
 
-.rowServiceGrid {
+.headerRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
+  align-items: flex-end;
+  margin-bottom: clamp(40px, 6vh, 6vh);
 }
 
-.rowServiceGrid .columnServiceGrid:nth-child(1) {
+.titleColumn h4 {
+  font-size: clamp(14px, 0.9vw, 0.9vw);
+  text-transform: uppercase;
+  font-weight: 300;
+  letter-spacing: 1px;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.titleColumn h2 {
+  font-size: clamp(32px, 3.5vw, 3.5vw);
+  font-weight: 400;
+  color: #fff;
+}
+
+.navColumn {
   display: flex;
   flex-direction: column;
-  row-gap: clamp(12px, 1vh, 1vh);
+  align-items: flex-end;
+  row-gap: 20px;
 }
 
-.columnServiceGrid h4 {
-  font-size: clamp(15px, 1vw, 1vw);
-  text-transform: uppercase;
-  font-weight: normal;
-  color: var(--color-orange);
+.arrows {
+  display: flex;
+  column-gap: 15px;
 }
 
-.columnServiceGrid h2 {
-  font-size: clamp(22px, 2.5vw, 2.5vw);
-  font-weight: normal;
-  color: var(--color-dark-blue);
+.navButton {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 20px;
 }
 
-.gridContainer {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 30px;
+.navButton:hover:not(.disabled) {
+  background: #fff;
+  color: #00376a;
 }
 
-.gridItem h3 {
-  font-size: clamp(16px, 1.2vw, 1.2vw);
-  font-weight: normal;
-  color: var(--color-dark-blue);
+.navButton.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.learnMore {
+  display: flex;
+  align-items: center;
+  column-gap: 12px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  transition: opacity 0.3s ease;
+}
+
+.learnMore:hover {
+  opacity: 0.8;
+}
+
+.orangeCircle {
+  width: 40px;
+  height: 40px;
+  background-color: #f5831f;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 18px;
+}
+
+/* Slider Styles */
+.sliderWrapper {
+  width: 100%;
+  overflow: visible; /* Allow items to be seen if needed, but track will handle movement */
+}
+
+.sliderTrack {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  margin: 0 -15px;
+}
+
+.sliderItem {
+  flex: 0 0 33.333%;
+  padding: 0 15px;
+}
+
+.sliderItem a {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+.imageContainer {
+  width: 100%;
+  aspect-ratio: 1.4 / 1;
+  overflow: hidden;
+  border-radius: 20px; /* Rounded corners as in image */
 }
 
 .serviceImage {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   object-fit: cover;
-  border-radius: 10px;
+  transition: transform 0.5s ease;
 }
 
-.gridItem a {
-  display: flex;
-  flex-direction: column;
-  row-gap: clamp(12px, 1vh, 1vh);
+.sliderItem:hover .serviceImage {
+  transform: scale(1.05);
 }
 
-/* media-query-css */
+.sliderItem h3 {
+  font-size: clamp(18px, 1.4vw, 1.4vw);
+  font-weight: 400;
+  color: #fff;
+  margin-top: 5px;
+}
+
+/* Media Queries */
+@media only screen and (max-width: 1024px) {
+  .sliderItem {
+    flex: 0 0 50%;
+  }
+}
+
 @media only screen and (max-width: 767px) {
-  .rowServiceGrid {
+  .headerRow {
     flex-direction: column;
-    row-gap: 20px;
-    align-items: baseline;
+    align-items: flex-start;
+    row-gap: 30px;
+  }
+  
+  .navColumn {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  .gridContainer {
-    grid-template-columns: repeat(1, 1fr);
+  .sliderItem {
+    flex: 0 0 100%;
+  }
+
+  .titleColumn h2 {
+    font-size: 28px;
   }
 }

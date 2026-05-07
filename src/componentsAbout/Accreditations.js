@@ -12,16 +12,16 @@ if (typeof window !== "undefined") {
 
 const AccredItems = [
   {
-    image: "/about/awr-1.png.webp",
+    image: "/about/awr-2.png.webp",
     title: "IMS",
     description: `
       ISO 9001:2015 - Quality <br>
       ISO 14001:2015 - EMS <br>
-      OHSAS 18001:2007 Certified for Occupational Health and Safety Assessment Series.
+      ISO 45001:2018 Certified for Occupational Health and Safety Management System.
     `,
   },
   {
-    image: "/about/awr-2.png.webp",
+    image: "/about/awr-1.png.webp",
     title: `CCR A- / STABLE RATING`,
     description: `CRISIL has upgraded our corporate credit rating to CCR A Stable from CCR BBB+/Positive.`,
   },
@@ -34,7 +34,7 @@ const AccredItems = [
   },
   {
     image: "/about/awr-4.png.webp",
-    title: "IMS",
+    title: "IGBC",
     description: `
       Ocean is a member of Indian Green Building Council.
     `,
