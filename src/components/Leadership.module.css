@@ -1,0 +1,74 @@
+.Leadership {
+  padding: clamp(80px, 7vh, 7vh) 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-image: url("../../public/leadership-bg.webp");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+}
+.mainRowLeadership {
+  width: 55%;
+  height: auto;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: clamp(40px, 4vw, 4vw);
+}
+.mainRowLeadership h4 {
+  font-size: clamp(15px, 1vw, 1vw);
+  color: var(--color-orange);
+  text-transform: uppercase;
+  font-weight: normal;
+}
+.mainRowLeadership h2 {
+  font-size: clamp(20px, 2.5vw, 2.5vw);
+  color: var(--color-dark-blue);
+  font-weight: normal;
+}
+.mainRowLeadership p {
+  font-size: clamp(15px, 1vw, 1vw);
+  color: var(--color-black);
+  text-align: justify;
+  font-weight: normal;
+}
+.columnLeadership img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 10.5px;
+}
+.columnLeadership {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(20px, 2vh, 2vh);
+  position: relative;
+}
+.floatRow {
+  position: absolute;
+  bottom: -30px;
+  right: -20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: clamp(10px, 1vw, 1vw) clamp(20px, 2vw, 2vw);
+  text-align: center;
+  border-radius: 10px;
+  z-index: 1;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+.floatRow h3 {
+  color: var(--color-dark-blue);
+}
+
+@media only screen and (max-width: 1024px) {
+  .mainRowLeadership {
+    width: 100%;
+    grid-template-columns: 1fr;
+    row-gap: clamp(20px, 2vh, 2vh);
+    padding: 0 20px;
+  }
+  .floatRow {
+    bottom: 0;
+    right: 0;
+  }
+}

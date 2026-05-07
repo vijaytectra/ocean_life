@@ -1,0 +1,60 @@
+/* components/ContactForm.module.css */
+
+.formContainer {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(20px, 3vh, 3vh);
+  background-color: #fff;
+  padding: clamp(20px, 3vw, 3vw);
+  border-radius: clamp(10px, 1vw, 1vw);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.formContainer h2 {
+  color: var(--color-dark-blue);
+}
+
+.fieldGroup {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.inputField,
+.textareaField {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.textareaField {
+  height: 150px;
+  font-family: "Neue Haas Grotesk Display Pro", sans-serif !important;
+}
+
+.submitButton {
+  padding: 10px 20px;
+  background-color: var(--color-dark-blue);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submitButton:hover {
+  background-color: #333;
+}
+
+.successMessage {
+  color: green;
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+}

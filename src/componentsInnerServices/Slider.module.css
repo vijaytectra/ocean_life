@@ -1,0 +1,66 @@
+/* Slider container */
+.sliderContainer {
+  position: relative;
+  width: 100%;
+  height: auto;
+  margin: auto;
+  overflow: hidden;
+}
+
+/* Image wrapper for sliding */
+.imageWrapper {
+  display: flex;
+  transition: transform 0.5s ease;
+  gap: 20px;
+}
+
+/* Slider image */
+.sliderImage {
+  width: 50%; /* Ensure one image is shown at a time */
+  height: auto;
+}
+
+/* Arrow buttons */
+.prevButton,
+.nextButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--color-dark-blue);
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.prevButton {
+  left: 10px;
+}
+
+.nextButton {
+  right: 10px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  /* Ensure only one image is visible at a time */
+  .imageWrapper {
+    flex-direction: row; /* Keep horizontal layout */
+  }
+
+  .sliderImage {
+    width: 100%; /* Ensure only one image is shown at a time */
+  }
+
+  .prevButton,
+  .nextButton {
+    font-size: 18px;
+    padding: 8px;
+  }
+}

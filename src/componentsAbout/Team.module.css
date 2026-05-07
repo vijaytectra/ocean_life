@@ -1,0 +1,56 @@
+.team {
+  position: relative;
+  padding: clamp(40px, 5vh, 5vh) 0;
+  background-color: #f4f6f7;
+}
+.mainRowTeam {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(20px, 5vh, 5vh);
+}
+.mainRowTeam .rowTeam:nth-child(1) {
+  align-self: center;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(12px, 1vh, 1vh);
+  width: 70%;
+}
+.mainRowTeam .rowTeam:nth-child(2) {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3vw;
+}
+.mainRowTeam .rowTeam:nth-child(2) img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.teamBox {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(12px, 1vh, 1vh);
+}
+.contentTeamBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* mediaquery-css */
+@media only screen and (min-width: 451px) and (max-width: 950px) {
+  .mainRowTeam .rowTeam:nth-child(2) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media only screen and (max-width: 450px) {
+  .mainRowTeam .rowTeam:nth-child(2) {
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 20px;
+  }
+  .mainRowTeam .rowTeam:nth-child(1) {
+    width: 100%;
+  }
+}

@@ -1,0 +1,265 @@
+.menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: clamp(10px, 0.7vw, 0.7vw) clamp(20px, 2vw, 2vw);
+  border-radius: clamp(10px, 1vw, 1vw);
+  position: fixed;
+  z-index: 99;
+  background: #fff;
+  width: 94%;
+  left: 3%;
+  top: 3%;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+.scrolled {
+  background: rgba(255, 255, 255, 0.5);
+}
+.logo {
+  width: clamp(100px, 10vw, 10vw);
+  height: auto;
+}
+.menuItemsContainerInner {
+  display: flex;
+  align-items: center;
+  column-gap: 3vw;
+}
+.menuItems {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  gap: 3vw;
+}
+.menuItemsContainerInner li {
+  display: flex;
+  align-items: center;
+}
+.menuItemsContainerInner a {
+  font-size: clamp(12px, 1vw, 1vw);
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+.menuItemsContainerInner a:hover {
+  color: var(--color-blue);
+}
+.menuItemsContainerInner button {
+  font-size: clamp(12px, 1vw, 1vw);
+  text-transform: uppercase;
+  border: none;
+  background: #e9e9e9;
+  cursor: pointer;
+  padding: clamp(10px, 1vw, 1vw) clamp(20px, 2vw, 2vw);
+  border-radius: 1vw;
+  position: relative;
+  overflow: hidden;
+}
+
+.menuItemsContainerInner button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: var(--color-blue);
+  z-index: 0;
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+.menuItemsContainerInner button:hover::before {
+  opacity: 1;
+  height: 100%;
+}
+.menuItemsContainerInner button:hover span {
+  color: #fff;
+}
+
+.menuItemsContainerInner button span {
+  position: relative;
+  z-index: 1;
+}
+
+.popupMenu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  right: -102%;
+  width: 100vw;
+  height: 100vh;
+  background: var(--color-blue);
+  z-index: 100;
+  transition: right 0.5s ease;
+  padding: 5vw;
+}
+.popupContentMenu {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  column-gap: 3vw;
+}
+.video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: clamp(10px, 1vw, 1vw);
+}
+.closeButtonMenu {
+  display: flex;
+  align-items: center;
+  column-gap: 1vw;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: clamp(14px, 1.2vw, 1.2vw);
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  height: fit-content;
+}
+.mobileMenuItems {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(15px, 5vh, 5vh);
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+.mobileMenuItem a {
+  font-size: clamp(16px, 1.5vw, 1.5vw);
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  color: white;
+}
+.active {
+  font-weight: bold;
+  color: var(--color-blue);
+}
+.mobileMenuItem {
+  position: relative;
+}
+
+.mobileMenuItem a {
+  text-decoration: none;
+  position: relative;
+}
+
+.mobileMenuItem a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background-color: #e9e9e9;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.mobileMenuItem a:hover::after {
+  transform: scaleX(1);
+}
+
+.mobileActive {
+  font-weight: bold !important;
+  color: #e9e9e9 !important;
+}
+
+.mobileMenuItem .mobileActive::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background-color: #e9e9e9;
+  transform: scaleX(1);
+}
+
+/* responsive CSS */
+
+@media only screen and (min-width: 769px) {
+  .popupContentMenu > div:nth-child(1) {
+    width: 20%;
+  }
+  .popupContentMenu > div:nth-child(2) {
+    width: 70%;
+  }
+  .popupContentMenu > div:nth-child(3) {
+    width: 10%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .menuItems {
+    display: none;
+  }
+  .popupContentMenu > div:nth-child(2) {
+    display: none;
+  }
+  .popupMenu {
+    flex-direction: column;
+  }
+  .mobileLogo {
+    display: flex !important;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+    border: solid 1px #5377b2;
+    border-radius: 10px;
+    padding: 5px 10px;
+    align-items: center;
+  }
+  .popupContentMenu button {
+    display: none;
+  }
+  .mobileLogo button {
+    padding: 15px 25px;
+    background: var(--color-grey);
+    border: none;
+    cursor: pointer;
+    color: #000;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+  }
+  .mobileMenuItems {
+    row-gap: 0px;
+  }
+  .mobileMenuItems li:not(:last-child) {
+    border-bottom: solid 1px #5377b2;
+  }
+  .mobileMenuItems li {
+    padding: 20px 0;
+  }
+  .popupContentMenu {
+    display: block;
+    padding: 0 20px;
+  }
+  .mobileMenuItem .mobileActive::after,
+  .mobileMenuItem a::after {
+    display: none;
+  }
+  .mobileLogoImage {
+    width: 120px;
+    height: auto;
+  }
+  .mobileMenuItem a {
+    color: #a5c6fc;
+  }
+  .mobileMenuItem a {
+    text-transform: none;
+  }
+}

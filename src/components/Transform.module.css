@@ -1,0 +1,81 @@
+.sectionTransform {
+  position: relative;
+  width: 100%;
+  height: fit-content;
+  overflow: hidden;
+  padding: clamp(40px, 5vh, 5vh) 0;
+}
+.rowTransform {
+  position: relative;
+  display: flex;
+  gap: clamp(20px, 3vw, 3vw);
+}
+.columnTransform {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(12px, 1vh, 1vh);
+  height: 100%;
+  width: 30%;
+}
+.rowTransform .columnTransform:nth-child(1) {
+  background-color: var(--color-dark-blue);
+  border-radius: clamp(10px, 1vw, 1vw);
+  padding: clamp(40px, 4vw, 4vw);
+  color: var(--color-white);
+  height: fit-content;
+  width: 70%;
+}
+.rowTransform .columnTransform:nth-child(2) img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.columnTransform h2 {
+  font-size: clamp(22px, 2vw, 2vw);
+  font-weight: normal;
+  color: var(--color-white);
+}
+.columnTransform p {
+  font-size: clamp(15px, 1vw, 1vw);
+  font-weight: normal;
+  text-align: justify;
+  color: var(--color-white);
+}
+.linkTransform {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: clamp(15px, 1vw, 1vw);
+  color: var(--color-dark-blue);
+  background-color: var(--color-white);
+  position: absolute;
+  bottom: -7vh;
+  right: 3vw;
+  width: clamp(80px, 7vw, 7vw);
+  height: clamp(80px, 7vw, 7vw);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  transform: translateX(10px);
+  transition: all 0.5s ease;
+}
+.rowTransform:hover .linkTransform {
+  display: flex;
+  transform: translateX(0);
+}
+
+/* responsive-css-starts-here */
+@media only screen and (max-width: 768px) {
+  .rowTransform {
+    flex-direction: column;
+    row-gap: 50px;
+  }
+  .columnTransform {
+    width: 100% !important;
+  }
+  .linkTransform {
+    bottom: -35px !important;
+  }
+}

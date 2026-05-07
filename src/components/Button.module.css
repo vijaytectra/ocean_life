@@ -1,0 +1,51 @@
+.customButton {
+  font-size: clamp(12px, 1vw, 1vw);
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: clamp(10px, 1vw, 1vw) clamp(20px, 2vw, 2vw);
+  border-radius: clamp(10px, 1.5vw, 1.5vw);
+  position: relative;
+  overflow: hidden;
+  border: solid 1px var(--button-border-color, var(--color-white)); /* Default border color */
+  background: var(
+    --button-bg-color,
+    transparent
+  ); /* Default button background color */
+  color: var(--button-text-color, var(--color-white)); /* Default text color */
+  transition: all 0.3s ease;
+}
+
+.customButton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: var(
+    --hover-bg-color,
+    var(--color-white)
+  ); /* Hover background color */
+  z-index: 0;
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+.customButton:hover::before {
+  opacity: 1;
+  height: 100%;
+}
+
+.customButton:hover span {
+  color: var(--hover-text-color, var(--color-dark-blue)); /* Hover text color */
+}
+
+.customButton span {
+  position: relative;
+  z-index: 1;
+  margin-left: 10px;
+}
+
+.customButton span svg {
+  margin-left: 5px;
+}

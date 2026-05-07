@@ -1,0 +1,72 @@
+.serviceGridSection {
+  padding: clamp(40px, 5vh, 5vh) 0;
+  position: relative;
+  background-image: url("../../public/homeServiceBg.webp");
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-blend-mode: lighten;
+}
+
+.rowServiceGrid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.rowServiceGrid .columnServiceGrid:nth-child(1) {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(12px, 1vh, 1vh);
+}
+
+.columnServiceGrid h4 {
+  font-size: clamp(15px, 1vw, 1vw);
+  text-transform: uppercase;
+  font-weight: normal;
+  color: var(--color-orange);
+}
+
+.columnServiceGrid h2 {
+  font-size: clamp(22px, 2.5vw, 2.5vw);
+  font-weight: normal;
+  color: var(--color-dark-blue);
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 30px;
+}
+
+.gridItem h3 {
+  font-size: clamp(16px, 1.2vw, 1.2vw);
+  font-weight: normal;
+  color: var(--color-dark-blue);
+}
+
+.serviceImage {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.gridItem a {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(12px, 1vh, 1vh);
+}
+
+/* media-query-css */
+@media only screen and (max-width: 767px) {
+  .rowServiceGrid {
+    flex-direction: column;
+    row-gap: 20px;
+    align-items: baseline;
+  }
+
+  .gridContainer {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

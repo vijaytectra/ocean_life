@@ -1,0 +1,262 @@
+.blogContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  color: #111;
+  font-family: "Arial", sans-serif;
+  line-height: 1.6;
+  padding-top: 120px;
+}
+
+.hero {
+  margin-bottom: 60px;
+}
+
+.hero h1 {
+  font-size: 2.2rem;
+  color: #00376a;
+  margin-bottom: 30px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.heroImage {
+  width: 100%;
+  height: 500px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.heroImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.heroImage:hover img {
+  transform: scale(1.03);
+}
+
+.section {
+  margin-bottom: 60px;
+}
+
+.section h2 {
+  color: #00376a;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.section h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background-color: #f5831f;
+}
+
+.introText {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.benefitsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin: 40px 0;
+}
+
+.benefitCard {
+  background-color: #e9e9e9;
+  padding: 25px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.benefitCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.benefitIcon {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+
+.benefitCard h3 {
+  color: #f5831f;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.trendCard {
+  display: flex;
+  gap: 30px;
+  margin-top: 45px;
+  align-items: flex-start;
+}
+
+.trendNumber {
+  background-color: #f5831f;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.trendContent {
+  flex: 1;
+}
+
+.trendContent h3 {
+  color: #00376a;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.featureList {
+  margin: 20px 0;
+}
+
+.section p a,
+.companyGrid p a {
+  font-weight: bold;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.featureIcon {
+  font-size: 1.2rem;
+}
+
+.note {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-left: 4px solid #f5831f;
+  font-style: italic;
+  margin: 30px 0;
+}
+
+.companySection {
+  margin: 80px 0;
+}
+
+.companyGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 15px;
+}
+
+.companyImage {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.companyImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.companyList {
+  margin: 20px 0;
+  padding-left: 20px;
+}
+
+.companyList li {
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.companyList li::before {
+  content: "•";
+  color: #f5831f;
+  font-size: 1.5rem;
+  position: absolute;
+  left: -20px;
+  top: -3px;
+}
+
+.conclusion {
+  margin: 80px 0;
+}
+
+.ctaBox {
+  background-color: #00376a;
+  color: white;
+  padding: 40px;
+  border-radius: 10px;
+  margin-top: 40px;
+  text-align: center;
+}
+
+.ctaText {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.ctaButton {
+  background-color: #f5831f;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.ctaButton:hover {
+  background-color: #e0721a;
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .heroImage {
+    height: 300px;
+  }
+
+  .section h2 {
+    font-size: 1.5rem;
+  }
+
+  .trendCard {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .companyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .benefitsGrid {
+    grid-template-columns: 1fr;
+  }
+}

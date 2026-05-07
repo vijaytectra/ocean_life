@@ -1,0 +1,108 @@
+.sectionNewsLetter {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: clamp(40px, 5vh, 5vh) 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 4vw);
+  background-color: #f5f7f8;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: clamp(390px, 55vw, 55vw);
+  margin: auto;
+  background-image: url("../../public/news-letter.webp");
+  background-position: center;
+  background-size: cover;
+}
+
+.heading {
+  font-size: clamp(20px, 2vw, 2vw);
+  color: var(--color-dark-blue);
+  margin-bottom: clamp(1rem, 1.5vh, 1.5vh);
+  font-weight: normal;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: fit-content;
+  position: relative;
+}
+
+.input {
+  padding: clamp(10px, 1vw, 1vw) clamp(20px, 2vw, 2vw);
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: clamp(14px, 1vw, 1vw);
+  width: 30vw;
+}
+
+.button {
+  position: absolute;
+  right: 5px;
+  background-color: var(--color-orange);
+  border: none;
+  width: clamp(28px, 2.9vw, 2.9vw);
+  height: clamp(28px, 2.9vw, 2.9vw);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  transform: rotate(-30deg);
+}
+.button:hover {
+  background-color: var(--color-dark-blue);
+}
+
+.icon {
+  font-size: clamp(18px, 1.5vw, 1.5vw);
+  color: var(--color-white);
+}
+
+@media only screen and (max-width: 767px) {
+  .input {
+    width: 250px;
+  }
+  .container {
+    background-position: initial;
+  }
+}
+.inputContainer {
+  position: relative;
+  flex-grow: 1;
+}
+
+.inputError {
+  border-color: #ff4444 !important;
+}
+
+.errorMessage {
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  color: #ff4444;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.message {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.successMessage {
+  color: #00c851;
+}
+
+.errorMessage {
+  color: #ff4444;
+}

@@ -1,0 +1,56 @@
+/* ImageSlider.module.css */
+
+.sliderContainer {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.sliderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.slider {
+  display: flex;
+  transition: all 0.5s ease;
+}
+
+.slide {
+  flex: 0 0 50%; /* For 2 slides on larger screens */
+  padding: 10px;
+}
+
+.arrows {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+}
+
+.arrow {
+  padding: 8px;
+  color: #000;
+  cursor: pointer;
+  z-index: 10;
+  background: aliceblue;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+  .slider {
+    flex-direction: row; /* Keep the horizontal layout */
+  }
+
+  .slide {
+    flex: 0 0 100%; /* Full width on mobile screens */
+  }
+}

@@ -1,0 +1,168 @@
+.recentProjects {
+  padding: 50px 0;
+  position: relative;
+  padding-bottom: 0;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5vw;
+}
+
+.leftColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.rightColumn {
+  flex: 2;
+  position: relative;
+  overflow: hidden;
+}
+
+.leftColumn h2 {
+  color: var(--color-dark-blue);
+}
+
+.arrowContainer {
+  display: flex;
+  gap: 1rem;
+  margin-top: 15px;
+}
+
+.arrow {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid var(--color-dark-blue);
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: var(--color-dark-blue);
+  color: var(--color-white);
+}
+
+.slider {
+  display: flex;
+  gap: 1vw;
+  transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+  min-width: calc((100% / 3) - 1vw);
+  transition: transform 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+.slide img {
+  width: 100%;
+  border-radius: 10px;
+}
+.carouselImage {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.projectInfo {
+  margin-top: 12px;
+  text-align: left;
+}
+
+.projectInfo p {
+  color: #707070;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: 5vw;
+  }
+
+  .rightColumn {
+    width: 100%;
+  }
+
+  .slider {
+    gap: 2vw;
+  }
+
+  .slide {
+    min-width: calc(100% / 2.2 - 2vw);
+  }
+
+  .arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .projectInfo {
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .leftColumn h2 {
+    font-size: 1.75rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+
+  .arrow {
+    width: 35px;
+    height: 35px;
+  }
+
+  .slider {
+    gap: 3vw;
+  }
+
+  .slide {
+    min-width: calc(100% / 1.5 - 3vw);
+  }
+
+  .carouselImage {
+    border-radius: 8px;
+  }
+
+  .projectInfo {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .recentProjects {
+    padding: 20px 0;
+  }
+
+  .arrow {
+    width: 30px;
+    height: 30px;
+  }
+
+  .leftColumn h2 {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 0.85rem;
+  }
+
+  .slide {
+    min-width: calc(100% / 1.2 - 3vw);
+  }
+
+  .carouselImage {
+    border-radius: 6px;
+  }
+
+  .projectInfo {
+    margin-top: 6px;
+  }
+}

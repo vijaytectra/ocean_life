@@ -1,0 +1,155 @@
+.sectionNews {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  padding: clamp(60px, 10vh, 10vh) 0;
+}
+.rowNews {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(12px, 1vh, 1vh);
+  margin-bottom: clamp(20px, 2vh, 2vh);
+}
+.rowNews h4 {
+  font-size: clamp(15px, 1vw, 1vw);
+  text-transform: uppercase;
+  font-weight: normal;
+  color: var(--color-orange);
+}
+.rowNews h2 {
+  font-size: clamp(22px, 2.5vw, 2.5vw);
+  font-weight: normal;
+  color: var(--color-dark-blue);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(10px, 2vw, 2vw);
+  margin-top: 2vh;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(12px, 3vh, 3vh);
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  border-radius: 10px;
+}
+.card:hover img {
+  transform: scale(1.2);
+}
+.dateBarNews {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.imageDiv {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+.card img {
+  width: 100%;
+  height: auto;
+  transition: all 2s ease-in;
+}
+.contentDiv {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(10px, 1vh, 1vh);
+  padding-left: clamp(10px, 1vw, 1vw);
+  padding-right: clamp(10px, 1vw, 1vw);
+  padding-bottom: clamp(10px, 1vw, 1vw);
+}
+.card h3 {
+  font-size: clamp(20px, 1.2vw, 1.2vw);
+  font-weight: normal;
+  color: var(--color-dark-blue);
+}
+
+.card h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 3em; /* Adjust based on line height */
+  word-wrap: break-word;
+}
+
+.card p {
+  font-size: clamp(15px, 1vw, 1vw);
+  color: var(--color-black);
+  font-weight: normal;
+}
+
+/* responsive-css-starts-here */
+@media only screen and (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(1, 1fr);
+    row-gap: 70px;
+  }
+  .sectionNews {
+    height: 100% !important;
+    padding-bottom: 20px;
+  }
+}
+/* From Uiverse.io by alexmaracinaru */
+.cta {
+  position: relative;
+  margin: auto;
+  padding: 12px 18px;
+  transition: all 0.2s ease;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.cta:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  border-radius: 50px;
+  background: #b1dae7;
+  width: 40px;
+  height: 40px;
+  transition: all 0.3s ease;
+}
+
+.cta span {
+  position: relative;
+  font-family: "Ubuntu", sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: #234567;
+}
+
+.cta svg {
+  position: relative;
+  top: 0;
+  margin-left: 10px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: #234567;
+  stroke-width: 2;
+  transform: translateX(-5px);
+  transition: all 0.3s ease;
+}
+
+.card:hover .cta:before {
+  width: 100%;
+  background: #b1dae7;
+}
+
+.cta:hover svg {
+  transform: translateX(0);
+}
+
+.cta:active {
+  transform: scale(0.95);
+}

@@ -1,0 +1,134 @@
+.projects {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: clamp(40px, 5vh, 5vh) 0;
+  padding-top: clamp(100px, 20vh, 20vh);
+}
+.rowMainProjects {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(20px, 5vh, 5vh);
+  width: 100%;
+  height: 100%;
+}
+.rowMainProjects h1 {
+  color: var(--color-dark-blue);
+  align-self: center;
+}
+.row1Projects,
+.row2Projects,
+.row4Projects {
+  display: flex;
+  column-gap: 2vw;
+  width: 100%;
+  height: 100%;
+}
+.row1Projects .columnProjects:nth-child(1) {
+  width: 34%;
+  height: 100%;
+}
+.row1Projects .columnProjects:nth-child(2) {
+  width: 66%;
+  height: 100%;
+}
+.columnProjects {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+}
+.columnProjects {
+  position: relative;
+  overflow: hidden;
+}
+
+.columnProjects::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: clamp(10px, 1vw, 1vw);
+}
+
+.columnProjects:hover::before {
+  opacity: 1;
+}
+
+.columnProjects .content {
+  transition: all 0.3s ease-in-out;
+  position: absolute;
+  color: var(--color-white);
+  bottom: 10%;
+  left: 10%;
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(12px, 1vh, 1vh);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+}
+.content h2 {
+  color: var(--color-white);
+  align-self: flex-start;
+}
+
+.columnProjects:hover .content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.columnProjects .content a {
+  font-size: clamp(15px, 1vw, 1vw);
+  display: flex;
+  align-items: center;
+  column-gap: clamp(8px, 0.5vw, 0.5vw);
+  transition: all 0.3s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+}
+.columnProjects .content a:hover {
+  color: var(--color-orange);
+}
+.columnProjects img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: clamp(10px, 1vw, 1vw);
+}
+.row2Projects .columnProjects {
+  width: calc(100% / 3);
+  height: 100%;
+}
+.row3Projects,
+.row3Projects .columnProjects {
+  width: 100%;
+  height: 100%;
+}
+.row4Projects .columnProjects {
+  width: calc(100% / 2);
+  height: 100%;
+}
+
+/* media-query-css */
+@media only screen and (max-width: 600px) {
+  .row1Projects,
+  .row2Projects,
+  .row4Projects {
+    flex-direction: column;
+    row-gap: 30px;
+  }
+  .columnProjects {
+    width: 100% !important;
+  }
+  .columnProjects .content {
+    right: 10%;
+    row-gap: 8px;
+  }
+  .rowMainProjects {
+    row-gap: 30px;
+  }
+}

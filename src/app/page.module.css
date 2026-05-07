@@ -1,0 +1,132 @@
+.dreamSection {
+  padding: clamp(60px, 7vh, 7vh) 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-image: url("../../public/feviconBg.webp");
+  background-repeat: no-repeat;
+  background-position: left bottom;
+}
+.logoScroll {
+  padding: clamp(40px, 5vh, 5vh) 0;
+}
+.rowDream {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: space-between;
+}
+.columnDream {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(20px, 2vh, 2vh);
+}
+.rowDream .columnDream:nth-child(2) {
+  align-items: flex-end;
+}
+.rowDream .columnDream:nth-child(2) img {
+  width: 80%;
+  height: auto;
+}
+.columnDream h4 {
+  font-size: clamp(15px, 1vw, 1vw);
+  color: var(--color-orange);
+  text-transform: uppercase;
+  font-weight: normal;
+}
+.columnDream h2,
+.logoScroll h2 {
+  font-size: clamp(20px, 2.5vw, 2.5vw);
+  color: var(--color-dark-blue);
+  font-weight: normal;
+}
+.logoScroll h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.columnDream p {
+  font-size: clamp(15px, 1vw, 1vw);
+  color: var(--color-black);
+  text-align: justify;
+  font-weight: normal;
+}
+.dreamFloat {
+  position: absolute;
+  bottom: 7vh;
+  left: 2vw;
+  width: 25vw;
+  background-color: var(--color-white);
+  color: var(--color-dark-blue) !important;
+  text-align: center !important;
+  padding: clamp(10px, 1vw, 1vw) clamp(20px, 2vw, 2vw);
+  border-radius: clamp(10px, 1vw, 1vw);
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+/* counter-box-css */
+.counterSection {
+  display: flex;
+  justify-content: space-between;
+  margin-top: clamp(20px, 5vh, 5vh);
+}
+
+.counterBox {
+  color: var(--color-black);
+}
+
+.counterBox h3 {
+  font-size: clamp(15px, 1vw, 1vw);
+  font-weight: normal;
+  color: var(--color-dark-blue);
+}
+
+.counterBox p {
+  font-size: clamp(20px, 2vw, 2vw);
+  font-weight: bold;
+  color: var(--color-dark-blue);
+}
+
+/* respnive-css-starts-here */
+@media only screen and (min-width: 1025px) {
+  /* .dreamSection {
+    padding-top: 18vh;
+  } */
+}
+@media screen and (max-width: 1024px) {
+  .dreamFloat {
+    position: relative;
+    left: 0;
+    width: 80%;
+    margin-top: 15px;
+    padding: 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .rowDream {
+    grid-template-columns: auto;
+  }
+  .dreamFloat {
+    position: relative;
+    left: 0;
+    width: 100%;
+    margin-top: 15px;
+  }
+  .rowDream .columnDream:nth-child(2) img {
+    width: 100%;
+  }
+  .counterSection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 0 !important;
+    margin-bottom: 25px;
+    row-gap: 20px;
+  }
+  .dreamFloat {
+    bottom: 0 !important;
+  }
+  .dreamSection {
+    height: 100% !important;
+  }
+}

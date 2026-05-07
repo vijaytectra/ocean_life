@@ -1,0 +1,116 @@
+.sectionTestimonialHome {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: clamp(40px, 5vh, 5vh) 0;
+}
+.rowTestimonialHome {
+  display: grid;
+  grid-template-columns: calc(60% - 1vw) calc(40% - 1vw);
+  gap: 2vw;
+  width: 100%;
+  height: 100%;
+}
+
+.columnTestimonialHome {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(12px, 1vh, 1vh);
+  height: 100%;
+}
+.rowTestimonialHome .columnTestimonialHome:nth-child(1) img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.columnTestimonialHome p {
+  text-align: justify;
+}
+.columnTestimonialHome h4,
+.columnTestimonialHome p,
+.columnTestimonialHome h5 {
+  font-size: clamp(15px, 1vw, 1vw);
+  font-weight: normal;
+}
+.columnTestimonialHome h4 {
+  color: var(--color-dark-blue);
+}
+/* Slider.module.css */
+.sliderWrapper {
+  position: relative;
+  width: 100%; /* As seen in your image */
+  height: 100%;
+  overflow: hidden;
+}
+
+.slider {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.slide {
+  flex: 0 0 100%;
+  height: 100%;
+  flex-direction: column;
+  display: flex;
+  row-gap: clamp(12px, 1vh, 1vh);
+}
+
+.testiImage {
+  width: clamp(100px, 10vw, 10vw);
+  height: auto;
+}
+.quoteImage {
+  width: clamp(10px, 2vw, 2vw);
+  height: auto;
+}
+.navigation {
+  position: absolute;
+  bottom: 20px;
+  left: 14%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+}
+
+.prevButton,
+.nextButton {
+  background-color: var(--color-dark-blue);
+  border: none;
+  padding: 10px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+.prevButton:hover,
+.nextButton:hover {
+  background-color: var(--color-black);
+  color: var(--color-white);
+}
+
+/* responsive-css-starts-here */
+@media only screen and (max-width: 920px) {
+  .rowTestimonialHome {
+    grid-template-columns: 100%;
+    row-gap: 30px;
+  }
+  .navigation {
+    bottom: 0;
+    left: 82%;
+  }
+  .prevButton,
+  .nextButton {
+    height: 30px;
+    width: 30px;
+  }
+}

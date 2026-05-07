@@ -1,0 +1,13 @@
+# Allow all search engines to crawl everything
+User-agent: *
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+Disallow: /server/
+
+# Optional: Disallow dev-only routes or admin areas
+Disallow: /admin
+Disallow: /dashboard
+
+# Sitemap URL (update if dynamic)
+Sitemap: https://www.olipl.com/sitemap.xml

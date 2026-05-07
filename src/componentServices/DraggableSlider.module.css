@@ -1,0 +1,192 @@
+.sliderWrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 10px;
+}
+
+.topControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  width: 100%;
+  position: relative;
+  z-index: 999;
+  padding: 0 5px;
+  gap: 15px;
+}
+
+.scrollerWrapper {
+  flex: 0 0 10%; 
+}
+
+.scrollerTrack {
+  width: 100%;
+  height: 2px;
+  background-color: rgba(0, 55, 106, 0.1);
+  position: relative;
+}
+
+.scrollerBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #f5831f;
+  transition: width 0.3s ease;
+}
+
+.categoryNav {
+  display: flex;
+  gap: clamp(8px, 1vw, 1vw);
+  flex: 1;
+  justify-content: flex-start;
+  overflow-x: auto;
+  padding: 5px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  mask-image: linear-gradient(to right, black 90%, transparent);
+}
+
+.categoryNav::-webkit-scrollbar {
+  display: none;
+}
+
+.categoryBtn {
+  background: transparent;
+  border: none;
+  font-size: clamp(11px, 0.8vw, 0.8vw);
+  color: #00376a;
+  opacity: 0.6;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  padding: 5px 8px;
+  position: relative;
+}
+.categoryNav {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 10px;
+  cursor: grab;
+}
+
+.categoryNav::-webkit-scrollbar {
+  display: none; /* optional clean UI */
+}
+
+.categoryBtn:hover,
+.categoryBtnActive {
+  opacity: 1;
+  color: #f5831f;
+}
+
+.categoryBtn::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: #f5831f;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.categoryBtn:hover::after {
+  width: 100%;
+}
+
+.btnGroup {
+  display: flex;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+.navBtn {
+  background-color: #00376a;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navBtn:hover {
+  background-color: #f5831f;
+  border-color: #f5831f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(245, 131, 31, 0.4);
+}
+
+.sliderContainer {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.sliderTrack {
+  display: flex;
+  width: max-content;
+  pointer-events: auto;
+}
+
+.sliderCard {
+  flex: 0 0 auto;
+  width: 30vw;
+  margin-right: 2.5vw;
+}
+
+.cardImage {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  margin-bottom: 15px;
+}
+
+.cardHeading {
+  text-align: left;
+  color: #00376a;
+  font-weight: 500;
+  font-size: clamp(16px, 1.3vw, 1.3vw);
+  margin-top: 5px;
+}
+
+@media screen and (max-width: 1024px) {
+  .topControls {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .categoryNav {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .btnGroup {
+    order: -1;
+    /* Keep arrows accessible at top mobile */
+  }
+
+  .scrollerWrapper {
+    display: none;
+    /* Hide scroller on mobile to save space */
+  }
+
+  .sliderCard {
+    width: 75vw;
+    margin-right: 20px;
+  }
+}

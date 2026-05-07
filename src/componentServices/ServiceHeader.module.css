@@ -1,0 +1,88 @@
+.serviceHead {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  background-image: url("../../public/services/head-bg.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.mainRowServiceHead {
+  display: flex;
+  padding: clamp(60px, 6vw, 6vw) clamp(20px, 2vw, 2vw);
+  border-radius: clamp(10px, 1vw, 1vw);
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  width: 85vw;
+  /* Restore original width visual */
+}
+
+.mainRowServiceHead:before {
+  content: "";
+  position: absolute;
+  background-color: #f4f6f7c7;
+  width: 100%;
+  /* Changed to 100% since parent has width */
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  border-radius: clamp(10px, 1vw, 1vw);
+}
+
+.rowServiceHead {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(12px, 1vh, 1vh);
+  width: 35%;
+  /* Adjusted balance */
+  flex-shrink: 0;
+  padding-right: 10px;
+}
+
+.rowServiceHead img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 20px;
+  border: 2px solid #e8dddd;
+}
+
+/* logo-scroll-css */
+.logoScroll {
+  padding: clamp(40px, 5vh, 5vh) 0;
+}
+
+/* media-query-css */
+@media only screen and (min-width: 1024px) {
+  .serviceHead {
+    padding-top: 13vh;
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+
+  .mainRowServiceHead>div:nth-child(2),
+  .mainRowServiceHead:before {
+    display: none;
+  }
+
+  .mainRowServiceHead {
+    background-color: #f4f6f7c7;
+    width: 100%;
+    padding: clamp(20px, 2vw, 2vw);
+  }
+
+  .rowServiceHead {
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .serviceHead {
+    padding-bottom: 20px;
+    align-items: flex-end;
+  }
+}
