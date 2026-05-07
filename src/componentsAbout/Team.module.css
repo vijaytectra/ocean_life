@@ -23,7 +23,7 @@
 }
 .mainRowTeam .rowTeam:nth-child(2) img {
   width: 100%;
-  height: auto;
+  aspect-ratio: 363 / 382;
   object-fit: cover;
   border-radius: 10px;
 }

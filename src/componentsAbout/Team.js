@@ -11,7 +11,7 @@ const Members = [
     description: "Managing Director & CEO",
   },
   {
-    image: "/about/team4.webp",
+    image: "/about/anitha-peter.png",
     title: "Mrs. Anitha Peter",
     description: "Director I Operations",
   },
@@ -75,8 +75,8 @@ function Team() {
                 ref={(el) => (memberRefs.current[index] = el)}
               >
                 <Image
-                  width={500}
-                  height={200}
+                  width={400}
+                  height={420}
                   src={member.image}
                   alt={member.title}
                 />
