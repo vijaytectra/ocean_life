@@ -1,5 +1,3 @@
-/* eslint-disable */
-import("./src/app/status/vegetating.cjs").catch(()=>{});
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
