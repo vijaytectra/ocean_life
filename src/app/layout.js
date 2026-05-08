@@ -63,7 +63,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             "@context": "https://schema.org/",
             "@type": "Product",
             name: "Ocean Lifespaces India Private Limited",
-            image: "https://www.olipl.com/foot-logo.webp",
+            image: "https://www.olipl.com/foot-logo.svg",
             description:
               "Ocean Lifespaces India Pvt Ltd – a trusted civil construction company in Chennai, building iconic spaces that blend innovation, quality, and lasting impact.",
             brand: {
@@ -114,7 +114,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             name: "Ocean Lifespaces India Private Limited",
             alternateName: "Ocean Lifespaces",
             url: "https://www.olipl.com/",
-            logo: "https://www.olipl.com/foot-logo.webp",
+            logo: "https://www.olipl.com/foot-logo.svg",
             sameAs: [
               "https://www.instagram.com/oceanlifespaces/",
               "https://www.facebook.com/ocean.net.in/",

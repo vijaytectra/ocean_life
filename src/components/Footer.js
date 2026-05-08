@@ -13,7 +13,7 @@ function Footer() {
               <Image
                 width={200}
                 height={100}
-                src="/foot-logo.webp"
+                src="/foot-logo.svg"
                 alt="image"
               />
             </Link>

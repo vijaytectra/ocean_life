@@ -16,7 +16,7 @@
 
 /* Slider image */
 .sliderImage {
-  width: 50%; /* Ensure one image is shown at a time */
+  width: calc(50% - 10px); /* Account for 20px gap */
   height: auto;
 }
 
@@ -55,7 +55,8 @@
   }
 
   .sliderImage {
-    width: 100%; /* Ensure only one image is shown at a time */
+    width: calc(50% - 10px); /* Show two images at a time */
+    flex-shrink: 0;
   }
 
   .prevButton,

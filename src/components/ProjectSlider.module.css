@@ -51,19 +51,23 @@
 }
 .cta {
   position: relative;
-  margin: auto;
+  margin-right: auto;
+  margin-left: 0;
   padding: 12px 18px;
   transition: all 0.2s ease;
   border: none;
   background: none;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
 }
 
 .cta:before {
   content: "";
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 0;
+  transform: translateY(-50%);
   display: block;
   border-radius: 50px;
   background: #f5831f;

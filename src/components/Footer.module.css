@@ -20,8 +20,9 @@
   justify-content: space-between;
 }
 .rowFooter .columnFooter:nth-child(1) img {
-  width: clamp(140px, 13vw, 13vw);
+  width: clamp(255px, 35vw, 35vw);
   height: auto;
+  margin-left: -350px;
 }
 .columnFooter a {
   color: var(--color-white);

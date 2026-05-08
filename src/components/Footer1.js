@@ -7,7 +7,10 @@ import {
   FaLinkedin,
   FaMapMarkerAlt,
   FaPhoneAlt,
+  FaPinterest,
+  FaYoutube
 } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 
 function Footer1() {
@@ -132,6 +135,24 @@ function Footer1() {
               target="blank"
             >
               <FaLinkedin />
+            </Link>
+            <Link
+              href="https://in.pinterest.com/ocean_net_in/_pins"
+              target="blank"
+            >
+              <FaPinterest />
+            </Link>
+            <Link
+              href="https://x.com/ocean_net_in"
+              target="blank"
+            >
+              <FaXTwitter />
+            </Link>
+            <Link
+              href="https://www.youtube.com/@OceanLifespaces"
+              target="blank"
+            >
+              <FaYoutube />
             </Link>
           </div>
         </div>
