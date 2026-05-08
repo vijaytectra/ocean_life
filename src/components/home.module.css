@@ -58,9 +58,20 @@
 /* responsive-css */
 @media screen and (max-width: 768px) {
   .content {
-    max-width: 70vw;
+    max-width: 90vw;
+    left: 5%;
+    bottom: 10%;
   }
   .videoSection {
     height: 90vh;
+  }
+  .h1 {
+    font-size: clamp(24px, 6vw, 6vw);
+  }
+  .heading {
+    font-size: clamp(16px, 4vw, 4vw);
+  }
+  .description {
+    font-size: clamp(14px, 3vw, 3vw);
   }
 }

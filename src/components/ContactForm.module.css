@@ -58,3 +58,11 @@
   font-size: 18px;
   margin-top: 20px;
 }
+
+@media only screen and (max-width: 768px) {
+  .fieldGroup {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+

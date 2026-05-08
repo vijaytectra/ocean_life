@@ -45,6 +45,7 @@
   padding: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   width: fit-content;
+  align-self: flex-start;
 }
 
 .clientImage {
@@ -72,11 +73,12 @@
 .sliderTrack {
   display: flex;
   transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-  column-gap: 30px;
+  margin: 0 -15px;
 }
 
 .slide {
-  flex: 0 0 calc(50% - 15px); /* Show 2 items as in image */
+  flex: 0 0 50%; /* Show 2 items as in image */
+  padding: 0 15px;
 }
 
 .slide a {
@@ -144,6 +146,10 @@
     width: 100%;
   }
 
+  .rightCol {
+    width: 100%;
+  }
+
   .navArrows {
     position: relative;
     bottom: 0;
@@ -160,5 +166,8 @@
   
   .heroCard {
     padding: 20px;
+  }
+  .clientCard {
+    max-width: 100%;
   }
 }

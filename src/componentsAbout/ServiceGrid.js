@@ -62,6 +62,22 @@ const ServiceGrid = () => {
   const heading1Ref = useRef(null);
   const sliderRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsToShow, setItemsToShow] = useState(3);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) {
+        setItemsToShow(1);
+      } else if (window.innerWidth <= 1024) {
+        setItemsToShow(2);
+      } else {
+        setItemsToShow(3);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const context = gsap.context(() => {
@@ -91,7 +107,7 @@ const ServiceGrid = () => {
   }, []);
 
   const nextSlide = () => {
-    if (currentIndex < services.length - 3) {
+    if (currentIndex < services.length - itemsToShow) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -122,7 +138,7 @@ const ServiceGrid = () => {
               </button>
               <button 
                 onClick={nextSlide} 
-                className={`${Styles.navButton} ${currentIndex >= services.length - 3 ? Styles.disabled : ""}`}
+                className={`${Styles.navButton} ${currentIndex >= services.length - itemsToShow ? Styles.disabled : ""}`}
               >
                 <BsArrowRight />
               </button>
@@ -139,7 +155,7 @@ const ServiceGrid = () => {
         <div className={Styles.sliderWrapper} ref={sliderRef}>
           <div 
             className={Styles.sliderTrack} 
-            style={{ transform: `translateX(-${currentIndex * (100 / 3)}%)` }}
+            style={{ transform: `translateX(-${currentIndex * (100 / itemsToShow)}%)` }}
           >
             {services.map((service) => (
               <div key={service.id} className={Styles.sliderItem}>

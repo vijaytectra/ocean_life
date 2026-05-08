@@ -61,6 +61,7 @@ export default function LogoScroll() {
       style={{
         overflow: "hidden",
         width: "100%",
+        maxWidth: "100vw",
         position: "relative",
         padding: "20px 0",
       }}

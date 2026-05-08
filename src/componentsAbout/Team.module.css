@@ -54,3 +54,12 @@
     width: 100%;
   }
 }
+@media only screen and (max-width: 767px) {
+  .mainRowTeam .rowTeam:nth-child(1) h3 {
+    font-size: 18px !important;
+  }
+  .mainRowTeam .rowTeam:nth-child(1) p {
+    font-size: 14px !important;
+    line-height: 1.4;
+  }
+}

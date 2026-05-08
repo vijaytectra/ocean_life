@@ -18,7 +18,7 @@ function Services() {
   return (
     <>
       <ServiceHeader />
-      <section style={{ backgroundColor: "#fff", padding: "40px 0" }}>
+      <section style={{ backgroundColor: "#fff", padding: "40px 0", overflow: "hidden", maxWidth: "100vw" }}>
         <LogoScroll />
       </section>
       <ServicesGrid />

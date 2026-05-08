@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .wrapper { width: 300px; height: 100px; border: 2px solid black; overflow: hidden; }
+  .track { display: flex; margin: 0 -15px; transform: translateX(-100%); background: #eee; }
+  .slide { flex: 0 0 100%; padding: 0 15px; box-sizing: border-box; }
+  .content { width: 100%; height: 100%; background: red; }
+  .slide:nth-child(2) .content { background: blue; }
+</style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="track" id="track">
+      <div class="slide"><div class="content">1</div></div>
+      <div class="slide"><div class="content">2</div></div>
+    </div>
+  </div>
+  <script>
+    console.log("Track offsetWidth: " + document.getElementById('track').offsetWidth);
+    console.log("Track scrollWidth: " + document.getElementById('track').scrollWidth);
+  </script>
+</body>
+</html>

@@ -58,7 +58,8 @@ function ServiceHeader() {
 
   const nextSlide = () => {
     if (isAnimating.current) return;
-    if (currentIndex < services.length - 2) {
+    const maxIndex = services.length - (slideWidth === 100 ? 1 : 2);
+    if (currentIndex < maxIndex) {
       isAnimating.current = true;
       setCurrentIndex(currentIndex + 1);
       setTimeout(() => (isAnimating.current = false), 500);
@@ -73,6 +74,21 @@ function ServiceHeader() {
       setTimeout(() => (isAnimating.current = false), 500);
     }
   };
+
+  const [slideWidth, setSlideWidth] = useState(50);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 767) {
+        setSlideWidth(100);
+      } else {
+        setSlideWidth(50);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <section className={styles.serviceHead}>
@@ -100,7 +116,7 @@ function ServiceHeader() {
               <div className={styles.sliderWrapper}>
                 <div 
                   className={styles.sliderTrack}
-                  style={{ transform: `translateX(-${currentIndex * 50}%)` }}
+                  style={{ transform: `translateX(-${currentIndex * slideWidth}%)` }}
                 >
                   {services.map((service) => (
                     <div key={service.id} className={styles.slide}>
@@ -131,7 +147,7 @@ function ServiceHeader() {
             </button>
             <button 
               onClick={nextSlide} 
-              className={`${styles.arrowBtn} ${currentIndex >= services.length - 2 ? styles.disabled : ""}`}
+              className={`${styles.arrowBtn} ${currentIndex >= services.length - (slideWidth === 100 ? 1 : 2) ? styles.disabled : ""}`}
             >
               <BsArrowRight />
             </button>

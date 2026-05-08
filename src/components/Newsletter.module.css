@@ -70,10 +70,14 @@
 
 @media only screen and (max-width: 767px) {
   .input {
-    width: 250px;
+    width: 100%;
   }
   .container {
     background-position: initial;
+    max-width: 90vw;
+  }
+  .inputWrapper {
+    width: 100%;
   }
 }
 .inputContainer {

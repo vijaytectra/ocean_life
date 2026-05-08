@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const Members = [
   {
-    image: "/about/team1.webp",
+    image: "/peter k.jpeg",
     title: "Mr. S. K. Peter ",
     description: "Managing Director & CEO",
   },
