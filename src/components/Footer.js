@@ -11,10 +11,11 @@ function Footer() {
           <div className={Styles.columnFooter}>
             <Link href={"https://www.olipl.com/"}>
               <Image
-                width={200}
-                height={100}
+                className={Styles.footerLogo}
+                width={455}
+                height={401}
                 src="/foot-logo.svg"
-                alt="image"
+                alt="Ocean Lifespaces logo"
               />
             </Link>
           </div>
