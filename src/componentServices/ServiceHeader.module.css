@@ -1,173 +1,238 @@
 .serviceHead {
   position: relative;
   width: 100%;
-  padding: clamp(120px, 18vh, 18vh) 0 clamp(80px, 12vh, 12vh) 0;
+  padding: clamp(120px, 18vh, 18vh) 0 clamp(80px, 12vh, 12vh);
   background-image: url("/services/head-bg.webp");
   background-size: cover;
   background-position: center;
-  background-color: #f0f2f5;
   overflow: hidden;
 }
 
-/* Removed ::before overlay as requested (remove opacity of bg) */
-
 .heroCard {
   position: relative;
-  background: #ffffff; /* Solid white background instead of translucent */
   border-radius: 30px;
-  padding: clamp(30px, 4vw, 4vw);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: clamp(24px, 3vw, 40px);
+  background: rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  box-shadow: 0 18px 50px rgba(18, 38, 63, 0.14);
 }
 
-.heroContent {
+.heroTopBar {
   display: flex;
-  column-gap: 40px;
+  justify-content: space-between;
   align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 28px;
 }
 
-.leftCol {
-  flex: 0 0 30%;
+.titleWrap {
   display: flex;
   flex-direction: column;
-  row-gap: 25px;
+  gap: 10px;
+}
+
+.kicker {
+  font-size: clamp(12px, 0.82vw, 14px);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(0, 55, 106, 0.78);
 }
 
 .title {
-  font-size: clamp(28px, 2.8vw, 2.8vw);
+  font-size: clamp(30px, 2.9vw, 46px);
   font-weight: 400;
-  color: #111;
+  color: #163861;
+  line-height: 1.05;
+}
+
+.actionGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.learnMoreButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f5831f 0%, #ff9f4d 100%);
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 10px 24px rgba(245, 131, 31, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.learnMoreButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(245, 131, 31, 0.34);
+}
+
+.heroContent {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.6fr);
+  gap: clamp(24px, 3vw, 42px);
+  align-items: start;
+}
+
+.leftCol {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
 }
 
 .clientCard {
-  background: #fff;
-  border-radius: 20px;
+  width: min(100%, 340px);
   padding: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  width: fit-content;
-  align-self: flex-start;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(22, 56, 97, 0.06);
+  box-shadow: 0 10px 22px rgba(22, 56, 97, 0.08);
 }
 
 .clientImage {
   width: 100%;
   height: auto;
-  border-radius: 15px;
+  display: block;
+  border-radius: 16px;
 }
 
 .description {
-  font-size: clamp(14px, 1.1vw, 1.1vw);
-  line-height: 1.6;
-  color: #444;
+  max-width: 34ch;
+  font-size: clamp(15px, 1.05vw, 17px);
+  line-height: 1.7;
+  color: rgba(12, 30, 54, 0.82);
 }
 
 .rightCol {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
+  min-width: 0;
 }
 
-.sliderWrapper {
-  width: 100%;
+.sliderViewport {
+  overflow: hidden;
 }
 
 .sliderTrack {
   display: flex;
-  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-  margin: 0 -15px;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .slide {
-  flex: 0 0 50%; /* Show 2 items as in image */
-  padding: 0 15px;
+  flex: 0 0 50%;
+  min-width: 0;
+  padding-right: clamp(14px, 1.4vw, 18px);
 }
 
-.slide a {
-  text-decoration: none;
+.slideLink {
   display: flex;
   flex-direction: column;
-  row-gap: 15px;
+  gap: 14px;
+  text-decoration: none;
 }
 
 .imageBox {
   position: relative;
   width: 100%;
-  aspect-ratio: 1.4 / 1;
-  border-radius: 20px;
+  aspect-ratio: 1.34 / 1;
+  border-radius: 24px;
   overflow: hidden;
+  box-shadow: 0 16px 30px rgba(18, 38, 63, 0.16);
 }
 
 .slide h3 {
-  font-size: clamp(16px, 1.2vw, 1.2vw);
+  font-size: clamp(17px, 1.2vw, 20px);
   font-weight: 500;
-  color: #00376a;
+  color: #163861;
 }
 
 .navArrows {
-  position: absolute;
-  bottom: 30px;
-  right: 30px;
   display: flex;
-  column-gap: 15px;
+  gap: 12px;
 }
 
 .arrowBtn {
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: #00376a;
+  border: 1px solid rgba(22, 56, 97, 0.18);
+  background: #0d4c8b;
   color: #fff;
-  border: none;
-  display: flex;
-  justify-content: center;
+  display: inline-flex;
   align-items: center;
-  cursor: pointer;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  justify-content: center;
   font-size: 20px;
-  box-shadow: 0 4px 10px rgba(0, 55, 106, 0.2);
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(13, 76, 139, 0.24);
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
 }
 
-.arrowBtn:hover:not(.disabled) {
-  transform: scale(1.1);
+.arrowBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #f5831f;
 }
 
-.arrowBtn.disabled {
-  opacity: 0.3;
+.arrowBtn:disabled {
+  opacity: 0.38;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-/* media queries */
+.arrowBtn:focus-visible,
+.learnMoreButton:focus-visible {
+  outline: 3px solid rgba(245, 131, 31, 0.38);
+  outline-offset: 3px;
+}
+
 @media only screen and (max-width: 1024px) {
-  .heroContent {
+  .heroTopBar {
     flex-direction: column;
-    row-gap: 40px;
-  }
-  
-  .leftCol {
-    width: 100%;
+    align-items: stretch;
   }
 
-  .rightCol {
-    width: 100%;
+  .actionGroup {
+    justify-content: space-between;
   }
 
-  .navArrows {
-    position: relative;
-    bottom: 0;
-    right: 0;
-    justify-content: flex-end;
-    margin-top: 20px;
+  .heroContent {
+    grid-template-columns: 1fr;
+  }
+
+  .description {
+    max-width: none;
   }
 }
 
 @media only screen and (max-width: 767px) {
-  .slide {
-    flex: 0 0 100%;
+  .serviceHead {
+    padding: 110px 0 60px;
   }
-  
+
   .heroCard {
     padding: 20px;
+    border-radius: 24px;
   }
-  .clientCard {
-    max-width: 100%;
+
+  .actionGroup {
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .learnMoreButton {
+    justify-content: center;
+  }
+
+  .navArrows {
+    align-self: flex-end;
+  }
+
+  .slide {
+    flex-basis: 100%;
+    padding-right: 0;
   }
 }
