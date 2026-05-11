@@ -50,3 +50,5 @@ test.txt
 
 # scripts with credentials
 *.exp
+
+/src/generated/prisma

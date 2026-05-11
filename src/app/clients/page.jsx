@@ -48,7 +48,7 @@ const OngoingLogos = [
   "/logo/rsp.jpeg",
   "/logo/nametech.jpeg",
   "/logo/IIT HYDERABAD.jpeg",
-  "/logo/sifi.webp",
+  "/logo/sifi.jpeg",
   "/logo/st_telemedia.webp",
   "/logo/IRON MOUNTAIN.jpeg",
   "/logo/CITY UNION BANK.jpeg",
