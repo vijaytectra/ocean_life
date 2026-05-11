@@ -42,7 +42,6 @@ const OngoingLogos = [
   "/clients/on5.webp",
   "/clients/on7.webp",
   "/clients/on11.webp",
-  "/clients/on12.webp",
   "/logo/workday.jpeg",
   "/logo/alldigi.svg",
   "/logo/accenture.jpeg",
