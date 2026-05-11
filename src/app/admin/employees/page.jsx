@@ -9,6 +9,7 @@ export default function AdminEmployees() {
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({ name: '', role: '', image: '' });
   const [showCropper, setShowCropper] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     fetchEmployees();
@@ -27,11 +28,20 @@ export default function AdminEmployees() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch('/api/employees', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
+    if (editingId) {
+      await fetch(`/api/employees/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      setEditingId(null);
+    } else {
+      await fetch('/api/employees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+    }
     setFormData({ name: '', role: '', image: '' });
     setIsCreating(false);
     fetchEmployees();
@@ -43,11 +53,23 @@ export default function AdminEmployees() {
     fetchEmployees();
   };
 
+  const startEdit = (emp) => {
+    setFormData({ name: emp.name, role: emp.role, image: emp.image || '' });
+    setEditingId(emp.id);
+    setIsCreating(true);
+    setShowCropper(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div>
       <div className={styles.header}>
         <h2 className={styles.pageTitle}>Manage Employees</h2>
-        <button onClick={() => setIsCreating(!isCreating)} className={isCreating ? styles.dangerButton : styles.primaryButton}>
+        <button onClick={() => {
+          setIsCreating(!isCreating);
+          setEditingId(null);
+          setFormData({ name: '', role: '', image: '' });
+        }} className={isCreating ? styles.dangerButton : styles.primaryButton}>
           {isCreating ? 'Cancel' : 'Add New Employee'}
         </button>
       </div>
@@ -65,11 +87,13 @@ export default function AdminEmployees() {
                 <button type="button" onClick={() => setShowCropper(true)} className={styles.editButton}>
                   {formData.image ? 'Change Profile Image' : 'Upload Profile Image'}
                 </button>
-                {formData.image && <img src={formData.image} alt="Preview" style={{ display: 'block', marginTop: '15px', maxHeight: '150px', borderRadius: '50%' }} />}
+                {formData.image && <img src={formData.image} alt="Preview" style={{ display: 'block', marginTop: '15px', width: '150px', height: '150px', objectFit: 'cover', borderRadius: '50%', border: '4px solid #e9e9e9' }} />}
               </div>
             )}
             
-            <button type="submit" className={styles.primaryButton} style={{ alignSelf: 'flex-start', marginTop: '10px' }}>Save Employee</button>
+            <button type="submit" className={styles.primaryButton} style={{ alignSelf: 'flex-start', marginTop: '10px' }}>
+              {editingId ? 'Update Employee' : 'Save Employee'}
+            </button>
           </form>
         </div>
       )}
@@ -85,7 +109,8 @@ export default function AdminEmployees() {
             <h3 className={styles.cardTitle}>{emp.name}</h3>
             <p className={styles.cardDescription}>{emp.role}</p>
             <div className={styles.cardActions} style={{ justifyContent: 'center' }}>
-              <button onClick={() => handleDelete(emp.id)} className={styles.dangerButton}>Delete Profile</button>
+              <button onClick={() => startEdit(emp)} className={styles.editButton}>Edit / Crop Image</button>
+              <button onClick={() => handleDelete(emp.id)} className={styles.dangerButton}>Delete</button>
             </div>
           </div>
         ))}

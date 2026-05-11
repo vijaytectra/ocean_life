@@ -1,57 +1,30 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import styles from "./Team.module.css";
 import Image from "next/image";
-
-const Members = [
-  {
-    image: "/peter k.jpeg",
-    title: "Mr. S. K. Peter ",
-    description: "Managing Director & CEO",
-  },
-  {
-    image: "/about/anitha-peter.png",
-    title: "Mrs. Anitha Peter",
-    description: "Director I Operations",
-  },
-  {
-    image: "/about/Sarat.jpg",
-    title: "Mr. Sarat Kadambi",
-    description: "Chief Operating Officer",
-  },
-  {
-    image: "/about/durai.png",
-    title: "Mr. Durai Raj L",
-    description: "Chief Financial Officer",
-  },
-  {
-    image: "/about/Arul1.jpg",
-    title: "Mr. Arul Arumugam",
-    description: "Senior Director",
-  },
-  {
-    image: "/about/vinod.webp",
-    title: "Mr. Vinod Vishwanath",
-    description: "Senior Director I Marine",
-  },
-   {
-    image: "/about/balu.jpg",
-    title: "Mr. Balu K",
-    description: "Director - Civil",
-  },
-   {
-    image: "/about/prabhu.jpg",
-    title: "Mr. Prabhu P",
-    description: "Head -  EHS",
-  },
-];
 
 function Team() {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const decRef = useRef(null);
   const memberRefs = useRef([]);
+  const [members, setMembers] = useState([]);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        const res = await fetch('/api/employees');
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setMembers(data);
+        }
+      } catch (e) {
+        console.error("Failed to fetch team:", e);
+      }
+    };
+    fetchTeam();
+  }, []);
 
   return (
     <section ref={sectionRef} className={styles.team}>
@@ -68,7 +41,7 @@ function Team() {
             </p>
           </div>
           <div className={styles.rowTeam}>
-            {Members.map((member, index) => (
+            {members.map((member, index) => (
               <div
                 key={index}
                 className={styles.teamBox}
@@ -77,12 +50,13 @@ function Team() {
                 <Image
                   width={400}
                   height={420}
-                  src={member.image}
-                  alt={member.title}
+                  src={member.image || '/about/prabhu.jpg'}
+                  alt={member.name}
+                  style={{ objectFit: 'cover' }}
                 />
                 <div className={styles.contentTeamBox}>
-                  <h3 className="h4">{member.title}</h3>
-                  <p className="description">{member.description}</p>
+                  <h3 className="h4">{member.name}</h3>
+                  <p className="description">{member.role}</p>
                 </div>
               </div>
             ))}

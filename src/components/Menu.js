@@ -39,6 +39,10 @@ function Menu() {
   const videoRef = useRef(null);
   const [scrolled, setScrolled] = useState(false);
 
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   const openMenu = () => {
     gsap.to(popupMenuRef.current, {
       right: "0%",

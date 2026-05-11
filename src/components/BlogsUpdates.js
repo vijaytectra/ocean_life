@@ -10,6 +10,7 @@ import Image from "next/image";
 gsap.registerPlugin(ScrollTrigger);
 
 const timeAgo = (date) => {
+  if (!date) return 'recently';
   const now = new Date();
   const eventDate = new Date(date);
   const diffInMs = now - eventDate;
@@ -32,34 +33,6 @@ const timeAgo = (date) => {
   }
 };
 
-const newsEvents = [
-  {
-    title: "Top 5 Interior Fit-Out Trends in Chennai’s Commercial Spaces",
-    description:
-      "The commercial landscape in Chennai is transforming drastically and is on the rise. With the enormous...",
-    image: "/blogs/top5.webp",
-    date: "2025-05-09T09:00:00",
-    link: "/blogs/top-5-interior-fit-out-trends-in-chennais-commercial-spaces",
-  },
-  {
-    title:
-      "Chennai’s Infrastructure Boom: Projects That Will Shape the Next Decade",
-    description:
-      "Chennai is considered one of the fastest-growing urban hubs in India. The next decade is planned to transform ...",
-    image: "/blogs/boom-projects.webp",
-    date: "2025-05-08T09:00:00",
-    link: "/blogs/chennai-infrastructure-boom",
-  },
-  {
-    title: "8 Tips to Choose the Best Civil Construction Company in Chennai",
-    description:
-      "It is essential to choose the best civil company for your real estate project. Choosing the right company ...",
-    image: "/blogs/right-civil.webp",
-    date: "2025-05-07T09:00:00",
-    link: "/blogs/best-civil-construction-company-chennai",
-  },
-];
-
 const BlogsUpdates = ({ list = 3 }) => {
   const [latestNews, setLatestNews] = useState([]);
   const newsEventsRef = useRef(null);
@@ -71,17 +44,30 @@ const BlogsUpdates = ({ list = 3 }) => {
   }, []);
 
   useEffect(() => {
-    const sortedNews = [...newsEvents].sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
-    setLatestNews(sortedNews.slice(0, list));
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch('/api/blogs');
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          // Sort by newest and slice
+          const sortedNews = data.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+          setLatestNews(sortedNews.slice(0, list));
+        }
+      } catch (e) {
+        console.error("Failed to fetch blogs:", e);
+      }
+    };
+    fetchBlogs();
   }, [list]);
 
   useLayoutEffect(() => {
     if (
       newsEventsRef.current &&
       headingRef.current &&
-      cardsRef.current.length
+      cardsRef.current.length > 0 &&
+      latestNews.length > 0
     ) {
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -128,18 +114,19 @@ const BlogsUpdates = ({ list = 3 }) => {
                 <Image
                   width={480}
                   height={282}
-                  src={news.image}
+                  src={news.image || '/blogs/top5.webp'}
                   alt={news.title}
+                  style={{ objectFit: 'cover' }}
                 />
               </div>
               <div className={Styles.contentDiv}>
                 <div className={Styles.dateBarNews}>
-                  <p>{timeAgo(news.date)}</p>
-                  <p>{news.date.slice(0, 10)}</p>
+                  <p>{timeAgo(news.createdAt)}</p>
+                  <p>{new Date(news.createdAt || Date.now()).toISOString().slice(0, 10)}</p>
                 </div>
                 <h3>{news.title}</h3>
-                <p>{news.description}</p>
-                <Link href={news.link}>
+                <p>{news.content ? news.content.substring(0, 120) + '...' : ''}</p>
+                <Link href={`/blogs/${news.id}`}>
                   <button className={Styles.cta}>
                     <span>Read More</span>
                     <svg width="15px" height="10px" viewBox="0 0 13 10">

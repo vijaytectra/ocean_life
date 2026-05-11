@@ -16,6 +16,7 @@ import TestimonialHome from "../components/TestimonialHome";
 import LogoScroll from "../components/LogoScroll";
 import Newsletter from "../components/Newsletter";
 import Loader from "../components/Loader";
+import { FaUsers, FaRegHandshake, FaCalendarAlt, FaBuilding, FaHardHat } from "react-icons/fa";
 
 function HomeMain() {
   const pathname = usePathname(); // Get the current path
@@ -45,6 +46,37 @@ function HomeMain() {
     experience: 0,
     ongoing: 0,
   });
+
+  const [counterTargets, setCounterTargets] = useState([
+    { id: "employees", end: 650 },
+    { id: "projects", end: 60 },
+    { id: "experience", end: 28 },
+    { id: "ongoing", end: 550 },
+  ]);
+
+  useEffect(() => {
+    const fetchCounters = async () => {
+      try {
+        const res = await fetch('/api/content');
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const findVal = (key, defaultVal) => {
+            const item = data.find(i => i.id === key);
+            return item ? parseInt(item.value) || defaultVal : defaultVal;
+          };
+          setCounterTargets([
+            { id: "employees", end: findVal("counter-employees", 650) },
+            { id: "projects", end: findVal("counter-projects", 60) },
+            { id: "experience", end: findVal("counter-experience", 28) },
+            { id: "ongoing", end: findVal("counter-ongoing", 550) },
+          ]);
+        }
+      } catch (e) {
+        console.error("Failed to fetch counters", e);
+      }
+    };
+    fetchCounters();
+  }, []);
 
   const counterRef = useRef(null);
   const dreamSectionRef = useRef(null);
@@ -91,12 +123,7 @@ function HomeMain() {
   }, [loading]);
 
   const startCounting = () => {
-    const targets = [
-      { id: "employees", end: 650 },
-      { id: "projects", end: 60 },
-      { id: "experience", end: 28 },
-      { id: "ongoing", end: 550 },
-    ];
+    const targets = counterTargets;
 
     targets.forEach((target) => {
       gsap.to(
@@ -150,18 +177,22 @@ function HomeMain() {
                   <div className={Styles.dreamCounter}>
                     <div ref={counterRef} className={Styles.counterSection}>
                       <div className={Styles.counterBox}>
+                        <FaUsers size={30} color="var(--color-orange)" style={{ marginBottom: '10px' }} />
                         <h3>Number of Employees</h3>
                         <p>{counters.employees}+</p>
                       </div>
                       <div className={Styles.counterBox}>
+                        <FaRegHandshake size={30} color="var(--color-orange)" style={{ marginBottom: '10px' }} />
                         <h3>Client Return Rate</h3>
                         <p>{counters.projects}%</p>
                       </div>
                       <div className={Styles.counterBox}>
+                        <FaCalendarAlt size={30} color="var(--color-orange)" style={{ marginBottom: '10px' }} />
                         <h3>Years in Operation</h3>
                         <p>{counters.experience}</p>
                       </div>
                       <div className={Styles.counterBox}>
+                        <FaBuilding size={30} color="var(--color-orange)" style={{ marginBottom: '10px' }} />
                         <h3>Projects Completed</h3>
                         <p>{counters.ongoing}+</p>
                       </div>
