@@ -9,6 +9,7 @@ export default function AdminBlogs() {
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({ title: '', content: '', image: '' });
   const [showCropper, setShowCropper] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     fetchBlogs();
@@ -27,11 +28,20 @@ export default function AdminBlogs() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch('/api/blogs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
+    if (editingId) {
+      await fetch(`/api/blogs/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      setEditingId(null);
+    } else {
+      await fetch('/api/blogs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+    }
     setFormData({ title: '', content: '', image: '' });
     setIsCreating(false);
     fetchBlogs();
@@ -43,12 +53,24 @@ export default function AdminBlogs() {
     fetchBlogs();
   };
 
+  const startEdit = (blog) => {
+    setFormData({ title: blog.title, content: blog.content, image: blog.image || '' });
+    setEditingId(blog.id);
+    setIsCreating(true);
+    setShowCropper(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div>
       <div className={styles.header}>
         <h2 className={styles.pageTitle}>Manage Blogs</h2>
-        <button onClick={() => setIsCreating(!isCreating)} className={isCreating ? styles.dangerButton : styles.primaryButton}>
-          {isCreating ? 'Cancel' : 'Create New'}
+        <button onClick={() => {
+          setIsCreating(!isCreating);
+          setEditingId(null);
+          setFormData({ title: '', content: '', image: '' });
+        }} className={isCreating ? styles.dangerButton : styles.primaryButton}>
+          {isCreating ? 'Cancel' : 'Create New Blog'}
         </button>
       </div>
 
@@ -69,7 +91,9 @@ export default function AdminBlogs() {
               </div>
             )}
             
-            <button type="submit" className={styles.primaryButton} style={{ alignSelf: 'flex-start', marginTop: '10px' }}>Save Blog Post</button>
+            <button type="submit" className={styles.primaryButton} style={{ alignSelf: 'flex-start', marginTop: '10px' }}>
+              {editingId ? 'Update Blog Post' : 'Save Blog Post'}
+            </button>
           </form>
         </div>
       )}
@@ -81,6 +105,7 @@ export default function AdminBlogs() {
             <p className={styles.cardDescription}>{blog.content.substring(0, 100)}...</p>
             {blog.image && <img src={blog.image} alt={blog.title} className={styles.cardImage} />}
             <div className={styles.cardActions}>
+              <button onClick={() => startEdit(blog)} className={styles.editButton}>Edit / Crop Image</button>
               <button onClick={() => handleDelete(blog.id)} className={styles.dangerButton}>Delete</button>
             </div>
           </div>

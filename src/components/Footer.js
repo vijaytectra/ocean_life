@@ -1,9 +1,17 @@
+"use client";
+
 import Image from "next/image";
 import Styles from "./Footer.module.css";
 import Link from "next/link";
 import Footer1 from "./Footer1";
+import { usePathname } from "next/navigation";
 
 function Footer() {
+  const pathname = usePathname();
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <footer className={Styles.sectionFooter}>
       <div className="container">

@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const GoToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     // Show button when the user scrolls down 100px from the top
@@ -22,6 +24,10 @@ const GoToTopButton = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     isVisible && (
