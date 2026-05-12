@@ -1,6 +1,5 @@
 import prisma from '@/lib/prisma';
 import Image from 'next/image';
-import Styles from '../../components/NewsAndEvents.module.css';
 
 export async function generateMetadata({ params }) {
   const blog = await prisma.blog.findUnique({
