@@ -5,9 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const logos = await prisma.clientLogo.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
+    const logos = await prisma.$queryRaw`SELECT * FROM ClientLogo ORDER BY createdAt DESC`;
     return NextResponse.json(logos);
   } catch (error) {
     console.error("Fetch error:", error);
