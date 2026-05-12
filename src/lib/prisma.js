@@ -1,3 +1,4 @@
+// Updated to include ClientLogo model
 import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = global;

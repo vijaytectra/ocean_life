@@ -10,33 +10,36 @@ export default function AdminDashboard() {
     content: 0, 
     blogs: 0, 
     employees: 0,
-    ongoing: 0,
-    completed: 0
+    users: 0,
+    enquiries: 0,
+    services: 0
   });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [contentRes, blogsRes, empRes] = await Promise.all([
+        const [contentRes, blogsRes, empRes, userRes, enqRes, serRes] = await Promise.all([
           fetch('/api/content'),
           fetch('/api/blogs'),
-          fetch('/api/employees')
+          fetch('/api/employees'),
+          fetch('/api/admin/users'),
+          fetch('/api/admin/enquiries'),
+          fetch('/api/admin/services')
         ]);
         const content = await contentRes.json();
         const blogs = await blogsRes.json();
         const employees = await empRes.json();
-
-        const findVal = (key) => {
-          const item = content.find(i => i.id === key);
-          return item ? item.value : '0';
-        };
+        const users = await userRes.json();
+        const enquiries = await enqRes.json();
+        const services = await serRes.json();
 
         setStats({
           content: Array.isArray(content) ? content.length : 0,
           blogs: Array.isArray(blogs) ? blogs.length : 0,
           employees: Array.isArray(employees) ? employees.length : 0,
-          ongoing: findVal('counter-ongoing'),
-          completed: findVal('counter-projects') // This is mapped to "Client Return Rate" or Projects in your UI
+          users: Array.isArray(users) ? users.length : 0,
+          enquiries: Array.isArray(enquiries) ? enquiries.length : 0,
+          services: Array.isArray(services) ? services.length : 0
         });
       } catch (e) {
         console.error("Failed to fetch stats", e);
@@ -54,22 +57,10 @@ export default function AdminDashboard() {
       <div className={styles.grid}>
         <div className={styles.card}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
-            <FaEdit size={24} color="var(--color-orange)" />
-            <h3 className={styles.cardTitle} style={{ margin: 0 }}>Site Content</h3>
-          </div>
-          <p className={styles.cardDescription}>Manage the dynamic text and images across all your website pages.</p>
-          <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--color-dark-blue)' }}>{stats.content}</span>
-            <Link href="/admin/content" className={styles.primaryButton} style={{ padding: '8px 15px', textDecoration: 'none' }}>Manage</Link>
-          </div>
-        </div>
-
-        <div className={styles.card}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
             <FaBlog size={24} color="var(--color-orange)" />
-            <h3 className={styles.cardTitle} style={{ margin: 0 }}>Blogs</h3>
+            <h3 className={styles.cardTitle} style={{ margin: 0 }}>Blogs & News</h3>
           </div>
-          <p className={styles.cardDescription}>Create and edit your recent news and events articles.</p>
+          <p className={styles.cardDescription}>Total articles published on the site.</p>
           <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--color-dark-blue)' }}>{stats.blogs}</span>
             <Link href="/admin/blogs" className={styles.primaryButton} style={{ padding: '8px 15px', textDecoration: 'none' }}>Manage</Link>
@@ -79,36 +70,48 @@ export default function AdminDashboard() {
         <div className={styles.card}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
             <FaUsers size={24} color="var(--color-orange)" />
-            <h3 className={styles.cardTitle} style={{ margin: 0 }}>Team</h3>
+            <h3 className={styles.cardTitle} style={{ margin: 0 }}>System Users</h3>
           </div>
-          <p className={styles.cardDescription}>Manage your company's leadership and team profiles.</p>
+          <p className={styles.cardDescription}>Admins and editors with panel access.</p>
           <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--color-dark-blue)' }}>{stats.employees}</span>
-            <Link href="/admin/employees" className={styles.primaryButton} style={{ padding: '8px 15px', textDecoration: 'none' }}>Manage</Link>
+            <span style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--color-dark-blue)' }}>{stats.users}</span>
+            <Link href="/admin/users" className={styles.primaryButton} style={{ padding: '8px 15px', textDecoration: 'none' }}>Manage</Link>
           </div>
         </div>
 
         <div className={styles.card}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
             <FaProjectDiagram size={24} color="var(--color-orange)" />
-            <h3 className={styles.cardTitle} style={{ margin: 0 }}>Ongoing Projects</h3>
+            <h3 className={styles.cardTitle} style={{ margin: 0 }}>Inquiries</h3>
           </div>
-          <p className={styles.cardDescription}>Live counter shown on the homepage.</p>
+          <p className={styles.cardDescription}>New form submissions from the website.</p>
           <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--color-dark-blue)' }}>{stats.ongoing}</span>
-            <Link href="/admin/content" className={styles.primaryButton} style={{ padding: '8px 15px', textDecoration: 'none' }}>Update</Link>
+            <span style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--color-dark-blue)' }}>{stats.enquiries}</span>
+            <Link href="/admin/enquiries" className={styles.primaryButton} style={{ padding: '8px 15px', textDecoration: 'none' }}>View All</Link>
           </div>
         </div>
 
         <div className={styles.card}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
             <FaCheckCircle size={24} color="var(--color-orange)" />
-            <h3 className={styles.cardTitle} style={{ margin: 0 }}>Completed Projects</h3>
+            <h3 className={styles.cardTitle} style={{ margin: 0 }}>Services</h3>
           </div>
-          <p className={styles.cardDescription}>Total projects count shown on homepage.</p>
+          <p className={styles.cardDescription}>Core service offerings and projects.</p>
           <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--color-dark-blue)' }}>{stats.completed}</span>
-            <Link href="/admin/content" className={styles.primaryButton} style={{ padding: '8px 15px', textDecoration: 'none' }}>Update</Link>
+            <span style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--color-dark-blue)' }}>{stats.services}</span>
+            <Link href="/admin/services" className={styles.primaryButton} style={{ padding: '8px 15px', textDecoration: 'none' }}>Manage</Link>
+          </div>
+        </div>
+
+        <div className={styles.card}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
+            <FaUsers size={24} color="var(--color-orange)" />
+            <h3 className={styles.cardTitle} style={{ margin: 0 }}>Management Team</h3>
+          </div>
+          <p className={styles.cardDescription}>Company leadership and staff profiles.</p>
+          <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--color-dark-blue)' }}>{stats.employees}</span>
+            <Link href="/admin/team" className={styles.primaryButton} style={{ padding: '8px 15px', textDecoration: 'none' }}>Manage</Link>
           </div>
         </div>
       </div>

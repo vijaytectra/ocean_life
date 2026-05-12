@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 
 export async function PUT(request, { params }) {
   try {
-    const id = parseInt(params.id);
+    const id = parseInt((await params).id);
     const body = await request.json();
     const blog = await prisma.blog.update({
       where: { id },
@@ -21,7 +21,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const id = parseInt(params.id);
+    const id = parseInt((await params).id);
     await prisma.blog.delete({
       where: { id }
     });

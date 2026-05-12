@@ -7,9 +7,12 @@ import styles from '../admin.module.css';
 export default function AdminBlogs() {
   const [blogs, setBlogs] = useState([]);
   const [isCreating, setIsCreating] = useState(false);
-  const [formData, setFormData] = useState({ title: '', content: '', image: '' });
+  const [formData, setFormData] = useState({ 
+    title: '', content: '', image: '', status: 'published', metaTitle: '', metaDesc: '' 
+  });
   const [showCropper, setShowCropper] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetchBlogs();
@@ -42,7 +45,7 @@ export default function AdminBlogs() {
         body: JSON.stringify(formData)
       });
     }
-    setFormData({ title: '', content: '', image: '' });
+    setFormData({ title: '', content: '', image: '', status: 'published', metaTitle: '', metaDesc: '' });
     setIsCreating(false);
     fetchBlogs();
   };
@@ -54,30 +57,56 @@ export default function AdminBlogs() {
   };
 
   const startEdit = (blog) => {
-    setFormData({ title: blog.title, content: blog.content, image: blog.image || '' });
+    setFormData({ 
+      title: blog.title, 
+      content: blog.content, 
+      image: blog.image || '', 
+      status: blog.status || 'published',
+      metaTitle: blog.metaTitle || '',
+      metaDesc: blog.metaDesc || ''
+    });
     setEditingId(blog.id);
     setIsCreating(true);
-    setShowCropper(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const filteredBlogs = blogs.filter(b => b.title.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div>
       <div className={styles.header}>
-        <h2 className={styles.pageTitle}>Manage Blogs</h2>
-        <button onClick={() => {
-          setIsCreating(!isCreating);
-          setEditingId(null);
-          setFormData({ title: '', content: '', image: '' });
-        }} className={isCreating ? styles.dangerButton : styles.primaryButton}>
-          {isCreating ? 'Cancel' : 'Create New Blog'}
-        </button>
+        <h2 className={styles.pageTitle}>Blogs & News</h2>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input 
+            type="text" 
+            placeholder="Search events..." 
+            value={search} 
+            onChange={e => setSearch(e.target.value)} 
+            className={styles.inputField} 
+            style={{ width: '250px', padding: '8px 15px' }} 
+          />
+          <button onClick={() => {
+            setIsCreating(!isCreating);
+            setEditingId(null);
+            setFormData({ title: '', content: '', image: '', status: 'published', metaTitle: '', metaDesc: '' });
+          }} className={styles.primaryButton}>
+            {isCreating ? 'Cancel' : 'Add News'}
+          </button>
+        </div>
       </div>
 
       {isCreating && (
         <div className={styles.formCard}>
           <form onSubmit={handleSubmit} className={styles.formGroup}>
-            <input type="text" placeholder="Blog Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required className={styles.inputField} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <input type="text" placeholder="Blog Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required className={styles.inputField} />
+              <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className={styles.inputField}>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+              </select>
+              <input type="text" placeholder="SEO Meta Title" value={formData.metaTitle} onChange={e => setFormData({...formData, metaTitle: e.target.value})} className={styles.inputField} />
+              <input type="text" placeholder="SEO Meta Description" value={formData.metaDesc} onChange={e => setFormData({...formData, metaDesc: e.target.value})} className={styles.inputField} />
+            </div>
             <textarea placeholder="Blog Content" value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} required rows={5} className={styles.inputField} />
             
             {showCropper ? (
@@ -85,32 +114,67 @@ export default function AdminBlogs() {
             ) : (
               <div>
                 <button type="button" onClick={() => setShowCropper(true)} className={styles.editButton}>
-                  {formData.image ? 'Change Banner Image' : 'Upload Banner Image'}
+                  {formData.image ? 'Change Banner' : 'Upload Banner'}
                 </button>
-                {formData.image && <img src={formData.image} alt="Preview" style={{ display: 'block', marginTop: '15px', maxHeight: '200px', borderRadius: '8px' }} />}
+                {formData.image && <img src={formData.image} alt="Preview" style={{ display: 'block', marginTop: '15px', maxHeight: '150px', borderRadius: '8px' }} />}
               </div>
             )}
             
-            <button type="submit" className={styles.primaryButton} style={{ alignSelf: 'flex-start', marginTop: '10px' }}>
-              {editingId ? 'Update Blog Post' : 'Save Blog Post'}
+            <button type="submit" className={styles.primaryButton} style={{ alignSelf: 'flex-start' }}>
+              {editingId ? 'Update News' : 'Save News'}
             </button>
           </form>
         </div>
       )}
 
-      <div className={styles.grid}>
-        {blogs.map(blog => (
-          <div key={blog.id} className={styles.card}>
-            <h3 className={styles.cardTitle}>{blog.title}</h3>
-            <p className={styles.cardDescription}>{blog.content.substring(0, 100)}...</p>
-            {blog.image && <img src={blog.image} alt={blog.title} className={styles.cardImage} />}
-            <div className={styles.cardActions}>
-              <button onClick={() => startEdit(blog)} className={styles.editButton}>Edit / Crop Image</button>
-              <button onClick={() => handleDelete(blog.id)} className={styles.dangerButton}>Delete</button>
-            </div>
-          </div>
-        ))}
-        {blogs.length === 0 && <p style={{color: '#94a3b8'}}>No blogs found. Create one above.</p>}
+      <div className={styles.formCard} style={{ padding: 0 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+              <th style={{ padding: '15px', textAlign: 'left', width: '60px' }}>S.No</th>
+              <th style={{ padding: '15px', textAlign: 'left' }}>Title</th>
+              <th style={{ padding: '15px', textAlign: 'left' }}>Date</th>
+              <th style={{ padding: '15px', textAlign: 'left' }}>Status</th>
+              <th style={{ padding: '15px', textAlign: 'left' }}>Banner</th>
+              <th style={{ padding: '15px', textAlign: 'left' }}>SEO Setup</th>
+              <th style={{ padding: '15px', textAlign: 'left' }}>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredBlogs.map((blog, index) => (
+              <tr key={blog.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                <td style={{ padding: '15px' }}>{index + 1}</td>
+                <td style={{ padding: '15px', fontWeight: 'bold' }}>{blog.title}</td>
+                <td style={{ padding: '15px' }}>{new Date(blog.createdAt).toLocaleDateString()}</td>
+                <td style={{ padding: '15px' }}>
+                  <span style={{ 
+                    padding: '4px 8px', 
+                    borderRadius: '4px', 
+                    fontSize: '0.8rem',
+                    background: blog.status === 'published' ? '#dcfce7' : '#fef9c3',
+                    color: blog.status === 'published' ? '#166534' : '#854d0e'
+                  }}>
+                    {blog.status}
+                  </span>
+                </td>
+                <td style={{ padding: '15px' }}>
+                  {blog.image ? <img src={blog.image} alt="thumb" style={{ width: '50px', height: '30px', objectFit: 'cover', borderRadius: '4px' }} /> : 'None'}
+                </td>
+                <td style={{ padding: '15px' }}>
+                  <span style={{ fontSize: '0.8rem', color: blog.metaTitle ? '#10b981' : '#f59e0b' }}>
+                    {blog.metaTitle ? '✅ Configured' : '⚠️ Missing'}
+                  </span>
+                </td>
+                <td style={{ padding: '15px' }}>
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    <button onClick={() => startEdit(blog)} className={styles.editButton} style={{ padding: '5px 10px', fontSize: '0.75rem' }}>Edit</button>
+                    <button onClick={() => handleDelete(blog.id)} className={styles.dangerButton} style={{ padding: '5px 10px', fontSize: '0.75rem' }}>Delete</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

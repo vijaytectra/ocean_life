@@ -3,9 +3,8 @@ import prisma from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const employees = await prisma.employee.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
+    // Using raw query because Prisma client sync is lagging in dev server
+    const employees = await prisma.$queryRaw`SELECT * FROM Employee ORDER BY priority DESC, createdAt DESC`;
     return NextResponse.json(employees);
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch employees" }, { status: 500 });
@@ -20,6 +19,7 @@ export async function POST(request) {
         name: body.name,
         role: body.role,
         image: body.image,
+        priority: body.priority ? parseInt(body.priority) : 0,
       }
     });
     return NextResponse.json(employee);

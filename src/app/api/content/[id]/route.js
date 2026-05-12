@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 
 export async function PUT(request, { params }) {
   try {
-    const id = params.id;
+    const id = (await params).id;
     const body = await request.json();
     const content = await prisma.siteContent.update({
       where: { id },
@@ -19,7 +19,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const id = params.id;
+    const id = (await params).id;
     await prisma.siteContent.delete({
       where: { id }
     });
