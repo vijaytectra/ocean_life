@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ['mammoth'],
   images: {
     deviceSizes: [320, 420, 640, 768, 1024, 1200],
     imageSizes: [64, 96, 128, 256],
