@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { PrismaClient } from '@prisma/client';
 import { cookies } from 'next/headers';
+
+const prisma = new PrismaClient();
 
 export async function POST(request) {
   try {
@@ -37,7 +39,7 @@ export async function POST(request) {
 
     return response;
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Login failed" }, { status: 500 });
+    console.error("Login Error:", error);
+    return NextResponse.json({ error: "Login failed", details: error.message }, { status: 500 });
   }
 }
