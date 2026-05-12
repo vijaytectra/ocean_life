@@ -5,18 +5,21 @@ import gsap from "gsap";
 import Image from "next/image";
 
 // Extended list of logos to make the scroll smoother and more diverse
-const images = [
-  "/clients/1.webp", "/clients/2.webp", "/clients/3.webp", "/clients/4.webp", "/clients/5.webp",
-  "/clients/6.webp", "/clients/7.webp", "/clients/8.webp", "/clients/9.webp", "/clients/10.webp",
-  "/clients/11.webp", "/clients/12.webp", "/clients/13.webp", "/clients/14.webp", "/clients/15.webp",
-  "/clients/16.webp", "/clients/17.webp", "/clients/18.webp", "/clients/19.webp", "/clients/20.webp",
-  "/clients/21.webp", "/clients/22.webp", "/clients/23.webp", "/clients/24.webp", "/clients/25.webp",
-  "/clients/26.webp", "/clients/27.webp", "/clients/28.webp", "/clients/29.webp", "/clients/30.webp",
-];
-
 export default function LogoScroll() {
   const trackRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/clients/logos')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setImages(data.map(l => l.image));
+        }
+      })
+      .catch(err => console.error("LogoScroll fetch error:", err));
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -27,7 +30,7 @@ export default function LogoScroll() {
 
   useEffect(() => {
     const track = trackRef.current;
-    if (!track) return;
+    if (!track || images.length === 0) return;
 
     let ctx = gsap.context(() => {
       const updateAnimation = () => {

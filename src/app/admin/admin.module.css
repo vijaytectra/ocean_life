@@ -27,7 +27,16 @@
 }
 
 .navItem {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+}
+
+.navSection {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  margin: 25px 0 10px 16px;
+  letter-spacing: 1.5px;
 }
 
 .navLink {

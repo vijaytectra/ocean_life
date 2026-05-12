@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Styles from "./Footer.module.css";
 import Link from "next/link";
@@ -8,9 +9,21 @@ import { usePathname } from "next/navigation";
 
 function Footer() {
   const pathname = usePathname();
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
+  const isAdmin = pathname?.startsWith('/admin');
+
+  const [logo, setLogo] = useState("/foot-logo.svg");
+
+  useEffect(() => {
+    fetch("/api/content")
+      .then((res) => res.json())
+      .then((data) => {
+        const logoItem = data.find((item) => item.id === "site-logo");
+        if (logoItem) setLogo(logoItem.value);
+      })
+      .catch((err) => console.error("Logo fetch error:", err));
+  }, []);
+
+  if (isAdmin) return null;
 
   return (
     <footer className={Styles.sectionFooter}>
@@ -22,8 +35,9 @@ function Footer() {
                 className={Styles.footerLogo}
                 width={455}
                 height={401}
-                src="/foot-logo.svg"
+                src={logo}
                 alt="Ocean Lifespaces logo"
+                style={{ objectFit: 'contain' }}
               />
             </Link>
           </div>

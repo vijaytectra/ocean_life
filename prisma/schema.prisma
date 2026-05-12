@@ -10,13 +10,36 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model Blog {
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  password     String
+  name         String?
+  roleId       Int?
+  role         Role?    @relation(fields: [roleId], references: [id])
+  email        String?
+  mobile       String?
+  status       String   @default("active") // active, inactive
+  createdAt    DateTime @default(now())
+}
+
+model Role {
   id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  image     String?
+  name      String   @unique
+  users     User[]
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+model Blog {
+  id           Int      @id @default(autoincrement())
+  title        String
+  content      String
+  image        String?
+  status       String   @default("published") // draft, published
+  metaTitle    String?
+  metaDesc     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Employee {
@@ -24,14 +47,56 @@ model Employee {
   name      String
   role      String
   image     String?
+  priority  Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model SiteContent {
-  id        String   @id // e.g., 'home-hero-title', 'about-us-description'
-  type      String   // e.g., 'text', 'image', 'html'
+  id        String   @id // e.g., 'main-video', 'popup-image', 'testimonial-desktop'
+  type      String   // e.g., 'text', 'image', 'video'
   value     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id             Int      @id @default(autoincrement())
+  type           String   // e.g., 'Turnkey solutions', 'Interior fit-out'
+  name           String
+  subServices    String?  // JSON or comma-separated
+  image          String?
+  description    String?
+  recentProject  String?
+  ongoingProject String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Enquiry {
+  id        Int      @id @default(autoincrement())
+  type      String   // Contact, Careers, Enquiry, Schedule Visit, Joint Venture
+  name      String
+  email     String
+  mobile    String?
+  subject   String?
+  message   String?
+  status    String   @default("new") // new, read, resolved
+  createdAt DateTime @default(now())
+}
+
+model SeoConfig {
+  id          Int      @id @default(autoincrement())
+  page        String   @unique // e.g., 'home', 'about', 'services'
+  metaTitle   String
+  metaDesc    String?
+  status      String   @default("active")
+  updatedAt   DateTime @updatedAt
+}
+
+model ClientLogo {
+  id        Int      @id @default(autoincrement())
+  image     String
+  category  String   @default("corporate") // 'corporate' or 'ongoing'
+  createdAt DateTime @default(now())
 }

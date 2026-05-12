@@ -39,9 +39,7 @@ function Menu() {
   const videoRef = useRef(null);
   const [scrolled, setScrolled] = useState(false);
 
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
+  const isAdmin = pathname?.startsWith('/admin');
 
   const openMenu = () => {
     gsap.to(popupMenuRef.current, {
@@ -118,15 +116,30 @@ function Menu() {
     };
   }, []);
 
+  const [logo, setLogo] = useState("/logo-web.webp");
+
+  useEffect(() => {
+    fetch("/api/content")
+      .then((res) => res.json())
+      .then((data) => {
+        const logoItem = data.find((item) => item.id === "site-logo");
+        if (logoItem) setLogo(logoItem.value);
+      })
+      .catch((err) => console.error("Logo fetch error:", err));
+  }, []);
+
+  if (isAdmin) return null;
+
   return (
     <div className={`${Styles.menu} ${scrolled ? Styles.scrolled : ""}`}>
       <Link href="/">
         <Image
           className={Styles.logo}
-          src="/logo-web.webp"
+          src={logo}
           alt="Logo"
           width={209}
           height={52}
+          style={{ objectFit: 'contain' }}
         />
       </Link>
 

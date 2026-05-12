@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 
 export async function PUT(request, { params }) {
   try {
-    const id = parseInt(params.id);
+    const id = parseInt((await params).id);
     const body = await request.json();
     const employee = await prisma.employee.update({
       where: { id },
@@ -11,6 +11,7 @@ export async function PUT(request, { params }) {
         name: body.name,
         role: body.role,
         image: body.image,
+        priority: body.priority !== undefined ? parseInt(body.priority) : undefined,
       }
     });
     return NextResponse.json(employee);
@@ -21,7 +22,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const id = parseInt(params.id);
+    const id = parseInt((await params).id);
     await prisma.employee.delete({
       where: { id }
     });
