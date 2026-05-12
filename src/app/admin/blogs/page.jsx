@@ -138,11 +138,28 @@ export default function AdminBlogs() {
                 onChange={async (e) => {
                   const file = e.target.files[0];
                   if (!file) return;
-                  const mammoth = await import('mammoth');
-                  const arrayBuffer = await file.arrayBuffer();
-                  const result = await mammoth.convertToHtml({ arrayBuffer });
-                  setFormData({ ...formData, content: result.value });
-                  if (result.messages.length > 0) console.warn("Mammoth messages:", result.messages);
+                  
+                  setIsUploading(true);
+                  const formDataReq = new FormData();
+                  formDataReq.append('file', file);
+
+                  try {
+                    const res = await fetch('/api/blogs/parse-docx', {
+                      method: 'POST',
+                      body: formDataReq
+                    });
+                    const data = await res.json();
+                    if (data.html) {
+                      setFormData({ ...formData, content: data.html });
+                    } else {
+                      alert("Error parsing document: " + (data.error || "Unknown error"));
+                    }
+                  } catch (err) {
+                    console.error("Upload error:", err);
+                    alert("Failed to upload document");
+                  } finally {
+                    setIsUploading(false);
+                  }
                 }} 
                 className={styles.inputField} 
               />
