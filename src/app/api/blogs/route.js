@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
-    const blogs = await prisma.blog.findMany({
-      orderBy: { createdAt: 'desc' }
+    const blogs = await prisma.$queryRaw`SELECT * FROM Blog ORDER BY createdAt DESC`;
+    return new NextResponse(JSON.stringify(blogs), {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0, must-revalidate',
+        'Content-Type': 'application/json',
+      }
     });
-    return NextResponse.json(blogs);
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
   }

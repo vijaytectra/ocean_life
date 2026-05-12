@@ -47,13 +47,29 @@ function Team() {
                 className={styles.teamBox}
                 ref={(el) => (memberRefs.current[index] = el)}
               >
-                <Image
-                  width={400}
-                  height={420}
-                  src={member.image || '/about/prabhu.jpg'}
-                  alt={member.name}
-                  style={{ objectFit: 'cover' }}
-                />
+                {member.image ? (
+                  <Image
+                    width={400}
+                    height={420}
+                    src={member.image}
+                    alt={member.name}
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div style={{ 
+                    width: '100%', 
+                    height: '420px', 
+                    background: '#f1f5f9', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontSize: '5rem',
+                    color: '#94a3b8',
+                    fontWeight: 'bold'
+                  }}>
+                    {member.name.charAt(0)}
+                  </div>
+                )}
                 <div className={styles.contentTeamBox}>
                   <h3 className="h4">{member.name}</h3>
                   <p className="description">{member.role}</p>

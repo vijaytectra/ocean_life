@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // Using raw query because Prisma client sync is lagging in dev server
     const employees = await prisma.$queryRaw`SELECT * FROM Employee ORDER BY priority DESC, createdAt DESC`;
-    return NextResponse.json(employees);
+    return new NextResponse(JSON.stringify(employees), {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0, must-revalidate',
+        'Content-Type': 'application/json',
+      }
+    });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch employees" }, { status: 500 });
   }

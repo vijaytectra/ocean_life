@@ -13,6 +13,7 @@ export default function AdminBlogs() {
   const [showCropper, setShowCropper] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     fetchBlogs();
@@ -27,6 +28,7 @@ export default function AdminBlogs() {
   const handleImageCropped = (url) => {
     setFormData({ ...formData, image: url });
     setShowCropper(false);
+    setIsUploading(false);
   };
 
   const handleSubmit = async (e) => {
@@ -110,7 +112,11 @@ export default function AdminBlogs() {
             <textarea placeholder="Blog Content" value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} required rows={5} className={styles.inputField} />
             
             {showCropper ? (
-              <ImageCropper onImageCropped={handleImageCropped} onCancel={() => setShowCropper(false)} />
+              <ImageCropper 
+                onImageCropped={handleImageCropped} 
+                onCancel={() => { setShowCropper(false); setIsUploading(false); }} 
+                onUploadStart={() => setIsUploading(true)}
+              />
             ) : (
               <div>
                 <button type="button" onClick={() => setShowCropper(true)} className={styles.editButton}>
@@ -120,8 +126,13 @@ export default function AdminBlogs() {
               </div>
             )}
             
-            <button type="submit" className={styles.primaryButton} style={{ alignSelf: 'flex-start' }}>
-              {editingId ? 'Update News' : 'Save News'}
+            <button 
+              type="submit" 
+              className={styles.primaryButton} 
+              style={{ alignSelf: 'flex-start', opacity: isUploading ? 0.5 : 1 }}
+              disabled={isUploading}
+            >
+              {isUploading ? 'Uploading...' : (editingId ? 'Update News' : 'Save News')}
             </button>
           </form>
         </div>

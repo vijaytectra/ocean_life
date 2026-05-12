@@ -13,7 +13,7 @@ export const metadata = {
 function page() {
   return (
     <div>
-      <BlogsUpdates />
+      <BlogsUpdates list={100} />
     </div>
   );
 }

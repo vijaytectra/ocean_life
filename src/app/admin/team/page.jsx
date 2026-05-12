@@ -10,6 +10,7 @@ export default function AdminTeam() {
   const [showCropper, setShowCropper] = useState(false);
   const [formData, setFormData] = useState({ name: '', role: '', image: '', priority: 0 });
   const [editingId, setEditingId] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     fetchMembers();
@@ -24,6 +25,7 @@ export default function AdminTeam() {
   const handleImageCropped = (url) => {
     setFormData({ ...formData, image: url });
     setShowCropper(false);
+    setIsUploading(false);
   };
 
   const handleSubmit = async (e) => {
@@ -88,7 +90,12 @@ export default function AdminTeam() {
             </div>
             
             {showCropper ? (
-              <ImageCropper onImageCropped={handleImageCropped} onCancel={() => setShowCropper(false)} aspectRatio={1/1} />
+              <ImageCropper 
+                onImageCropped={handleImageCropped} 
+                onCancel={() => { setShowCropper(false); setIsUploading(false); }} 
+                onUploadStart={() => setIsUploading(true)}
+                aspectRatio={1/1} 
+              />
             ) : (
               <div>
                 <button type="button" onClick={() => setShowCropper(true)} className={styles.editButton}>
@@ -98,7 +105,14 @@ export default function AdminTeam() {
               </div>
             )}
             
-            <button type="submit" className={styles.primaryButton} style={{ alignSelf: 'flex-start' }}>Save Member</button>
+            <button 
+              type="submit" 
+              className={styles.primaryButton} 
+              style={{ alignSelf: 'flex-start', opacity: isUploading ? 0.5 : 1 }}
+              disabled={isUploading}
+            >
+              {isUploading ? 'Uploading Image...' : 'Save Member'}
+            </button>
           </form>
         </div>
       )}

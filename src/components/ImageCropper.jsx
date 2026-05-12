@@ -4,7 +4,7 @@ import React, { useState, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '@/utils/cropImage';
 
-export default function ImageCropper({ onImageCropped, onCancel }) {
+export default function ImageCropper({ onImageCropped, onCancel, onUploadStart, aspectRatio }) {
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -24,6 +24,7 @@ export default function ImageCropper({ onImageCropped, onCancel }) {
 
   const showCroppedImage = useCallback(async () => {
     try {
+      if (onUploadStart) onUploadStart();
       const croppedImageBlob = await getCroppedImg(
         imageSrc,
         croppedAreaPixels,
@@ -47,7 +48,7 @@ export default function ImageCropper({ onImageCropped, onCancel }) {
     } catch (e) {
       console.error(e);
     }
-  }, [imageSrc, croppedAreaPixels, onImageCropped]);
+  }, [imageSrc, croppedAreaPixels, onImageCropped, onUploadStart]);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '400px', background: '#333' }}>
@@ -63,7 +64,7 @@ export default function ImageCropper({ onImageCropped, onCancel }) {
               image={imageSrc}
               crop={crop}
               zoom={zoom}
-              aspect={1}
+              aspect={aspectRatio || 1}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}
