@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import ImageCropper from '@/components/ImageCropper';
 import styles from '../admin.module.css';
+import 'react-quill-new/dist/quill.snow.css';
+
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
 export default function AdminBlogs() {
   const [blogs, setBlogs] = useState([]);
@@ -14,6 +18,23 @@ export default function AdminBlogs() {
   const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+
+  const modules = useMemo(() => ({
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+      [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+      ['link', 'image'],
+      ['clean']
+    ],
+  }), []);
+
+  const formats = [
+    'header',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'indent',
+    'link', 'image'
+  ];
 
   useEffect(() => {
     fetchBlogs();
@@ -109,7 +130,36 @@ export default function AdminBlogs() {
               <input type="text" placeholder="SEO Meta Title" value={formData.metaTitle} onChange={e => setFormData({...formData, metaTitle: e.target.value})} className={styles.inputField} />
               <input type="text" placeholder="SEO Meta Description" value={formData.metaDesc} onChange={e => setFormData({...formData, metaDesc: e.target.value})} className={styles.inputField} />
             </div>
-            <textarea placeholder="Blog Content" value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} required rows={5} className={styles.inputField} />
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px', fontWeight: 'bold' }}>Import from Word Document (.docx)</label>
+              <input 
+                type="file" 
+                accept=".docx" 
+                onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (!file) return;
+                  const mammoth = await import('mammoth');
+                  const arrayBuffer = await file.arrayBuffer();
+                  const result = await mammoth.convertToHtml({ arrayBuffer });
+                  setFormData({ ...formData, content: result.value });
+                  if (result.messages.length > 0) console.warn("Mammoth messages:", result.messages);
+                }} 
+                className={styles.inputField} 
+              />
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', fontSize: '14px', marginBottom: '8px', fontWeight: 'bold' }}>Blog Content</label>
+              <div style={{ background: 'white' }}>
+                <ReactQuill 
+                  theme="snow"
+                  value={formData.content}
+                  onChange={(content) => setFormData({ ...formData, content })}
+                  modules={modules}
+                  formats={formats}
+                  style={{ height: '400px', marginBottom: '50px' }}
+                />
+              </div>
+            </div>
             
             {showCropper ? (
               <ImageCropper 

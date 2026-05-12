@@ -1,9 +1,10 @@
-x"use client";
+"use client";
 
 import { usePathname } from "next/navigation";
 import Menu from "@/components/Menu";
 import Footer from "@/components/Footer";
 import GoToTopButton from "@/components/GoToTopButton";
+import AdPopup from "@/components/AdPopup";
 
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
@@ -19,6 +20,7 @@ export default function LayoutWrapper({ children }) {
       {children}
       <Footer />
       <GoToTopButton />
+      <AdPopup />
     </>
   );
 }

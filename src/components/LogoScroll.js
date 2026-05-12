@@ -28,35 +28,10 @@ export default function LogoScroll() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track || images.length === 0) return;
-
-    let ctx = gsap.context(() => {
-      const updateAnimation = () => {
-        const totalWidth = track.scrollWidth / 2;
-        if (totalWidth <= 0) {
-          setTimeout(updateAnimation, 100);
-          return;
-        }
-        
-        gsap.to(track, {
-          x: -totalWidth,
-          duration: isMobile ? 30 : 50, 
-          ease: "none",
-          repeat: -1,
-        });
-      };
-
-      setTimeout(updateAnimation, 500);
-    }, trackRef);
-
-    return () => ctx.revert();
-  }, [isMobile]);
-
   const logoWidth = isMobile ? "100px" : "160px";
   const logoHeight = isMobile ? "50px" : "90px";
   const gap = isMobile ? "40px" : "80px";
+  const duplicatedImages = [...images, ...images, ...images, ...images];
 
   return (
     <div
@@ -66,21 +41,22 @@ export default function LogoScroll() {
         width: "100%",
         maxWidth: "100vw",
         position: "relative",
-        padding: "20px 0",
+        padding: "40px 0",
+        maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+        WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'
       }}
     >
       <div
         className="logo-scroll-track"
-        ref={trackRef}
         style={{
           display: "flex",
           gap: gap,
           width: "max-content",
           alignItems: "center",
-          willChange: "transform",
+          animation: `scroll ${isMobile ? '50s' : '80s'} linear infinite`,
         }}
       >
-        {[...images, ...images].map((src, index) => (
+        {duplicatedImages.map((src, index) => (
           <div 
             key={index} 
             style={{ 
@@ -90,7 +66,15 @@ export default function LogoScroll() {
               position: "relative",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center"
+              justifyContent: "center",
+              transition: 'all 0.3s ease',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'scale(1)';
             }}
           >
             <Image
@@ -103,6 +87,12 @@ export default function LogoScroll() {
           </div>
         ))}
       </div>
+      <style jsx>{`
+        @keyframes scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
     </div>
   );
 }

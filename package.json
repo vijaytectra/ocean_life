@@ -13,12 +13,14 @@
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@prisma/client": "^6.19.3",
+    "mammoth": "^1.12.0",
     "next": "15.1.7",
     "nodemailer": "^7.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-easy-crop": "^5.5.7",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "react-quill-new": "^3.8.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

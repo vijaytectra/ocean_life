@@ -7,7 +7,8 @@ export async function generateMetadata({ params }) {
   });
 
   return {
-    title: blog ? `${blog.title} | Ocean Lifespaces` : 'Blog Not Found',
+    title: blog?.metaTitle || (blog ? `${blog.title} | Ocean Lifespaces` : 'Blog Not Found'),
+    description: blog?.metaDesc || '',
   };
 }
 
@@ -42,14 +43,25 @@ export default async function BlogPage({ params }) {
             </div>
           )}
 
-          <div style={{ 
-            fontSize: '1.1rem', 
-            lineHeight: '1.8', 
-            color: '#334155',
-            whiteSpace: 'pre-wrap'
-          }}>
-            {blog.content}
-          </div>
+          <div 
+            style={{ 
+              fontSize: '1.1rem', 
+              lineHeight: '1.8', 
+              color: '#334155',
+            }}
+            dangerouslySetInnerHTML={{ __html: blog.content }}
+          />
+          <style jsx>{`
+            div :global(h1) { font-size: 2rem; margin: 30px 0 15px; color: #0f172a; }
+            div :global(h2) { font-size: 1.75rem; margin: 25px 0 12px; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+            div :global(h3) { font-size: 1.5rem; margin: 20px 0 10px; color: #334155; }
+            div :global(p) { margin-bottom: 15px; }
+            div :global(ul), div :global(ol) { margin-bottom: 15px; padding-left: 20px; }
+            div :global(li) { margin-bottom: 8px; }
+            div :global(strong) { font-weight: 700; color: #0f172a; }
+            div :global(a) { color: #2563eb; text-decoration: underline; }
+            div :global(blockquote) { border-left: 4px solid #e2e8f0; padding-left: 20px; font-style: italic; color: #64748b; margin: 20px 0; }
+          `}</style>
         </div>
       </div>
     </article>
