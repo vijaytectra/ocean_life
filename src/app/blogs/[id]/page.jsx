@@ -43,25 +43,27 @@ export default async function BlogPage({ params }) {
             </div>
           )}
 
+          <style dangerouslySetInnerHTML={{ __html: `
+            .blog-content h1 { font-size: 2.2rem; margin: 30px 0 15px; color: #0f172a; font-weight: 700; }
+            .blog-content h2 { font-size: 1.8rem; margin: 25px 0 12px; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: 600; }
+            .blog-content h3 { font-size: 1.5rem; margin: 20px 0 10px; color: #334155; font-weight: 600; }
+            .blog-content p { margin-bottom: 20px; color: #475569; }
+            .blog-content ul, .blog-content ol { margin-bottom: 20px; padding-left: 25px; color: #475569; }
+            .blog-content li { margin-bottom: 10px; }
+            .blog-content strong { font-weight: 700; color: #0f172a; }
+            .blog-content a { color: #2563eb; text-decoration: underline; font-weight: 500; }
+            .blog-content blockquote { border-left: 4px solid #cbd5e1; padding: 10px 20px; font-style: italic; color: #64748b; background: #f8fafc; margin: 25px 0; border-radius: 0 8px 8px 0; }
+            .blog-content img { max-width: 100%; height: auto; border-radius: 12px; margin: 20px 0; }
+          `}} />
           <div 
+            className="blog-content"
             style={{ 
-              fontSize: '1.1rem', 
-              lineHeight: '1.8', 
+              fontSize: '1.15rem', 
+              lineHeight: '1.85', 
               color: '#334155',
             }}
             dangerouslySetInnerHTML={{ __html: blog.content }}
           />
-          <style jsx>{`
-            div :global(h1) { font-size: 2rem; margin: 30px 0 15px; color: #0f172a; }
-            div :global(h2) { font-size: 1.75rem; margin: 25px 0 12px; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
-            div :global(h3) { font-size: 1.5rem; margin: 20px 0 10px; color: #334155; }
-            div :global(p) { margin-bottom: 15px; }
-            div :global(ul), div :global(ol) { margin-bottom: 15px; padding-left: 20px; }
-            div :global(li) { margin-bottom: 8px; }
-            div :global(strong) { font-weight: 700; color: #0f172a; }
-            div :global(a) { color: #2563eb; text-decoration: underline; }
-            div :global(blockquote) { border-left: 4px solid #e2e8f0; padding-left: 20px; font-style: italic; color: #64748b; margin: 20px 0; }
-          `}</style>
         </div>
       </div>
     </article>
