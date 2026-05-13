@@ -1,40 +1,18 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
-import dynamic from 'next/dynamic';
+import { useState, useEffect, useRef } from 'react';
+import Script from 'next/script';
 import ImageCropper from '@/components/ImageCropper';
 import styles from '../admin.module.css';
-import 'react-quill-new/dist/quill.snow.css';
-
-const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
 export default function AdminBlogs() {
   const [blogs, setBlogs] = useState([]);
-  const [isCreating, setIsCreating] = useState(false);
-  const [formData, setFormData] = useState({ 
-    title: '', content: '', image: '', status: 'published', metaTitle: '', metaDesc: '' 
-  });
+  const [formData, setFormData] = useState({ title: '', content: '', image: '', metaTitle: '', metaDesc: '', status: 'Published' });
   const [showCropper, setShowCropper] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState('');
   const [isUploading, setIsUploading] = useState(false);
-
-  const modules = useMemo(() => ({
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
-      ['link', 'image'],
-      ['clean']
-    ],
-  }), []);
-
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'indent',
-    'link', 'image'
-  ];
+  const editorRef = useRef(null);
 
   useEffect(() => {
     fetchBlogs();
@@ -46,213 +24,166 @@ export default function AdminBlogs() {
     if (Array.isArray(data)) setBlogs(data);
   };
 
-  const handleImageCropped = (url) => {
-    setFormData({ ...formData, image: url });
-    setShowCropper(false);
-    setIsUploading(false);
+  const handleDocxUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !window.mammoth) return;
+    
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const arrayBuffer = event.target.result;
+      const result = await window.mammoth.convertToHtml({ arrayBuffer });
+      if (window.tinymce && window.tinymce.activeEditor) {
+        window.tinymce.activeEditor.setContent(result.value);
+      }
+      setFormData(prev => ({ ...prev, content: result.value }));
+      setIsUploading(false);
+    };
+    reader.readAsArrayBuffer(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      await fetch(`/api/blogs/${editingId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      setEditingId(null);
-    } else {
-      await fetch('/api/blogs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-    }
-    setFormData({ title: '', content: '', image: '', status: 'published', metaTitle: '', metaDesc: '' });
-    setIsCreating(false);
-    fetchBlogs();
-  };
+    const content = window.tinymce ? window.tinymce.activeEditor.getContent() : formData.content;
+    const dataToSend = { ...formData, content };
 
-  const handleDelete = async (id) => {
-    if(!confirm("Are you sure?")) return;
-    await fetch(`/api/blogs/${id}`, { method: 'DELETE' });
-    fetchBlogs();
-  };
+    const url = editingId ? `/api/blogs/${editingId}` : '/api/blogs';
+    const method = editingId ? 'PUT' : 'POST';
 
-  const startEdit = (blog) => {
-    setFormData({ 
-      title: blog.title, 
-      content: blog.content, 
-      image: blog.image || '', 
-      status: blog.status || 'published',
-      metaTitle: blog.metaTitle || '',
-      metaDesc: blog.metaDesc || ''
+    await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend)
     });
+
+    setFormData({ title: '', content: '', image: '', metaTitle: '', metaDesc: '', status: 'Published' });
+    if (window.tinymce && window.tinymce.activeEditor) window.tinymce.activeEditor.setContent('');
+    setEditingId(null);
+    fetchBlogs();
+  };
+
+  const deleteBlog = async (id) => {
+    if (confirm('Delete this blog?')) {
+      await fetch(`/api/blogs/${id}`, { method: 'DELETE' });
+      fetchBlogs();
+    }
+  };
+
+  const editBlog = (blog) => {
     setEditingId(blog.id);
-    setIsCreating(true);
+    setFormData(blog);
+    if (window.tinymce && window.tinymce.activeEditor) {
+      window.tinymce.activeEditor.setContent(blog.content || '');
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const filteredBlogs = blogs.filter(b => b.title.toLowerCase().includes(search.toLowerCase()));
-
   return (
-    <div>
+    <div className={styles.adminContainer}>
+      <Script 
+        src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" 
+        strategy="afterInteractive"
+      />
+      <Script 
+        src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" 
+        referrerPolicy="origin"
+        onLoad={() => {
+          window.tinymce.init({
+            selector: '#blog-editor',
+            height: 500,
+            plugins: 'link image lists table code help wordcount',
+            toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image | code help',
+            setup: (editor) => {
+              editor.on('change', () => {
+                setFormData(prev => ({ ...prev, content: editor.getContent() }));
+              });
+            }
+          });
+        }}
+      />
+
       <div className={styles.header}>
-        <h2 className={styles.pageTitle}>Blogs & News</h2>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input 
-            type="text" 
-            placeholder="Search events..." 
-            value={search} 
-            onChange={e => setSearch(e.target.value)} 
-            className={styles.inputField} 
-            style={{ width: '250px', padding: '8px 15px' }} 
-          />
-          <button onClick={() => {
-            setIsCreating(!isCreating);
-            setEditingId(null);
-            setFormData({ title: '', content: '', image: '', status: 'published', metaTitle: '', metaDesc: '' });
-          }} className={styles.primaryButton}>
-            {isCreating ? 'Cancel' : 'Add News'}
-          </button>
-        </div>
+        <h2 className={styles.pageTitle}>Blogs & News Management</h2>
       </div>
 
-      {isCreating && (
-        <div className={styles.formCard}>
-          <form onSubmit={handleSubmit} className={styles.formGroup}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-              <input type="text" placeholder="Blog Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required className={styles.inputField} />
-              <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className={styles.inputField}>
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-              </select>
-              <input type="text" placeholder="SEO Meta Title" value={formData.metaTitle} onChange={e => setFormData({...formData, metaTitle: e.target.value})} className={styles.inputField} />
-              <input type="text" placeholder="SEO Meta Description" value={formData.metaDesc} onChange={e => setFormData({...formData, metaDesc: e.target.value})} className={styles.inputField} />
-            </div>
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px', fontWeight: 'bold' }}>Import from Word Document (.docx)</label>
-              <input 
-                type="file" 
-                accept=".docx" 
-                onChange={async (e) => {
-                  const file = e.target.files[0];
-                  if (!file) return;
-                  
-                  setIsUploading(true);
-                  const formDataReq = new FormData();
-                  formDataReq.append('file', file);
+      <div className={styles.formCard}>
+        <h3 className={styles.cardTitle}>{editingId ? 'Edit Post' : 'Create New Post'}</h3>
+        <form onSubmit={handleSubmit}>
+          <div className={styles.grid}>
+            <input type="text" placeholder="Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required className={styles.inputField} />
+            <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className={styles.inputField}>
+              <option value="Published">Published</option>
+              <option value="Draft">Draft</option>
+            </select>
+            <input type="text" placeholder="SEO Meta Title" value={formData.metaTitle} onChange={e => setFormData({...formData, metaTitle: e.target.value})} className={styles.inputField} />
+            <input type="text" placeholder="SEO Meta Description" value={formData.metaDesc} onChange={e => setFormData({...formData, metaDesc: e.target.value})} className={styles.inputField} />
+          </div>
 
-                  try {
-                    const res = await fetch('/api/blogs/parse-docx', {
-                      method: 'POST',
-                      body: formDataReq
-                    });
-                    const data = await res.json();
-                    if (data.html) {
-                      setFormData({ ...formData, content: data.html });
-                    } else {
-                      alert("Error parsing document: " + (data.error || "Unknown error"));
-                    }
-                  } catch (err) {
-                    console.error("Upload error:", err);
-                    alert("Failed to upload document");
-                  } finally {
-                    setIsUploading(false);
-                  }
-                }} 
-                className={styles.inputField} 
-              />
-            </div>
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', fontSize: '14px', marginBottom: '8px', fontWeight: 'bold' }}>Blog Content</label>
-              <div style={{ background: 'white' }}>
-                <ReactQuill 
-                  theme="snow"
-                  value={formData.content}
-                  onChange={(content) => setFormData({ ...formData, content })}
-                  modules={modules}
-                  formats={formats}
-                  style={{ height: '400px', marginBottom: '50px' }}
-                />
-              </div>
-            </div>
-            
-            {showCropper ? (
-              <ImageCropper 
-                onImageCropped={handleImageCropped} 
-                onCancel={() => { setShowCropper(false); setIsUploading(false); }} 
-                onUploadStart={() => setIsUploading(true)}
-              />
-            ) : (
-              <div>
-                <button type="button" onClick={() => setShowCropper(true)} className={styles.editButton}>
-                  {formData.image ? 'Change Banner' : 'Upload Banner'}
-                </button>
-                {formData.image && <img src={formData.image} alt="Preview" style={{ display: 'block', marginTop: '15px', maxHeight: '150px', borderRadius: '8px' }} />}
-              </div>
-            )}
-            
-            <button 
-              type="submit" 
-              className={styles.primaryButton} 
-              style={{ alignSelf: 'flex-start', opacity: isUploading ? 0.5 : 1 }}
-              disabled={isUploading}
-            >
-              {isUploading ? 'Uploading...' : (editingId ? 'Update News' : 'Save News')}
+          <div style={{ margin: '20px 0' }}>
+            <label style={{ display: 'block', fontSize: '14px', marginBottom: '8px', fontWeight: 'bold' }}>
+              Import from Word Document (.docx)
+            </label>
+            <input type="file" accept=".docx" onChange={handleDocxUpload} className={styles.inputField} />
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', fontSize: '14px', marginBottom: '8px', fontWeight: 'bold' }}>Content</label>
+            <textarea id="blog-editor" defaultValue={formData.content}></textarea>
+          </div>
+          
+          <div style={{ marginBottom: '20px' }}>
+            {formData.image && <img src={formData.image} alt="Preview" style={{ width: '200px', borderRadius: '8px', marginBottom: '10px' }} />}
+            <button type="button" onClick={() => setShowCropper(true)} className={styles.editButton}>
+              {formData.image ? 'Change Banner' : 'Upload Banner'}
             </button>
-          </form>
-        </div>
-      )}
+          </div>
 
-      <div className={styles.formCard} style={{ padding: 0 }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-              <th style={{ padding: '15px', textAlign: 'left', width: '60px' }}>S.No</th>
-              <th style={{ padding: '15px', textAlign: 'left' }}>Title</th>
-              <th style={{ padding: '15px', textAlign: 'left' }}>Date</th>
-              <th style={{ padding: '15px', textAlign: 'left' }}>Status</th>
-              <th style={{ padding: '15px', textAlign: 'left' }}>Banner</th>
-              <th style={{ padding: '15px', textAlign: 'left' }}>SEO Setup</th>
-              <th style={{ padding: '15px', textAlign: 'left' }}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredBlogs.map((blog, index) => (
-              <tr key={blog.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                <td style={{ padding: '15px' }}>{index + 1}</td>
-                <td style={{ padding: '15px', fontWeight: 'bold' }}>{blog.title}</td>
-                <td style={{ padding: '15px' }}>{new Date(blog.createdAt).toLocaleDateString()}</td>
-                <td style={{ padding: '15px' }}>
-                  <span style={{ 
-                    padding: '4px 8px', 
-                    borderRadius: '4px', 
-                    fontSize: '0.8rem',
-                    background: blog.status === 'published' ? '#dcfce7' : '#fef9c3',
-                    color: blog.status === 'published' ? '#166534' : '#854d0e'
-                  }}>
-                    {blog.status}
-                  </span>
-                </td>
-                <td style={{ padding: '15px' }}>
-                  {blog.image ? <img src={blog.image} alt="thumb" style={{ width: '50px', height: '30px', objectFit: 'cover', borderRadius: '4px' }} /> : 'None'}
-                </td>
-                <td style={{ padding: '15px' }}>
-                  <span style={{ fontSize: '0.8rem', color: blog.metaTitle ? '#10b981' : '#f59e0b' }}>
-                    {blog.metaTitle ? '✅ Configured' : '⚠️ Missing'}
-                  </span>
-                </td>
-                <td style={{ padding: '15px' }}>
-                  <div style={{ display: 'flex', gap: '5px' }}>
-                    <button onClick={() => startEdit(blog)} className={styles.editButton} style={{ padding: '5px 10px', fontSize: '0.75rem' }}>Edit</button>
-                    <button onClick={() => handleDelete(blog.id)} className={styles.dangerButton} style={{ padding: '5px 10px', fontSize: '0.75rem' }}>Delete</button>
-                  </div>
-                </td>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="submit" className={styles.primaryButton}>{editingId ? 'Update Post' : 'Publish Post'}</button>
+            {editingId && <button type="button" onClick={() => { setEditingId(null); setFormData({ title: '', content: '', image: '', metaTitle: '', metaDesc: '', status: 'Published' }); if(window.tinymce) window.tinymce.activeEditor.setContent(''); }} className={styles.dangerButton}>Cancel</button>}
+          </div>
+        </form>
+
+        {showCropper && (
+          <ImageCropper 
+            onImageCropped={(url) => { setFormData({...formData, image: url}); setShowCropper(false); }} 
+            onCancel={() => setShowCropper(false)} 
+          />
+        )}
+      </div>
+
+      <div className={styles.listSection} style={{ marginTop: '40px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h3 className={styles.cardTitle}>Recent Posts</h3>
+          <input type="text" placeholder="Search blogs..." value={search} onChange={e => setSearch(e.target.value)} className={styles.inputField} style={{ width: '300px' }} />
+        </div>
+        <div className={styles.tableResponsive}>
+          <table className={styles.adminTable}>
+            <thead>
+              <tr>
+                <th>Banner</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {blogs.filter(b => b.title.toLowerCase().includes(search.toLowerCase())).map(blog => (
+                <tr key={blog.id}>
+                  <td><img src={blog.image || '/placeholder.jpg'} style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} alt="" /></td>
+                  <td>{blog.title}</td>
+                  <td><span className={styles.statusBadge}>{blog.status}</span></td>
+                  <td>{new Date(blog.createdAt).toLocaleDateString()}</td>
+                  <td className={styles.actions}>
+                    <button onClick={() => editBlog(blog)} className={styles.editButton}>Edit</button>
+                    <button onClick={() => deleteBlog(blog.id)} className={styles.dangerButton}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
