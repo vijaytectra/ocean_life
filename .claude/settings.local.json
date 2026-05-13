@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sshpass *)",
+      "Bash(ssh -V)",
+      "Bash(apt-get install *)",
+      "Bash(apk add *)",
+      "Bash(yum install *)",
+      "Bash(python3 -c \"import paramiko; print\\('paramiko ok'\\)\")",
+      "Bash(pip3 install *)",
+      "Bash(python3 *)"
+    ]
+  }
+}
