@@ -18,7 +18,10 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const role = await prisma.role.create({
-      data: { name: body.name }
+      data: { 
+        name: body.name,
+        permissions: body.permissions // JSON string
+      }
     });
     return NextResponse.json(role);
   } catch (error) {

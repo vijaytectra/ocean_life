@@ -63,6 +63,22 @@ export async function POST(request) {
   };
 
   try {
+    // Save to Database
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    
+    await prisma.enquiry.create({
+      data: {
+        type: "Contact", // Default for this route
+        name,
+        email,
+        mobile: phone,
+        subject,
+        message,
+        status: "new"
+      }
+    });
+
     // Send both emails
     await transporter.sendMail(adminMailOptions);
     await transporter.sendMail(userMailOptions);

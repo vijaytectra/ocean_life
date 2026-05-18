@@ -1,5 +1,6 @@
 import RecentProjects from "../../../componentsInnerServices/RecentProjects";
 import HeaderInnerServices from "../../../componentsInnerServices/HeaderInnerServices";
+import DynamicCategoryServices from "../../../componentsInnerServices/DynamicCategoryServices";
 import Newsletter from "../../../components/Newsletter";
 
 export const metadata = {
@@ -126,6 +127,7 @@ function TurkneySolutions() {
         clientsList="Our turnkey approach takes the burden off your shoulders, managing everything from procurement to construction and final handover. This ensures that your project runs smoothly and delivers the expected results with minimal disruption to your operations. We prioritize safety, efficiency, and environmental sustainability in every project, ensuring that every detail is meticulously managed."
         transformationText="From concept to completion, our turnkey solutions handle every aspect of your project. We deliver end-to-end services, ensuring seamless execution and timely delivery, tailored to your specific requirements."
       />
+      <DynamicCategoryServices categoryType="Turnkey solutions" />
       <RecentProjects projects={page3Projects} />
       <Newsletter />
     </>

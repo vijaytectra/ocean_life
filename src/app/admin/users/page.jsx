@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import ConfirmModal from '@/components/admin/ConfirmModal';
 import styles from '../admin.module.css';
 
 export default function AdminUsers() {
@@ -10,6 +11,7 @@ export default function AdminUsers() {
   const [formData, setFormData] = useState({ 
     username: '', password: '', name: '', email: '', mobile: '', roleId: '', status: 'active' 
   });
+  const [modal, setModal] = useState({ isOpen: false, userId: null });
 
   useEffect(() => {
     fetchUsers();
@@ -41,7 +43,12 @@ export default function AdminUsers() {
   };
 
   const handleDelete = async (id) => {
-    if(!confirm("Are you sure?")) return;
+    setModal({ isOpen: true, userId: id });
+  };
+
+  const confirmDelete = async () => {
+    const id = modal.userId;
+    setModal({ isOpen: false, userId: null });
     await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
     fetchUsers();
   };
@@ -112,6 +119,17 @@ export default function AdminUsers() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmModal 
+        isOpen={modal.isOpen}
+        title="Delete User?"
+        message="Are you sure you want to delete this user? This will permanently remove their access."
+        onConfirm={confirmDelete}
+        onCancel={() => setModal({ isOpen: false, userId: null })}
+        confirmText="Delete"
+        cancelText="Cancel"
+        danger
+      />
     </div>
   );
 }

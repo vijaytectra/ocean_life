@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ImageCropper from '@/components/ImageCropper';
+import ConfirmModal from '@/components/admin/ConfirmModal';
 import styles from '../admin.module.css';
 
 export default function AdminTeam() {
@@ -11,6 +12,7 @@ export default function AdminTeam() {
   const [formData, setFormData] = useState({ name: '', role: '', image: '', priority: 0 });
   const [editingId, setEditingId] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [modal, setModal] = useState({ isOpen: false, memberId: null });
 
   useEffect(() => {
     fetchMembers();
@@ -62,7 +64,12 @@ export default function AdminTeam() {
   };
 
   const handleDelete = async (id) => {
-    if(!confirm("Are you sure?")) return;
+    setModal({ isOpen: true, memberId: id });
+  };
+
+  const confirmDelete = async () => {
+    const id = modal.memberId;
+    setModal({ isOpen: false, memberId: null });
     await fetch(`/api/employees/${id}`, { method: 'DELETE' });
     fetchMembers();
   };
@@ -136,6 +143,17 @@ export default function AdminTeam() {
           </div>
         ))}
       </div>
+
+      <ConfirmModal 
+        isOpen={modal.isOpen}
+        title="Remove Team Member?"
+        message="Are you sure you want to remove this team member? This will remove them from the About Us page."
+        onConfirm={confirmDelete}
+        onCancel={() => setModal({ isOpen: false, memberId: null })}
+        confirmText="Remove"
+        cancelText="Cancel"
+        danger
+      />
     </div>
   );
 }

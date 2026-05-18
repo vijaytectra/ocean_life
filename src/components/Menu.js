@@ -9,6 +9,8 @@ import { usePathname } from "next/navigation";
 import { IoCloseCircle } from "react-icons/io5";
 import { RiMenu3Line } from "react-icons/ri";
 import { RxCross1 } from "react-icons/rx";
+import { useMainHeroVideoSrc } from "@/hooks/useMainHeroVideoSrc";
+import { isHeroBackgroundImageUrl, parseMainVideoValue, resolveMediaPublicUrl } from "@/lib/mainVideoContent";
 
 const MenuItems = [
   { name: "Home", path: "/" },
@@ -32,6 +34,8 @@ const MobileMenuItems = [
 ];
 
 function Menu() {
+  const heroVideoSrc = useMainHeroVideoSrc();
+  const heroIsImage = isHeroBackgroundImageUrl(heroVideoSrc);
   const [isPopupVisible, setPopupVisible] = useState(false);
   const pathname = usePathname();
   const mobileMenuRef = useRef(null);
@@ -122,8 +126,11 @@ function Menu() {
     fetch("/api/content")
       .then((res) => res.json())
       .then((data) => {
-        const logoItem = data.find((item) => item.id === "site-logo");
-        if (logoItem) setLogo(logoItem.value);
+        const logoItem = data.find((item) => item.id === "site-logo-header") || data.find((item) => item.id === "site-logo");
+        if (logoItem) {
+          const { active } = parseMainVideoValue(logoItem.value);
+          setLogo(resolveMediaPublicUrl(active));
+        }
       })
       .catch((err) => console.error("Logo fetch error:", err));
   }, []);
@@ -204,15 +211,19 @@ function Menu() {
 
           {/* Added the autoplay video with GSAP animation */}
           <div className={Styles.video} ref={videoRef}>
-            <video
-              className={Styles.videoElement}
-              src="/hero-video.mp4"
-              type="video/mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-            />
+            {heroIsImage ? (
+              <img key={heroVideoSrc} className={Styles.videoElement} src={heroVideoSrc} alt="" />
+            ) : (
+              <video
+                key={heroVideoSrc}
+                className={Styles.videoElement}
+                src={heroVideoSrc}
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            )}
           </div>
 
           <button className={Styles.closeButtonMenu} onClick={togglePopup}>

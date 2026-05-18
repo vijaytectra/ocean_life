@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ImageCropper from '@/components/ImageCropper';
+import ConfirmModal from '@/components/admin/ConfirmModal';
 import styles from '../admin.module.css';
 
 export default function AdminClients() {
@@ -9,6 +10,7 @@ export default function AdminClients() {
   const [showCropper, setShowCropper] = useState(false);
   const [category, setCategory] = useState('corporate');
   const [loading, setLoading] = useState(false);
+  const [modal, setModal] = useState({ isOpen: false, logoId: null });
 
   useEffect(() => {
     fetchLogos();
@@ -38,7 +40,12 @@ export default function AdminClients() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Remove this client logo?")) return;
+    setModal({ isOpen: true, logoId: id });
+  };
+
+  const confirmDelete = async () => {
+    const id = modal.logoId;
+    setModal({ isOpen: false, logoId: null });
     await fetch(`/api/clients/logos/${id}`, { method: 'DELETE' });
     fetchLogos();
   };
@@ -97,6 +104,17 @@ export default function AdminClients() {
           ))}
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={modal.isOpen}
+        title="Remove Client Logo?"
+        message="Are you sure you want to remove this client logo? It will be removed from the Clients page."
+        onConfirm={confirmDelete}
+        onCancel={() => setModal({ isOpen: false, logoId: null })}
+        confirmText="Remove"
+        cancelText="Cancel"
+        danger
+      />
     </div>
   );
 }

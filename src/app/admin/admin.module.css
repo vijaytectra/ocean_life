@@ -15,6 +15,11 @@
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .sidebarTitle {
@@ -55,6 +60,19 @@
   transform: translateX(5px);
 }
 
+.navLinkActive {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: inset 4px 0 0 0 var(--color-orange, #f5831f);
+}
+
+.navLinkActive:hover {
+  background: var(--color-orange, #f5831f);
+  color: var(--color-white, #fff);
+  transform: translateX(5px);
+}
+
 .navLinkBack {
   display: block;
   margin-top: auto;
@@ -74,7 +92,6 @@
 .mainContent {
   flex: 1;
   padding: 50px;
-  overflow-y: auto;
   background: var(--color-grey, #e9e9e9);
 }
 

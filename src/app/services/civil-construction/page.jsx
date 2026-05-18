@@ -1,5 +1,6 @@
 import RecentProjects from "../../../componentsInnerServices/RecentProjects";
 import HeaderInnerServices from "../../../componentsInnerServices/HeaderInnerServices";
+import DynamicCategoryServices from "../../../componentsInnerServices/DynamicCategoryServices";
 import Newsletter from "../../../components/Newsletter";
 
 export const metadata = {
@@ -90,6 +91,7 @@ function CivilConstruction() {
         clientsList="Whether it’s building homes, offices, or specialized industrial facilities, we ensure that each project is completed to the highest standards. Our civil construction services extend to site preparation, foundation work, and beyond, ensuring that every phase of the construction process is completed with precision. We also provide tailored solutions for unique project requirements."
         transformationText="We bring excellence to civil construction, delivering durable and innovative structures, from commercial complexes to large-scale developments. Our commitment to precision engineering, timely execution, and sustainability ensures superior quality in every project."
       />
+      <DynamicCategoryServices categoryType="Civil construction" />
       <RecentProjects projects={page2Projects} />
       <Newsletter />
     </>

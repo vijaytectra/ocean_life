@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import ConfirmModal from '@/components/admin/ConfirmModal';
 import styles from '../admin.module.css';
 
 export default function AdminSEO() {
   const [configs, setConfigs] = useState([]);
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({ page: '', metaTitle: '', metaDesc: '', status: 'active' });
+  const [modal, setModal] = useState({ isOpen: false, configId: null });
 
   useEffect(() => {
     fetchSEO();
@@ -31,7 +33,12 @@ export default function AdminSEO() {
   };
 
   const handleDelete = async (id) => {
-    if(!confirm("Are you sure?")) return;
+    setModal({ isOpen: true, configId: id });
+  };
+
+  const confirmDelete = async () => {
+    const id = modal.configId;
+    setModal({ isOpen: false, configId: null });
     await fetch(`/api/admin/seo/${id}`, { method: 'DELETE' });
     fetchSEO();
   };
@@ -90,6 +97,17 @@ export default function AdminSEO() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmModal 
+        isOpen={modal.isOpen}
+        title="Delete SEO Configuration?"
+        message="Are you sure you want to delete this SEO configuration? This may affect your site's search engine visibility."
+        onConfirm={confirmDelete}
+        onCancel={() => setModal({ isOpen: false, configId: null })}
+        confirmText="Delete"
+        cancelText="Cancel"
+        danger
+      />
     </div>
   );
 }

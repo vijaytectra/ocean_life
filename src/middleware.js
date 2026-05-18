@@ -11,10 +11,17 @@ export function middleware(request) {
     }
   }
 
+  if (pathname.startsWith('/api/admin') && !session) {
+    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   // Protect sensitive API routes (POST, PUT, DELETE)
   const sensitiveApis = ['/api/blogs', '/api/content', '/api/employees', '/api/upload', '/api/clients/logos'];
-  const isSensitiveApi = sensitiveApis.some(api => pathname.startsWith(api));
-  
+  const isSensitiveApi = sensitiveApis.some((api) => pathname.startsWith(api));
+
   if (isSensitiveApi && request.method !== 'GET') {
     if (!session) {
       return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {

@@ -1,17 +1,45 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import {
+  isMysqlBlogEnabled,
+  mysqlUpdateBlog,
+  mysqlDeleteBlog,
+  mysqlGetBlogById,
+} from "@/lib/mysqlBlog";
+
+function mapStatus(bodyStatus) {
+  if (!bodyStatus || typeof bodyStatus !== "string") return "published";
+  return bodyStatus.toLowerCase() === "draft" ? "draft" : "published";
+}
 
 export async function PUT(request, { params }) {
   try {
-    const id = parseInt((await params).id);
+    const id = parseInt((await params).id, 10);
+    if (Number.isNaN(id)) {
+      return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+    }
     const body = await request.json();
+    const payload = {
+      title: body.title,
+      content: body.content,
+      image: body.image ?? null,
+      metaTitle: body.metaTitle ?? null,
+      metaDesc: body.metaDesc ?? null,
+      status: mapStatus(body.status),
+    };
+
+    if (isMysqlBlogEnabled()) {
+      const existing = await mysqlGetBlogById(id);
+      if (!existing) {
+        return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+      }
+      const blog = await mysqlUpdateBlog(id, payload);
+      return NextResponse.json(blog);
+    }
+
     const blog = await prisma.blog.update({
       where: { id },
-      data: {
-        title: body.title,
-        content: body.content,
-        image: body.image,
-      }
+      data: payload,
     });
     return NextResponse.json(blog);
   } catch (error) {
@@ -21,9 +49,22 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const id = parseInt((await params).id);
+    const id = parseInt((await params).id, 10);
+    if (Number.isNaN(id)) {
+      return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+    }
+
+    if (isMysqlBlogEnabled()) {
+      const existing = await mysqlGetBlogById(id);
+      if (!existing) {
+        return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+      }
+      await mysqlDeleteBlog(id);
+      return NextResponse.json({ success: true });
+    }
+
     await prisma.blog.delete({
-      where: { id }
+      where: { id },
     });
     return NextResponse.json({ success: true });
   } catch (error) {

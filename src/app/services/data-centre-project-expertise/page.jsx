@@ -3,6 +3,7 @@ import Styles from "./Interior-design.module.css";
 import { LuChevronRight } from "react-icons/lu";
 import Link from "next/link";
 import Image from "next/image";
+import DynamicCategoryServices from "../../../componentsInnerServices/DynamicCategoryServices";
 
 function page() {
   return (
@@ -379,6 +380,7 @@ function page() {
           </div>
         </div>
       </div>
+      <DynamicCategoryServices categoryType="Data Centre Project Expertise" />
     </>
   );
 }

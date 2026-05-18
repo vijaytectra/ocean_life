@@ -5,12 +5,11 @@ import Styles from "./NewsAndEvents.module.css";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const timeAgo = (date) => {
-  if (!date) return 'recently';
+  if (!date) return "recently";
   const now = new Date();
   const eventDate = new Date(date);
   const diffInMs = now - eventDate;
@@ -18,19 +17,21 @@ const timeAgo = (date) => {
 
   if (diffInMins < 60) {
     return `${diffInMins} minutes ago`;
-  } else if (diffInMins < 1440) {
+  }
+  if (diffInMins < 1440) {
     const diffInHours = Math.floor(diffInMins / 60);
     return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
-  } else if (diffInMins < 43200) {
+  }
+  if (diffInMins < 43200) {
     const diffInDays = Math.floor(diffInMins / 1440);
     return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
-  } else if (diffInMins < 518400) {
+  }
+  if (diffInMins < 518400) {
     const diffInMonths = Math.floor(diffInMins / 43200);
     return `${diffInMonths} month${diffInMonths > 1 ? "s" : ""} ago`;
-  } else {
-    const diffInYears = Math.floor(diffInMins / 518400);
-    return `${diffInYears} year${diffInYears > 1 ? "s" : ""} ago`;
   }
+  const diffInYears = Math.floor(diffInMins / 518400);
+  return `${diffInYears} year${diffInYears > 1 ? "s" : ""} ago`;
 };
 
 const BlogsUpdates = ({ list = 3 }) => {
@@ -40,23 +41,16 @@ const BlogsUpdates = ({ list = 3 }) => {
   const cardsRef = useRef([]);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-  }, []);
-
-  useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await fetch('/api/blogs');
+        const res = await fetch("/api/blogs", { cache: "no-store" });
         const data = await res.json();
         if (Array.isArray(data)) {
-          // Sort by newest and slice
-          const sortedNews = data.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          );
+          const sortedNews = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setLatestNews(sortedNews.slice(0, list));
         }
-      } catch (e) {
-        console.error("Failed to fetch blogs:", e);
+      } catch {
+        /* ignore */
       }
     };
     fetchBlogs();
@@ -106,17 +100,19 @@ const BlogsUpdates = ({ list = 3 }) => {
         <div className={Styles.grid}>
           {latestNews.map((news, index) => (
             <div
-              key={index}
+              key={news.id ?? index}
               className={Styles.card}
-              ref={(el) => (cardsRef.current[index] = el)}
+              ref={(el) => {
+                cardsRef.current[index] = el;
+              }}
             >
               <div className={Styles.imageDiv}>
-                <Image
-                  width={480}
-                  height={282}
-                  src={news.image || '/blogs/top5.webp'}
-                  alt={news.title}
-                  style={{ objectFit: 'cover' }}
+                <img
+                  src={news.image || "/blogs/top5.webp"}
+                  alt={news.title ? `Cover: ${news.title}` : "Blog cover"}
+                  className={Styles.blogThumb}
+                  loading={index < 2 ? "eager" : "lazy"}
+                  decoding="async"
                 />
               </div>
               <div className={Styles.contentDiv}>
@@ -125,15 +121,13 @@ const BlogsUpdates = ({ list = 3 }) => {
                   <p>{new Date(news.createdAt || Date.now()).toISOString().slice(0, 10)}</p>
                 </div>
                 <h3>{news.title}</h3>
-                <p>{news.content ? news.content.substring(0, 120) + '...' : ''}</p>
-                <Link href={`/blogs/${news.id}`}>
-                  <button className={Styles.cta}>
-                    <span>Read More</span>
-                    <svg width="15px" height="10px" viewBox="0 0 13 10">
-                      <path d="M1,5 L11,5"></path>
-                      <polyline points="8 1 12 5 8 9"></polyline>
-                    </svg>
-                  </button>
+                <p>{news.content ? `${news.content.substring(0, 120)}...` : ""}</p>
+                <Link href={`/blogs/${news.id}`} className={Styles.cta}>
+                  <span>Read more</span>
+                  <svg width="15px" height="10px" viewBox="0 0 13 10" aria-hidden>
+                    <path d="M1,5 L11,5" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                    <polyline points="8 1 12 5 8 9" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  </svg>
                 </Link>
               </div>
             </div>

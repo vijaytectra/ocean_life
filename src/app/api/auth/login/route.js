@@ -28,12 +28,21 @@ export async function POST(request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Set a simple session cookie
+    // Set simple session cookies
     const response = NextResponse.json({ success: true });
-    (await cookies()).set('admin_session', 'authenticated', {
+    const cookieStore = await cookies();
+    
+    cookieStore.set('admin_session', 'authenticated', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24, // 24 hours
+      maxAge: 60 * 60 * 24,
+      path: '/'
+    });
+
+    cookieStore.set('user_id', user.id.toString(), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24,
       path: '/'
     });
 

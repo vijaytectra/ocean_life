@@ -1,5 +1,6 @@
 import RecentProjects from "../../../componentsInnerServices/RecentProjects";
 import HeaderInnerServices from "../../../componentsInnerServices/HeaderInnerServices";
+import DynamicCategoryServices from "../../../componentsInnerServices/DynamicCategoryServices";
 import Newsletter from "../../../components/Newsletter";
 
 export const metadata = {
@@ -55,6 +56,7 @@ function InfrastructureDevelopment() {
         clientsList="Our infrastructure solutions include everything from road construction and utilities to energy distribution and urban planning. We are committed to integrating sustainable practices in every project to minimize environmental impact while ensuring that the infrastructure we build is robust and future-ready."
         transformationText="We develop resilient infrastructure, from roads to large-scale public projects, ensuring innovation, sustainability, and excellence for a better future."
       />
+      <DynamicCategoryServices categoryType="Infrastructure development" />
       {/* <RecentProjects projects={page5Projects} /> */}
       <Newsletter />
     </>

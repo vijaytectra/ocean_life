@@ -1,4 +1,5 @@
 import HeaderInnerServices from "../../../componentsInnerServices/HeaderInnerServices";
+import DynamicCategoryServices from "../../../componentsInnerServices/DynamicCategoryServices";
 import Newsletter from "../../../components/Newsletter";
 import Image from "next/image";
 
@@ -68,6 +69,7 @@ function HospitalsAndHospitality() {
                 clientsList="We are committed to delivering world-class hospital and hospitality projects that meet the highest standards of safety, comfort, and functionality."
                 transformationText="Creating spaces that care, welcome, and inspire."
             />
+            <DynamicCategoryServices categoryType="Hospitals and hospitality" />
             <div className="container" style={{ paddingBottom: "80px" }}>
                 <h2 className="h3" style={{ marginBottom: "30px", color: "var(--color-dark-blue)" }}>Notable Projects:</h2>
                 <ul style={{ listStyle: "none", padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px" }}>

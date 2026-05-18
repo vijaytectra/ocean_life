@@ -1,5 +1,6 @@
 import RecentProjects from "../../../componentsInnerServices/RecentProjects";
 import HeaderInnerServices from "../../../componentsInnerServices/HeaderInnerServices";
+import DynamicCategoryServices from "../../../componentsInnerServices/DynamicCategoryServices";
 import Newsletter from "../../../components/Newsletter";
 
 export const metadata = {
@@ -56,6 +57,7 @@ function RealEstateDevelopment() {
         clientsList="We also specialize in property management services, ensuring your assets are well-maintained, tenants are satisfied, and your investment provides long-term value. Our team of professionals is committed to helping you achieve your real estate goals, whether you're looking to buy, sell, lease, or invest in properties."
         transformationText="We create exceptional residential and commercial spaces with strategic planning, innovative design, and superior construction."
       />
+      <DynamicCategoryServices categoryType="Real estate development" />
       {/* <RecentProjects projects={page1Projects} /> */}
       <Newsletter />
     </>

@@ -3,7 +3,9 @@ import "./globals.css";
 import Footer from "@/components/Footer";
 import Menu from "@/components/Menu";
 import GoToTopButton from "@/components/GoToTopButton";
+import AdPopup from "@/components/AdPopup";
 import Script from "next/script";
+import FloatingEnquiry from "@/components/FloatingEnquiry";
 
 const roboto = Roboto({
   variable: "--font-roboto-sans",
@@ -138,6 +140,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {children}
         <Footer />
         <GoToTopButton />
+        <AdPopup />
+        <FloatingEnquiry />
       </body>
     </html>
   );

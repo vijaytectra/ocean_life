@@ -1,190 +1,471 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import Script from 'next/script';
-import ImageCropper from '@/components/ImageCropper';
-import styles from '../admin.module.css';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import Script from "next/script";
+import ImageCropper from "@/components/ImageCropper";
+import ConfirmModal from "@/components/admin/ConfirmModal";
+import styles from "../admin.module.css";
+import blogStyles from "./blogsAdmin.module.css";
+
+const TINYMCE_VERSION = "6.8.3";
+const TINYMCE_CDN_BASE = `https://cdn.jsdelivr.net/npm/tinymce@${TINYMCE_VERSION}`;
+const BANNER_FALLBACK = "/foot-logo.svg";
+
+const tinymceCloudKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY?.trim();
+
+function resolveBannerSrc(url) {
+  if (!url || typeof url !== "string") return BANNER_FALLBACK;
+  const u = url.trim();
+  if (!u) return BANNER_FALLBACK;
+  if (u.startsWith("http://") || u.startsWith("https://")) return u;
+  if (u.startsWith("/")) return u;
+  return `/${u}`;
+}
+
+function normalizeStatusForForm(status) {
+  if (!status || typeof status !== "string") return "Published";
+  return status.toLowerCase() === "draft" ? "Draft" : "Published";
+}
+
+function BlogThumb({ src }) {
+  const [imgSrc, setImgSrc] = useState(() => resolveBannerSrc(src));
+
+  useEffect(() => {
+    setImgSrc(resolveBannerSrc(src));
+  }, [src]);
+
+  return (
+    <img
+      src={imgSrc}
+      alt=""
+      className={blogStyles.postThumb}
+      loading="lazy"
+      decoding="async"
+      onError={() => setImgSrc(BANNER_FALLBACK)}
+    />
+  );
+}
 
 export default function AdminBlogs() {
   const [blogs, setBlogs] = useState([]);
-  const [formData, setFormData] = useState({ title: '', content: '', image: '', metaTitle: '', metaDesc: '', status: 'Published' });
+  const [formData, setFormData] = useState({
+    title: "",
+    content: "",
+    image: "",
+    metaTitle: "",
+    metaDesc: "",
+    status: "Published",
+  });
   const [showCropper, setShowCropper] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const editorRef = useRef(null);
+  const [editorReady, setEditorReady] = useState(false);
+  const [plainEditorFallback, setPlainEditorFallback] = useState(false);
+  const [modal, setModal] = useState({ isOpen: false, blogId: null });
+  const tinymceInitOnce = useRef(false);
+
+  const tinymceScriptSrc = tinymceCloudKey
+    ? `https://cdn.tiny.cloud/1/${tinymceCloudKey}/tinymce/6/tinymce.min.js`
+    : `${TINYMCE_CDN_BASE}/tinymce.min.js`;
+
+  const getEditorHtml = useCallback(() => {
+    if (typeof window === "undefined") return formData.content;
+    const editor = window.tinymce?.get?.("blog-editor");
+    if (editor && !editor.removed) return editor.getContent();
+    return formData.content;
+  }, [formData.content]);
 
   useEffect(() => {
     fetchBlogs();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      const editor = typeof window !== "undefined" ? window.tinymce?.get?.("blog-editor") : null;
+      if (editor && !editor.removed) {
+        try {
+          editor.remove();
+        } catch {
+          /* ignore */
+        }
+      }
+      setEditorReady(false);
+      tinymceInitOnce.current = false;
+    };
+  }, []);
+
   const fetchBlogs = async () => {
-    const res = await fetch('/api/blogs');
+    const res = await fetch("/api/blogs");
     const data = await res.json();
     if (Array.isArray(data)) setBlogs(data);
   };
 
+  const initTinyMce = useCallback(() => {
+    if (typeof window === "undefined" || !window.tinymce || plainEditorFallback) return;
+    if (tinymceInitOnce.current) return;
+    tinymceInitOnce.current = true;
+
+    const existing = window.tinymce.get?.("blog-editor");
+    if (existing && !existing.removed) {
+      try {
+        existing.remove();
+      } catch {
+        /* ignore */
+      }
+    }
+
+    const initConfig = {
+      selector: "#blog-editor",
+      height: 520,
+      menubar: false,
+      branding: false,
+      promotion: false,
+      plugins: "link image lists table code help wordcount",
+      toolbar:
+        "undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image | code help",
+      init_instance_callback: (editor) => {
+        setEditorReady(true);
+        const sync = () => {
+          setFormData((prev) => ({ ...prev, content: editor.getContent() }));
+        };
+        editor.on("change keyup Undo Redo", sync);
+      },
+    };
+
+    if (!tinymceCloudKey) {
+      initConfig.base_url = TINYMCE_CDN_BASE;
+      initConfig.suffix = ".min";
+    }
+
+    window.tinymce.init(initConfig);
+  }, [plainEditorFallback, tinymceCloudKey]);
+
+  useLayoutEffect(() => {
+    if (plainEditorFallback) return;
+    if (typeof window === "undefined" || !window.tinymce?.init) return;
+    initTinyMce();
+  }, [plainEditorFallback, initTinyMce]);
+
   const handleDocxUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file || !window.mammoth) return;
-    
+    const file = e.target.files?.[0];
+    if (!file || typeof window === "undefined" || !window.mammoth) return;
+
     setIsUploading(true);
     const reader = new FileReader();
     reader.onload = async (event) => {
-      const arrayBuffer = event.target.result;
-      const result = await window.mammoth.convertToHtml({ arrayBuffer });
-      if (window.tinymce && window.tinymce.activeEditor) {
-        window.tinymce.activeEditor.setContent(result.value);
+      try {
+        const arrayBuffer = event.target?.result;
+        const result = await window.mammoth.convertToHtml({ arrayBuffer });
+        const html = result.value || "";
+        setFormData((prev) => ({ ...prev, content: html }));
+        const editor = window.tinymce?.get?.("blog-editor");
+        if (editor && !editor.removed) editor.setContent(html);
+      } finally {
+        setIsUploading(false);
       }
-      setFormData(prev => ({ ...prev, content: result.value }));
-      setIsUploading(false);
     };
     reader.readAsArrayBuffer(file);
+    e.target.value = "";
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const content = window.tinymce ? window.tinymce.activeEditor.getContent() : formData.content;
-    const dataToSend = { ...formData, content };
+    const content = getEditorHtml();
+    const payload = { ...formData, content };
 
-    const url = editingId ? `/api/blogs/${editingId}` : '/api/blogs';
-    const method = editingId ? 'PUT' : 'POST';
+    const url = editingId ? `/api/blogs/${editingId}` : "/api/blogs";
+    const method = editingId ? "PUT" : "POST";
 
     await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dataToSend)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
 
-    setFormData({ title: '', content: '', image: '', metaTitle: '', metaDesc: '', status: 'Published' });
-    if (window.tinymce && window.tinymce.activeEditor) window.tinymce.activeEditor.setContent('');
+    const empty = {
+      title: "",
+      content: "",
+      image: "",
+      metaTitle: "",
+      metaDesc: "",
+      status: "Published",
+    };
+    setFormData(empty);
+    const editor = typeof window !== "undefined" ? window.tinymce?.get?.("blog-editor") : null;
+    if (editor && !editor.removed) editor.setContent("");
     setEditingId(null);
     fetchBlogs();
   };
 
   const deleteBlog = async (id) => {
-    if (confirm('Delete this blog?')) {
-      await fetch(`/api/blogs/${id}`, { method: 'DELETE' });
-      fetchBlogs();
-    }
+    setModal({ isOpen: true, blogId: id });
+  };
+
+  const confirmDelete = async () => {
+    const id = modal.blogId;
+    setModal({ isOpen: false, blogId: null });
+    await fetch(`/api/blogs/${id}`, { method: "DELETE" });
+    fetchBlogs();
   };
 
   const editBlog = (blog) => {
     setEditingId(blog.id);
-    setFormData(blog);
-    if (window.tinymce && window.tinymce.activeEditor) {
-      window.tinymce.activeEditor.setContent(blog.content || '');
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setFormData({
+      title: blog.title || "",
+      content: blog.content || "",
+      image: blog.image || "",
+      metaTitle: blog.metaTitle || "",
+      metaDesc: blog.metaDesc || "",
+      status: normalizeStatusForForm(blog.status),
+    });
+    queueMicrotask(() => {
+      const editor = typeof window !== "undefined" ? window.tinymce?.get?.("blog-editor") : null;
+      if (editor && !editor.removed) editor.setContent(blog.content || "");
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const cancelEdit = () => {
+    setEditingId(null);
+    setFormData({
+      title: "",
+      content: "",
+      image: "",
+      metaTitle: "",
+      metaDesc: "",
+      status: "Published",
+    });
+    const editor = typeof window !== "undefined" ? window.tinymce?.get?.("blog-editor") : null;
+    if (editor && !editor.removed) editor.setContent("");
+  };
+
+  const filtered = blogs.filter((b) => (b.title || "").toLowerCase().includes(search.toLowerCase()));
+
   return (
-    <div className={styles.adminContainer}>
-      <Script 
-        src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" 
-        strategy="afterInteractive"
-      />
-      <Script 
-        src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" 
-        referrerPolicy="origin"
-        onLoad={() => {
-          window.tinymce.init({
-            selector: '#blog-editor',
-            height: 500,
-            plugins: 'link image lists table code help wordcount',
-            toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image | code help',
-            setup: (editor) => {
-              editor.on('change', () => {
-                setFormData(prev => ({ ...prev, content: editor.getContent() }));
-              });
-            }
-          });
-        }}
-      />
+    <div className={blogStyles.page}>
+      <Script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" strategy="afterInteractive" />
+      {!plainEditorFallback && (
+        <Script
+          src={tinymceScriptSrc}
+          referrerPolicy="origin"
+          strategy="afterInteractive"
+          onLoad={initTinyMce}
+          onError={() => {
+            setPlainEditorFallback(true);
+            tinymceInitOnce.current = false;
+            setEditorReady(false);
+          }}
+        />
+      )}
 
       <div className={styles.header}>
         <h2 className={styles.pageTitle}>Blogs & News Management</h2>
       </div>
 
+      {!tinymceCloudKey && !plainEditorFallback ? (
+        <p className={blogStyles.editorNote}>
+          Rich text editor loads from Tiny&apos;s open-source package on jsDelivr (no API key). For Tiny Cloud features, add{" "}
+          <code>NEXT_PUBLIC_TINYMCE_API_KEY</code> to <code>.env</code> from{" "}
+          <a href="https://www.tiny.cloud/" target="_blank" rel="noopener noreferrer">
+            tiny.cloud
+          </a>
+          .
+        </p>
+      ) : null}
+
+      {plainEditorFallback ? (
+        <p className={blogStyles.editorNote} role="status">
+          TinyMCE could not load from the network. Using a plain HTML textarea — you can paste HTML from Word or other tools.
+        </p>
+      ) : null}
+
       <div className={styles.formCard}>
-        <h3 className={styles.cardTitle}>{editingId ? 'Edit Post' : 'Create New Post'}</h3>
+        <h3 className={styles.cardTitle}>{editingId ? "Edit Post" : "Create New Post"}</h3>
         <form onSubmit={handleSubmit}>
           <div className={styles.grid}>
-            <input type="text" placeholder="Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required className={styles.inputField} />
-            <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className={styles.inputField}>
-              <option value="Published">Published</option>
-              <option value="Draft">Draft</option>
-            </select>
-            <input type="text" placeholder="SEO Meta Title" value={formData.metaTitle} onChange={e => setFormData({...formData, metaTitle: e.target.value})} className={styles.inputField} />
-            <input type="text" placeholder="SEO Meta Description" value={formData.metaDesc} onChange={e => setFormData({...formData, metaDesc: e.target.value})} className={styles.inputField} />
+            <div className={styles.inputWrapper}>
+              <label className={blogStyles.docLabel}>Post Title</label>
+              <input
+                type="text"
+                placeholder="Enter a catchy title..."
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                required
+                className={styles.inputField}
+                style={{ width: '100%' }}
+              />
+            </div>
+            <div className={styles.inputWrapper}>
+              <label className={blogStyles.docLabel}>Status</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                className={styles.inputField}
+                style={{ width: '100%' }}
+              >
+                <option value="Published">Published</option>
+                <option value="Draft">Draft</option>
+              </select>
+            </div>
+            <div className={styles.inputWrapper}>
+              <label className={blogStyles.docLabel}>SEO Meta Title</label>
+              <input
+                type="text"
+                placeholder="Meta title for search engines"
+                value={formData.metaTitle}
+                onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                className={styles.inputField}
+                style={{ width: '100%' }}
+              />
+            </div>
+            <div className={styles.inputWrapper}>
+              <label className={blogStyles.docLabel}>SEO Meta Description</label>
+              <input
+                type="text"
+                placeholder="Short description for search results"
+                value={formData.metaDesc}
+                onChange={(e) => setFormData({ ...formData, metaDesc: e.target.value })}
+                className={styles.inputField}
+                style={{ width: '100%' }}
+              />
+            </div>
           </div>
 
-          <div style={{ margin: '20px 0' }}>
-            <label style={{ display: 'block', fontSize: '14px', marginBottom: '8px', fontWeight: 'bold' }}>
-              Import from Word Document (.docx)
+          <div className={blogStyles.importSection}>
+            <div className={blogStyles.docRow}>
+              <label className={blogStyles.docLabel}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                  Import from Word Document (.docx)
+                </span>
+              </label>
+              <input type="file" accept=".docx" onChange={handleDocxUpload} className={styles.inputField} disabled={isUploading} style={{ fontSize: '13px' }} />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: "20px" }}>
+            <label className={blogStyles.contentLabel} htmlFor="blog-editor">
+              Content
             </label>
-            <input type="file" accept=".docx" onChange={handleDocxUpload} className={styles.inputField} />
+            <textarea
+              id="blog-editor"
+              className={`${blogStyles.textareaFallback} ${
+                editorReady && !plainEditorFallback ? blogStyles.textareaHidden : ""
+              }`}
+              value={formData.content}
+              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+              readOnly={editorReady && !plainEditorFallback}
+            />
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontSize: '14px', marginBottom: '8px', fontWeight: 'bold' }}>Content</label>
-            <textarea id="blog-editor" defaultValue={formData.content}></textarea>
-          </div>
-          
-          <div style={{ marginBottom: '20px' }}>
-            {formData.image && <img src={formData.image} alt="Preview" style={{ width: '200px', borderRadius: '8px', marginBottom: '10px' }} />}
+          <div className={blogStyles.bannerRow}>
+            {formData.image ? (
+              <img
+                src={resolveBannerSrc(formData.image)}
+                alt=""
+                className={blogStyles.bannerPreview}
+                onError={(e) => {
+                  e.currentTarget.src = BANNER_FALLBACK;
+                }}
+              />
+            ) : null}
             <button type="button" onClick={() => setShowCropper(true)} className={styles.editButton}>
-              {formData.image ? 'Change Banner' : 'Upload Banner'}
+              {formData.image ? "Change banner" : "Upload banner"}
             </button>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button type="submit" className={styles.primaryButton}>{editingId ? 'Update Post' : 'Publish Post'}</button>
-            {editingId && <button type="button" onClick={() => { setEditingId(null); setFormData({ title: '', content: '', image: '', metaTitle: '', metaDesc: '', status: 'Published' }); if(window.tinymce) window.tinymce.activeEditor.setContent(''); }} className={styles.dangerButton}>Cancel</button>}
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <button type="submit" className={styles.primaryButton}>
+              {editingId ? "Update post" : "Publish post"}
+            </button>
+            {editingId ? (
+              <button type="button" onClick={cancelEdit} className={styles.dangerButton}>
+                Cancel edit
+              </button>
+            ) : null}
           </div>
         </form>
+      </div>
 
-        {showCropper && (
-          <ImageCropper 
-            onImageCropped={(url) => { setFormData({...formData, image: url}); setShowCropper(false); }} 
-            onCancel={() => setShowCropper(false)} 
+      {showCropper ? (
+        <div
+          className={blogStyles.cropOverlay}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Crop banner image"
+          onMouseDown={(e) => e.target === e.currentTarget && setShowCropper(false)}
+        >
+          <div className={blogStyles.cropDialog} onMouseDown={(e) => e.stopPropagation()}>
+            <ImageCropper
+              freeAspect
+              onImageCropped={(url) => {
+                setFormData((prev) => ({ ...prev, image: url }));
+                setShowCropper(false);
+              }}
+              onCancel={() => setShowCropper(false)}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      <section>
+        <div className={blogStyles.postsHeader}>
+          <h3 className={styles.cardTitle} style={{ margin: 0 }}>
+            Recent posts
+          </h3>
+          <input
+            type="search"
+            placeholder="Search posts…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className={`${styles.inputField} ${blogStyles.searchInput}`}
+            aria-label="Search blog posts"
           />
-        )}
-      </div>
+        </div>
 
-      <div className={styles.listSection} style={{ marginTop: '40px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h3 className={styles.cardTitle}>Recent Posts</h3>
-          <input type="text" placeholder="Search blogs..." value={search} onChange={e => setSearch(e.target.value)} className={styles.inputField} style={{ width: '300px' }} />
+        <div className={blogStyles.postsGrid}>
+          {filtered.map((blog) => (
+            <article key={blog.id} className={blogStyles.postCard}>
+              <div className={blogStyles.postMedia}>
+                <BlogThumb src={blog.image} />
+              </div>
+              <div className={blogStyles.postBody}>
+                <h4 className={blogStyles.postTitle}>{blog.title}</h4>
+                <div className={blogStyles.postMeta}>
+                  <span
+                    className={`${blogStyles.statusPill} ${
+                      (blog.status || "").toLowerCase() === "draft" ? blogStyles.statusPillDraft : ""
+                    }`}
+                  >
+                    {normalizeStatusForForm(blog.status)}
+                  </span>
+                  <time dateTime={blog.createdAt}>{new Date(blog.createdAt).toLocaleDateString()}</time>
+                </div>
+                <div className={blogStyles.postActions}>
+                  <button type="button" onClick={() => editBlog(blog)} className={styles.editButton}>
+                    Edit
+                  </button>
+                  <button type="button" onClick={() => deleteBlog(blog.id)} className={styles.dangerButton}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
-        <div className={styles.tableResponsive}>
-          <table className={styles.adminTable}>
-            <thead>
-              <tr>
-                <th>Banner</th>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {blogs.filter(b => b.title.toLowerCase().includes(search.toLowerCase())).map(blog => (
-                <tr key={blog.id}>
-                  <td><img src={blog.image || '/placeholder.jpg'} style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} alt="" /></td>
-                  <td>{blog.title}</td>
-                  <td><span className={styles.statusBadge}>{blog.status}</span></td>
-                  <td>{new Date(blog.createdAt).toLocaleDateString()}</td>
-                  <td className={styles.actions}>
-                    <button onClick={() => editBlog(blog)} className={styles.editButton}>Edit</button>
-                    <button onClick={() => deleteBlog(blog.id)} className={styles.dangerButton}>Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      </section>
+
+      <ConfirmModal 
+        isOpen={modal.isOpen}
+        title="Delete Blog Post?"
+        message="Are you sure you want to delete this blog post? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setModal({ isOpen: false, blogId: null })}
+        confirmText="Delete"
+        cancelText="Cancel"
+        danger
+      />
     </div>
   );
 }
