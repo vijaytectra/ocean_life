@@ -53,7 +53,7 @@ export default function LogoScroll() {
           gap: gap,
           width: "max-content",
           alignItems: "center",
-          animation: `scroll ${isMobile ? '50s' : '80s'} linear infinite`,
+          animation: `scroll ${isMobile ? '100s' : '160s'} linear infinite`,
         }}
       >
         {duplicatedImages.map((src, index) => (

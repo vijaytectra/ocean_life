@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  trailingSlash: true,
   serverExternalPackages: ['mammoth'],
   experimental: {
     cpus: 1,
