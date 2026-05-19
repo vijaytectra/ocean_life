@@ -26,7 +26,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* ✅ Google Tag Manager */}
         <Script defer id="gtm-script" strategy="beforeInteractive">
@@ -125,7 +125,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           })}
         </Script>
       </head>
-      <body className={`${roboto.variable}`}>
+      <body className={`${roboto.variable}`} suppressHydrationWarning>
         {/* ✅ Google Tag Manager (noscript) */}
         <noscript>
           <iframe

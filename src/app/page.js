@@ -16,7 +16,8 @@ import TestimonialHome from "../components/TestimonialHome";
 import LogoScroll from "../components/LogoScroll";
 import Newsletter from "../components/Newsletter";
 import Loader from "../components/Loader";
-import { FaUsers, FaRegHandshake, FaCalendarAlt, FaBuilding, FaHardHat } from "react-icons/fa";
+import { FaUsers, FaRegHandshake, FaCalendarAlt, FaBuilding } from "react-icons/fa";
+import { useCountUpOnView } from "@/hooks/useCountUpOnView";
 
 function HomeMain() {
   const pathname = usePathname(); // Get the current path
@@ -40,12 +41,6 @@ function HomeMain() {
   }, [pathname]); // Re-run when the path changes
 
   gsap.registerPlugin(ScrollTrigger);
-  const [counters, setCounters] = useState({
-    employees: 0,
-    projects: 0,
-    experience: 0,
-    ongoing: 0,
-  });
 
   const [counterTargets, setCounterTargets] = useState([
     { id: "employees", end: 650 },
@@ -78,7 +73,11 @@ function HomeMain() {
     fetchCounters();
   }, []);
 
-  const counterRef = useRef(null);
+  const { containerRef: counterRef, values: counters } = useCountUpOnView(
+    counterTargets,
+    { enabled: !loading }
+  );
+
   const dreamSectionRef = useRef(null);
 
   useEffect(() => {
@@ -105,43 +104,6 @@ function HomeMain() {
       );
     }
   }, [loading]);
-
-  useEffect(() => {
-    if (!loading) {
-      let ctx = gsap.context(() => {
-        ScrollTrigger.create({
-          trigger: counterRef.current,
-          start: "top 80%",
-          onEnter: () => startCounting(),
-        });
-      }, counterRef);
-
-      return () => {
-        ctx.revert();
-      };
-    }
-  }, [loading]);
-
-  const startCounting = () => {
-    const targets = counterTargets;
-
-    targets.forEach((target) => {
-      gsap.to(
-        { value: 0 },
-        {
-          value: target.end,
-          duration: 2,
-          ease: "power1.out",
-          onUpdate: function () {
-            setCounters((prev) => ({
-              ...prev,
-              [target.id]: Math.floor(this.targets()[0].value),
-            }));
-          },
-        }
-      );
-    });
-  };
 
   return (
     <main style={{ position: "relative", minHeight: "100vh" }}>

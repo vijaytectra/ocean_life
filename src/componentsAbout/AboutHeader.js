@@ -4,31 +4,30 @@ import Styles from "./AboutHeader.module.css";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import { useCountUpOnView } from "@/hooks/useCountUpOnView";
 
 gsap.registerPlugin(ScrollTrigger);
 
-function AboutHeader() {
-  const [counters, setCounters] = useState({
-    employees: 0,
-    projects: 0,
-    experience: 0,
-  });
+const COUNTER_TARGETS = [
+  { id: "employees", end: 650 },
+  { id: "projects", end: 550 },
+  { id: "experience", end: 28 },
+];
 
-  const counterRef = useRef(null);
+function AboutHeader() {
+  const { containerRef: counterRef, values: counters } =
+    useCountUpOnView(COUNTER_TARGETS);
+
   const textRef = useRef(null);
   const imageRefs = useRef([]);
+  const sectionRef = useRef(null);
 
   useEffect(() => {
-    let ctx = gsap.context(() => {
-      // Counter animation
-      ScrollTrigger.create({
-        trigger: counterRef.current,
-        start: "top 80%",
-        onEnter: () => startCounting(),
-      });
+    const scope = sectionRef.current;
+    if (!scope) return;
 
-      // Text and image animation
+    const ctx = gsap.context(() => {
       gsap.from(textRef.current, {
         opacity: 0,
         y: 50,
@@ -40,58 +39,34 @@ function AboutHeader() {
       });
 
       imageRefs.current.forEach((img, index) => {
+        if (!img) return;
         gsap.from(img, {
           opacity: 0,
           scale: 0.9,
           duration: 1,
-          delay: index * 0.2, // Staggered effect
+          delay: index * 0.2,
           scrollTrigger: {
             trigger: img,
             start: "top 80%",
           },
         });
       });
-    }, counterRef);
+    }, scope);
 
-    return () => {
-      ctx.revert();
-    };
+    return () => ctx.revert();
   }, []);
 
-  const startCounting = () => {
-    const targets = [
-      { id: "employees", end: 650 },
-      { id: "projects", end: 550 },
-      { id: "experience", end: 28 },
-    ];
-
-    targets.forEach((target) => {
-      gsap.to(
-        { value: 0 },
-        {
-          value: target.end,
-          duration: 2,
-          ease: "power1.out",
-          onUpdate: function () {
-            setCounters((prev) => ({
-              ...prev,
-              [target.id]: Math.floor(this.targets()[0].value),
-            }));
-          },
-        }
-      );
-    });
-  };
-
   return (
-    <section className={Styles.aboutHeader} ref={counterRef}>
-      <div className={Styles.rowAh}>
+    <section className={Styles.aboutHeader} ref={sectionRef}>
+      <div ref={counterRef} className={Styles.rowAh}>
         <div className={Styles.columnAboutHeader}>
           <img
-            ref={(el) => (imageRefs.current[0] = el)}
+            ref={(el) => {
+              imageRefs.current[0] = el;
+            }}
             className={Styles.imageOneAbout}
             src="/about/header-left.webp"
-            alt="image"
+            alt="Ocean Lifespaces workspace"
           />
         </div>
         <div className={Styles.columnAboutHeader}>
@@ -126,9 +101,11 @@ function AboutHeader() {
           <Image
             width={300}
             height={200}
-            ref={(el) => (imageRefs.current[1] = el)}
+            ref={(el) => {
+              imageRefs.current[1] = el;
+            }}
             src="/about/header-right.webp"
-            alt="image"
+            alt="Ocean Lifespaces project"
           />
         </div>
       </div>
