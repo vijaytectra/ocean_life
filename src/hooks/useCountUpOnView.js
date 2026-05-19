@@ -12,14 +12,15 @@ export function useCountUpOnView(targets, options = {}) {
   const containerRef = useRef(null);
   const hasAnimatedRef = useRef(false);
 
-  const initial = Object.fromEntries(
-    (targets || []).map((t) => [t.id, 0])
+  const [values, setValues] = useState(() =>
+    Object.fromEntries((targets || []).map((t) => [t.id, t.end ?? 0]))
   );
-  const [values, setValues] = useState(initial);
 
   const animate = useCallback(() => {
     if (hasAnimatedRef.current || !targets?.length) return;
     hasAnimatedRef.current = true;
+
+    setValues(Object.fromEntries(targets.map((t) => [t.id, 0])));
 
     targets.forEach((target) => {
       gsap.to(
