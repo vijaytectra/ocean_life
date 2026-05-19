@@ -21,11 +21,26 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 3vw;
 }
-.mainRowTeam .rowTeam:nth-child(2) img {
+.mainRowTeam .rowTeam:nth-child(2) img,
+.memberPhoto {
   width: 100%;
   aspect-ratio: 363 / 382;
   object-fit: cover;
   border-radius: 10px;
+  display: block;
+}
+
+.memberPlaceholder {
+  width: 100%;
+  aspect-ratio: 363 / 382;
+  background: #e2e8f0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: #64748b;
+  font-weight: bold;
 }
 .teamBox {
   display: flex;

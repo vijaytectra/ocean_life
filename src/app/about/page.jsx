@@ -5,6 +5,9 @@ import DriveUs from "../../componentsAbout/DriveUs";
 import Team from "../../componentsAbout/Team";
 import Accreditations from "../../componentsAbout/Accreditations";
 import Newsletter from "../../components/Newsletter";
+import { listEmployeesForPublic } from "@/lib/employees";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "About Us | Ocean Lifespaces India Pvt Ltd",
@@ -16,18 +19,18 @@ export const metadata = {
   },
 };
 
-function About() {
+export default async function About() {
+  const teamMembers = await listEmployeesForPublic();
+
   return (
     <>
       <AboutHeader />
       <AboutVision />
       <ServiceGrid />
       <DriveUs />
-      <Team />
+      <Team initialMembers={teamMembers} />
       <Accreditations />
       <Newsletter />
     </>
   );
 }
-
-export default About;

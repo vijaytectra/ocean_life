@@ -19,7 +19,7 @@ export default function AdminTeam() {
   }, []);
 
   const fetchMembers = async () => {
-    const res = await fetch('/api/employees');
+    const res = await fetch('/api/employees/');
     const data = await res.json();
     if (Array.isArray(data)) setMembers(data);
   };
