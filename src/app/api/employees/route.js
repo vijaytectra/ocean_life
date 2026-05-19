@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { listEmployees, serializeEmployees } from "@/lib/employees";
+import { FALLBACK_EMPLOYEES } from "@/lib/employeesShared";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const employees = serializeEmployees(await listEmployees());
+    const rows = await listEmployees();
+    const employees =
+      rows.length > 0 ? serializeEmployees(rows) : FALLBACK_EMPLOYEES;
     return NextResponse.json(employees, {
       headers: {
         "Cache-Control": "no-store, max-age=0, must-revalidate",

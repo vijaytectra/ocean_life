@@ -2,63 +2,48 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import styles from "./Team.module.css";
-import { resolveEmployeeImageSrc } from "@/lib/employees";
+import Image from "next/image";
+import {
+  FALLBACK_EMPLOYEES,
+  resolveEmployeeImageSrc,
+} from "@/lib/employeesShared";
 
-function MemberPhoto({ member }) {
-  const src = resolveEmployeeImageSrc(member.image);
-  const initial = member.name?.trim().charAt(0) || "?";
-
-  if (!src) {
-    return <PlaceholderAvatar initial={initial} />;
-  }
-
-  return (
-    <img
-      src={src}
-      alt={member.name || "Team member"}
-      className={styles.memberPhoto}
-      loading="lazy"
-      decoding="async"
-    />
-  );
-}
-
-function PlaceholderAvatar({ initial }) {
-  return (
-    <div className={styles.memberPlaceholder} aria-hidden>
-      {initial}
-    </div>
-  );
-}
+const PLACEHOLDER_STYLE = {
+  width: "100%",
+  height: "420px",
+  background: "#f1f5f9",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "5rem",
+  color: "#94a3b8",
+  fontWeight: "bold",
+};
 
 function Team({ initialMembers = [] }) {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const decRef = useRef(null);
   const memberRefs = useRef([]);
-  const [members, setMembers] = useState(initialMembers);
-  const [loadError, setLoadError] = useState(false);
+  const [members, setMembers] = useState(
+    () => (initialMembers?.length > 0 ? initialMembers : FALLBACK_EMPLOYEES)
+  );
 
   useEffect(() => {
-    if (initialMembers.length > 0) return;
-
     const fetchTeam = async () => {
       try {
         const res = await fetch("/api/employees/", { cache: "no-store" });
+        if (!res.ok) return;
         const data = await res.json();
-        if (!res.ok) {
-          setLoadError(true);
-          return;
-        }
         if (Array.isArray(data) && data.length > 0) {
           setMembers(data);
         }
-      } catch {
-        setLoadError(true);
+      } catch (e) {
+        console.error("Failed to fetch team:", e);
       }
     };
     fetchTeam();
-  }, [initialMembers.length]);
+  }, []);
 
   return (
     <section ref={sectionRef} className={styles.team}>
@@ -75,29 +60,42 @@ function Team({ initialMembers = [] }) {
             </p>
           </div>
           <div className={styles.rowTeam}>
-            {members.length === 0 ? (
-              <p className="description" style={{ gridColumn: "1 / -1", textAlign: "center" }}>
-                {loadError
-                  ? "Unable to load the management team right now. Please refresh the page."
-                  : "Management team profiles will appear here soon."}
-              </p>
-            ) : (
-              members.map((member, index) => (
+            {members.map((member, index) => {
+              const imageSrc = resolveEmployeeImageSrc(member.image);
+              const useUnoptimized =
+                imageSrc.startsWith("/api/") ||
+                imageSrc.includes("%20") ||
+                imageSrc.startsWith("/about/");
+
+              return (
                 <div
-                  key={member.id ?? `team-${index}`}
+                  key={member.id ?? index}
                   className={styles.teamBox}
                   ref={(el) => {
                     memberRefs.current[index] = el;
                   }}
                 >
-                  <MemberPhoto member={member} />
+                  {imageSrc ? (
+                    <Image
+                      width={400}
+                      height={420}
+                      src={imageSrc}
+                      alt={member.name}
+                      style={{ objectFit: "cover" }}
+                      unoptimized={useUnoptimized}
+                    />
+                  ) : (
+                    <div style={PLACEHOLDER_STYLE}>
+                      {member.name?.trim().charAt(0) || "?"}
+                    </div>
+                  )}
                   <div className={styles.contentTeamBox}>
                     <h3 className="h4">{member.name}</h3>
                     <p className="description">{member.role}</p>
                   </div>
                 </div>
-              ))
-            )}
+              );
+            })}
           </div>
         </div>
       </div>
