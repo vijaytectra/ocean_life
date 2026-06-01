@@ -1,0 +1,126 @@
+.hero {
+  padding-top: clamp(100px, 22vh, 22vh);
+  padding-bottom: clamp(48px, 8vh, 8vh);
+  background: linear-gradient(135deg, #0f2744 0%, #1a4a7a 50%, #0ea5e9 100%);
+  color: #fff;
+  text-align: center;
+}
+
+.heroInner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+
+.hero p {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.6;
+  opacity: 0.92;
+  margin: 0;
+}
+
+.why {
+  padding: clamp(48px, 8vh, 80px) 0;
+  background: #f8fafc;
+}
+
+.whyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.whyCard {
+  background: #fff;
+  padding: 28px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+}
+
+.whyCard h3 {
+  color: var(--color-dark-blue, #1a365d);
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.whyCard p {
+  color: #64748b;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.openings {
+  padding: clamp(48px, 8vh, 72px) 0;
+  background: #fff;
+}
+
+.openingsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.openingItem {
+  padding: 20px 22px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.openingItem:hover {
+  border-color: var(--color-orange, #ff7a00);
+  box-shadow: 0 8px 24px rgba(255, 122, 0, 0.12);
+}
+
+.openingItem h4 {
+  margin: 0 0 6px;
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.openingItem span {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.applySection {
+  padding: clamp(48px, 8vh, 80px) 0 clamp(64px, 10vh, 96px);
+  background: #f1f5f9;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 8px;
+  color: var(--color-dark-blue, #1a365d);
+}
+
+.sectionLead {
+  text-align: center;
+  color: #64748b;
+  max-width: 560px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.ctaLink {
+  display: inline-block;
+  margin-top: 24px;
+  color: var(--color-orange, #ff7a00);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ctaLink:hover {
+  text-decoration: underline;
+}

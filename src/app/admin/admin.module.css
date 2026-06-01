@@ -248,3 +248,135 @@
   gap: 10px;
   margin-top: 20px;
 }
+
+/* SEO Setup form */
+.seoSetupTitle {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--color-dark-blue, #00376a);
+  margin: 0 0 24px;
+}
+
+.seoForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.seoRow {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) 1fr;
+  gap: 16px 24px;
+  align-items: start;
+  width: 100%;
+}
+
+.seoLabel {
+  font-weight: 500;
+  color: #334155;
+  padding-top: 12px;
+}
+
+.seoRequired {
+  color: #dc2626;
+}
+
+.seoField {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  color: #111;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.seoField:focus {
+  outline: none;
+  border-color: var(--color-orange, #f5831f);
+  box-shadow: 0 0 0 2px rgba(245, 131, 31, 0.2);
+}
+
+.seoActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.saveButton {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: #15803d;
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.seoMessage {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #ecfdf5;
+  color: #166534;
+  font-size: 0.95rem;
+}
+
+.seoTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.seoTable th,
+.seoTable td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.seoTable th {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.seoStatusActive {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  background: #dcfce7;
+  color: #166534;
+  text-transform: capitalize;
+}
+
+.seoStatusInactive {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  background: #fee2e2;
+  color: #991b1b;
+  text-transform: capitalize;
+}
+
+@media (max-width: 768px) {
+  .seoRow {
+    grid-template-columns: 1fr;
+  }
+
+  .seoLabel {
+    padding-top: 0;
+  }
+}

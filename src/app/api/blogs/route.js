@@ -9,23 +9,37 @@ import {
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const cacheHeaders = {
+    "Cache-Control": "no-store, max-age=0, must-revalidate",
+  };
+
   try {
     if (isMysqlBlogEnabled()) {
       const blogs = await mysqlListBlogs();
-      return NextResponse.json(blogs, {
-        headers: {
-          "Cache-Control": "no-store, max-age=0, must-revalidate",
-        },
-      });
+      return NextResponse.json(blogs, { headers: cacheHeaders });
     }
     const blogs = await prisma.$queryRaw`SELECT * FROM Blog ORDER BY createdAt DESC`;
     return new NextResponse(JSON.stringify(blogs), {
       headers: {
-        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        ...cacheHeaders,
         "Content-Type": "application/json",
       },
     });
   } catch (error) {
+    if (isMysqlBlogEnabled()) {
+      try {
+        const blogs = await prisma.$queryRaw`SELECT * FROM Blog ORDER BY createdAt DESC`;
+        return new NextResponse(JSON.stringify(blogs), {
+          headers: {
+            ...cacheHeaders,
+            "Content-Type": "application/json",
+          },
+        });
+      } catch {
+        /* fall through */
+      }
+    }
+    console.error("GET /api/blogs:", error);
     return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
   }
 }

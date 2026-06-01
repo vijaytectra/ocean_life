@@ -57,7 +57,7 @@ async function main() {
     "/logo/workday.jpeg", "/logo/alldigi.svg", "/logo/accenture.jpeg",
     "/logo/rsp.jpeg", "/logo/nametech.jpeg", "/logo/IIT HYDERABAD.jpeg",
     "/logo/sifi.jpeg", "/logo/st_telemedia.webp", "/logo/IRON MOUNTAIN.jpeg",
-    "/logo/CITY UNION BANK.jpeg",
+    "/logo/CITY UNION BANK.png",
   ];
 
   const currentCount = await prisma.clientLogo.count();

@@ -19,6 +19,7 @@ const MenuItems = [
   { name: "Projects", path: "/projects" },
   { name: "Clients", path: "/clients" },
   { name: "Our Partners", path: "/partners" },
+  { name: "Careers", path: "/careers" },
   { name: "Blogs", path: "/blogs" },
 ];
 const MobileMenuItems = [
@@ -28,6 +29,7 @@ const MobileMenuItems = [
   { name: "Projects", path: "/projects" },
   { name: "Clients", path: "/clients" },
   { name: "Our Partners", path: "/partners" },
+  { name: "Careers", path: "/careers" },
   { name: "Blogs", path: "/blogs" },
   { name: "News", path: "/news" },
   { name: "Contact Us", path: "/contact" },

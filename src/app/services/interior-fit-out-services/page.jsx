@@ -2,6 +2,7 @@ import RecentProjects from "../../../componentsInnerServices/RecentProjects";
 import HeaderInnerServices from "../../../componentsInnerServices/HeaderInnerServices";
 import DynamicCategoryServices from "../../../componentsInnerServices/DynamicCategoryServices";
 import Newsletter from "../../../components/Newsletter";
+import { INTERIOR_FIT_OUT_RECENT_PROJECTS } from "@/data/projectsGallery";
 
 export const metadata = {
   title: "Interior Fit-Out Services in Chennai - Ocean Lifespaces Pvt Ltd",
@@ -23,39 +24,6 @@ function FitOuts() {
     { img: "/services/blocks.webp", text: "Design & Build Services" },
   ];
 
-  const page4Projects = [
-    // {
-    //   imgSrc: "/services/genysis.webp",
-    //   title: "Genysis",
-    //   link: "#",
-    // },
-    // {
-    //   imgSrc: "/services/tafe.webp",
-    //   title: "Tafe",
-    //   link: "#",
-    // },
-    // {
-    //   imgSrc: "/services/daimler.webp",
-    //   title: "Daimler",
-    //   link: "#",
-    // },
-    {
-      imgSrc: "/services/swissre.webp",
-      title: "SwissRe",
-      link: "/projects/swiss-re-200000-sq-ft-interior-works-bangalore",
-    },
-    {
-      imgSrc: "/services/shell.webp",
-      title: "Shell",
-      link: "/projects/shell",
-    },
-    {
-      imgSrc: "/services/siliconlab.webp",
-      title: "Silicon Lab",
-      link: "/projects/silicon-lab-hyderabad",
-    },
-  ];
-
   return (
     <>
       <HeaderInnerServices
@@ -72,7 +40,12 @@ function FitOuts() {
         transformationText="Enhance your space with our expert interior fit-out solutions, seamlessly blending style and functionality to create environments that reflect your vision and unique aesthetic."
       />
       <DynamicCategoryServices categoryType="Interior fit-out services" />
-      <RecentProjects projects={page4Projects} />
+      <RecentProjects
+        projects={INTERIOR_FIT_OUT_RECENT_PROJECTS}
+        eyebrow="Interior fit-out portfolio"
+        title="Recent Projects"
+        description="Corporate campuses, offices, and workspace transformations delivered across South India — scroll through our complete interior fit-out work."
+      />
       <Newsletter />
     </>
   );

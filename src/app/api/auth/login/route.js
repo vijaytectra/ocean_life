@@ -7,10 +7,13 @@ const prisma = new PrismaClient();
 export async function POST(request) {
   try {
     const { username, password } = await request.json();
+    const loginId = (username || "").trim();
 
-    // Find user
-    let user = await prisma.user.findUnique({
-      where: { username }
+    // Find user by username OR email (UI label currently says "Email")
+    let user = await prisma.user.findFirst({
+      where: {
+        OR: [{ username: loginId }, { email: loginId }],
+      },
     });
 
     // If no users at all, create this one as the first admin (convenience for setup)
@@ -18,7 +21,7 @@ export async function POST(request) {
     if (userCount === 0) {
       user = await prisma.user.create({
         data: {
-          username,
+          username: loginId || "admin",
           password // In a real app, hash this!
         }
       });

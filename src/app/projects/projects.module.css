@@ -1,21 +1,38 @@
 .projects {
   position: relative;
+  z-index: 0;
   width: 100%;
   height: 100%;
-  padding: clamp(40px, 5vh, 5vh) 0;
-  padding-top: clamp(100px, 20vh, 20vh);
+  padding: clamp(24px, 4vh, 40px) 0;
+  padding-top: clamp(88px, 14vh, 120px);
+  overflow-x: clip;
 }
 .rowMainProjects {
   position: relative;
   display: flex;
   flex-direction: column;
-  row-gap: clamp(20px, 5vh, 5vh);
+  row-gap: clamp(8px, 1.5vh, 16px);
   width: 100%;
   height: 100%;
+  padding: 0 clamp(12px, 4vw, 0);
 }
 .rowMainProjects h1 {
   color: var(--color-dark-blue);
   align-self: center;
+  margin-bottom: 0;
+  text-align: center;
+  font-size: clamp(2rem, 5.5vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  padding: 0 clamp(8px, 3vw, 16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rowMainProjects h1 {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 .row1Projects,
 .row2Projects,
@@ -40,6 +57,25 @@
 .columnProjects {
   position: relative;
   overflow: hidden;
+}
+
+.columnProjects img {
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.columnProjects[data-project-card] {
+  clip-path: inset(0 0 100% 0 round clamp(10px, 1vw, 1vw));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .columnProjects[data-project-card] {
+    clip-path: inset(0 0 0 0 round clamp(10px, 1vw, 1vw));
+  }
+
+  .columnProjects img {
+    transform: none !important;
+  }
 }
 
 .columnProjects::before {
@@ -113,6 +149,27 @@
   height: 100%;
 }
 
+@media (max-width: 900px) {
+  .projects {
+    padding-top: clamp(80px, 12vh, 100px);
+  }
+
+  .rowMainProjects {
+    row-gap: clamp(12px, 2vh, 20px);
+  }
+}
+
+@media (max-width: 640px) {
+  .projects {
+    padding-top: clamp(72px, 11vh, 88px);
+    padding-bottom: clamp(16px, 3vh, 24px);
+  }
+
+  .rowMainProjects h1 {
+    font-size: clamp(1.75rem, 7vw, 2.25rem);
+  }
+}
+
 /* media-query-css */
 @media only screen and (max-width: 600px) {
   .row1Projects,
@@ -129,6 +186,6 @@
     row-gap: 8px;
   }
   .rowMainProjects {
-    row-gap: 30px;
+    row-gap: 24px;
   }
 }

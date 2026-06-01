@@ -46,7 +46,7 @@ export default function Newsletter() {
     }
 
     try {
-      const response = await fetch("/api/newsletter", {
+      const response = await fetch("/api/newsletter/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,11 +55,14 @@ export default function Newsletter() {
       });
 
       const data = await response.json();
-      if (response.ok) {
-        setMessage(data.message);
+      if (response.ok && data.success) {
+        setMessage(
+          data.message ||
+            "Thank you! You have successfully subscribed to our newsletter."
+        );
         setEmail("");
       } else {
-        setMessage(data.message || "Something went wrong");
+        setMessage(data.error || data.message || "Something went wrong");
       }
     } catch (error) {
       setMessage("Failed to submit. Please try again.");

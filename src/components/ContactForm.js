@@ -3,7 +3,67 @@
 import { useState, useEffect } from "react";
 import styles from "./ContactForm.module.css";
 
+const FORM_COPY = {
+  default: {
+    nameLabel: "Name",
+    namePlaceholder: "Enter your full name",
+    emailLabel: "Email",
+    emailPlaceholder: "Enter your email address",
+    phoneLabel: "Phone",
+    phonePlaceholder: "Enter your mobile number",
+    subjectLabel: "Subject",
+    subjectPlaceholder: "Enter the subject of your message",
+    messageLabel: "Message",
+    messagePlaceholder: "Enter your message or project details",
+    submitLabel: "Send Message",
+    successTitle: "Submitted Successfully",
+    successBody:
+      "Thank you for reaching out. Our team will get back to you shortly.",
+  },
+  "Floating Enquiry": {
+    nameLabel: "Name",
+    namePlaceholder: "Enter your full name",
+    emailLabel: "Email",
+    emailPlaceholder: "Enter your email address",
+    phoneLabel: "Phone",
+    phonePlaceholder: "Enter your mobile number",
+    subjectLabel: "Subject",
+    subjectPlaceholder: "Enter your enquiry subject",
+    messageLabel: "Message",
+    messagePlaceholder: "Describe your requirement or question",
+    submitLabel: "Submit Enquiry",
+    successTitle: "Enquiry Submitted",
+    successBody:
+      "Thank you. We have received your enquiry and will respond as soon as possible.",
+  },
+  Careers: {
+    subjectLabel: "Position",
+    subjectPlaceholder: "Enter the position you are applying for",
+    messageLabel: "Details",
+    messagePlaceholder: "Enter additional details about your application",
+  },
+  "Schedule Visit": {
+    subjectLabel: "Visit Type",
+    subjectPlaceholder: "Enter purpose of your site visit",
+    messageLabel: "Preferred Details",
+    messagePlaceholder: "Enter preferred date, time, and location",
+  },
+  "Joint Venture": {
+    subjectLabel: "Partnership Type",
+    subjectPlaceholder: "Enter type of joint venture or collaboration",
+    messageLabel: "Proposal",
+    messagePlaceholder: "Enter details of your partnership proposal",
+  },
+};
+
+function getFormCopy(type) {
+  const base = FORM_COPY.default;
+  const extra = FORM_COPY[type] || {};
+  return { ...base, ...extra };
+}
+
 const ContactForm = ({ type = "Contact", title = "Get in Touch" }) => {
+  const copy = getFormCopy(type);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,8 +89,7 @@ const ContactForm = ({ type = "Contact", title = "Get in Touch" }) => {
     setError(null);
 
     try {
-      // We'll add the 'type' to the request body so the API knows what kind of enquiry it is
-      const response = await fetch("/api/contact", {
+      const response = await fetch("/api/contact/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,49 +131,64 @@ const ContactForm = ({ type = "Contact", title = "Get in Touch" }) => {
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.fieldGroup}>
           <div className={styles.inputWrapper}>
-            <label className={styles.label}>Full Name</label>
+            <label className={styles.label} htmlFor="contact-name">
+              {copy.nameLabel} *
+            </label>
             <input
+              id="contact-name"
               type="text"
               name="name"
-              placeholder="e.g. John Doe"
+              placeholder={copy.namePlaceholder}
               value={formData.name}
               onChange={handleChange}
               required
+              autoComplete="name"
               className={styles.inputField}
             />
           </div>
           <div className={styles.inputWrapper}>
-            <label className={styles.label}>Email Address</label>
+            <label className={styles.label} htmlFor="contact-email">
+              {copy.emailLabel} *
+            </label>
             <input
+              id="contact-email"
               type="email"
               name="email"
-              placeholder="e.g. john@example.com"
+              placeholder={copy.emailPlaceholder}
               value={formData.email}
               onChange={handleChange}
               required
+              autoComplete="email"
               className={styles.inputField}
             />
           </div>
         </div>
         <div className={styles.fieldGroup}>
           <div className={styles.inputWrapper}>
-            <label className={styles.label}>Phone Number</label>
+            <label className={styles.label} htmlFor="contact-phone">
+              {copy.phoneLabel} *
+            </label>
             <input
+              id="contact-phone"
               type="tel"
               name="phone"
-              placeholder="e.g. +91 98765 43210"
+              placeholder={copy.phonePlaceholder}
               value={formData.phone}
               onChange={handleChange}
               required
+              autoComplete="tel"
               className={styles.inputField}
             />
           </div>
           <div className={styles.inputWrapper}>
-            <label className={styles.label}>Subject</label>
+            <label className={styles.label} htmlFor="contact-subject">
+              {copy.subjectLabel} *
+            </label>
             <input
+              id="contact-subject"
               type="text"
               name="subject"
-              placeholder={type === "Careers" ? "Position Applied For" : "How can we help?"}
+              placeholder={copy.subjectPlaceholder}
               value={formData.subject}
               onChange={handleChange}
               required
@@ -123,17 +197,20 @@ const ContactForm = ({ type = "Contact", title = "Get in Touch" }) => {
           </div>
         </div>
         <div className={styles.inputWrapper}>
-          <label className={styles.label}>Message / Details</label>
+          <label className={styles.label} htmlFor="contact-message">
+            {copy.messageLabel} *
+          </label>
           <textarea
+            id="contact-message"
             name="message"
-            placeholder="Tell us more about your requirement..."
+            placeholder={copy.messagePlaceholder}
             value={formData.message}
             onChange={handleChange}
             required
             className={styles.textareaField}
           />
         </div>
-        
+
         <button
           type="submit"
           className={styles.submitButton}
@@ -146,10 +223,10 @@ const ContactForm = ({ type = "Contact", title = "Get in Touch" }) => {
               <span className={styles.dot}></span>
             </span>
           ) : (
-            "Send Message"
+            copy.submitLabel
           )}
         </button>
-        
+
         {error && <p className={styles.errorMessage}>{error}</p>}
       </form>
 
@@ -157,9 +234,15 @@ const ContactForm = ({ type = "Contact", title = "Get in Touch" }) => {
         <div className={styles.popupOverlay}>
           <div className={styles.popup}>
             <div className={styles.successIcon}>✓</div>
-            <h3>Submitted Successfully!</h3>
-            <p>Thank you for reaching out. Our team will get back to you shortly.</p>
-            <button onClick={() => setSubmitted(false)} className={styles.closeBtn}>Close</button>
+            <h3>{copy.successTitle}</h3>
+            <p>{copy.successBody}</p>
+            <button
+              type="button"
+              onClick={() => setSubmitted(false)}
+              className={styles.closeBtn}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

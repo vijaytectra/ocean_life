@@ -48,8 +48,12 @@ function selectExpr() {
   ].join(", ");
 }
 
+/** True only when a real MySQL URL is configured (not .env placeholders). */
 export function isMysqlBlogEnabled() {
-  return Boolean(process.env.MYSQL_BLOG_URL?.trim());
+  const url = process.env.MYSQL_BLOG_URL?.trim();
+  if (!url) return false;
+  const placeholderPattern = /USER:PASSWORD@HOST|YOUR_DATABASE|mysql:\/\/user:pass@host/i;
+  return !placeholderPattern.test(url);
 }
 
 export function getMysqlBlogPool() {

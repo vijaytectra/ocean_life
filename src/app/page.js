@@ -45,7 +45,7 @@ function HomeMain() {
   const [counterTargets, setCounterTargets] = useState([
     { id: "employees", end: 650 },
     { id: "projects", end: 60 },
-    { id: "experience", end: 28 },
+    { id: "experience", end: 30 },
     { id: "ongoing", end: 550 },
   ]);
 
@@ -62,7 +62,7 @@ function HomeMain() {
           setCounterTargets([
             { id: "employees", end: findVal("counter-employees", 650) },
             { id: "projects", end: findVal("counter-projects", 60) },
-            { id: "experience", end: findVal("counter-experience", 28) },
+            { id: "experience", end: 30 },
             { id: "ongoing", end: findVal("counter-ongoing", 550) },
           ]);
         }

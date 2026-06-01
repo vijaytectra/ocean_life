@@ -101,3 +101,21 @@ model ClientLogo {
   category  String   @default("corporate") // 'corporate' or 'ongoing'
   createdAt DateTime @default(now())
 }
+
+model CareerApplication {
+  id          Int      @id @default(autoincrement())
+  fullName    String
+  email       String
+  phone       String
+  position    String
+  experience  String?
+  location    String?
+  linkedin    String?
+  coverLetter String?
+  resumePath  String
+  resumeName  String?
+  status      String   @default("new") // new, screening, interview, offered, rejected, hired
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

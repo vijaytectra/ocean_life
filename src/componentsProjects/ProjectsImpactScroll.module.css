@@ -1,0 +1,438 @@
+/* Dentsu Creative–style: white editorial, masked lines, green metrics */
+
+.section {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  margin: clamp(12px, 2vh, 24px) 0 clamp(28px, 4vh, 40px);
+  padding: clamp(20px, 3vh, 32px) 0 clamp(24px, 4vh, 36px);
+  overflow: hidden;
+}
+
+.header {
+  text-align: center;
+  padding: 0 clamp(20px, 5vw, 48px);
+  margin-bottom: clamp(20px, 2.5vh, 28px);
+  opacity: 1;
+}
+
+.header .eyebrow {
+  font-family: "Roboto", system-ui, sans-serif;
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #2d6a4f;
+  margin: 0;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Two-up row: Sustainable + Built at Scale (like Dentsu Green Business | Energy) */
+.topPair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 4vw, 48px);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 48px);
+  border-bottom: 1px solid #e4e9ed;
+  padding-bottom: clamp(28px, 4vh, 40px);
+  margin-bottom: clamp(28px, 4vh, 40px);
+}
+
+.topPair .chapter {
+  min-height: auto;
+  padding: 0;
+}
+
+.topPair .visualCol {
+  display: none;
+}
+
+.topPair .chapterInner {
+  grid-template-columns: 1fr;
+}
+
+/* Single chapter block */
+.chapter {
+  position: relative;
+  min-height: auto;
+  display: flex;
+  align-items: center;
+  padding: clamp(20px, 3vh, 32px) clamp(20px, 5vw, 48px);
+  box-sizing: border-box;
+}
+
+.chapter.wide,
+.chapter.hero {
+  max-width: 1180px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.chapter.hero {
+  min-height: auto;
+  padding-bottom: clamp(28px, 4vh, 40px);
+}
+
+.chapterInner {
+  display: grid;
+  grid-template-columns: minmax(0, 46%) 1fr;
+  gap: clamp(20px, 3vw, 36px);
+  align-items: center;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.textCol {
+  position: relative;
+  z-index: 2;
+}
+
+/* Masked line reveal (Dentsu text effect) */
+.maskLine {
+  overflow: hidden;
+  line-height: 1.2;
+}
+
+.maskInner {
+  display: block;
+  will-change: transform;
+}
+
+.title {
+  font-family: "Roboto", system-ui, sans-serif;
+  font-size: clamp(1.35rem, 2.8vw, 2rem);
+  font-weight: 500;
+  color: #3d4f5f;
+  letter-spacing: 0.01em;
+  margin: 0 0 clamp(10px, 1.5vh, 14px);
+  line-height: 1.25;
+}
+
+.rule {
+  height: 1px;
+  width: min(100%, 320px);
+  background: #c5d0d8;
+  margin-bottom: clamp(14px, 2vh, 20px);
+  transform-origin: left center;
+}
+
+.metricGroup {
+  margin-bottom: clamp(12px, 2vh, 18px);
+}
+
+.metricRow {
+  display: flex;
+  align-items: baseline;
+  margin: 0;
+  line-height: 1;
+  gap: 2px;
+}
+
+.metricNum {
+  font-family: "Roboto", system-ui, sans-serif;
+  font-size: clamp(3.25rem, 10vw, 5.75rem);
+  font-weight: 500;
+  color: #2d6a4f;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.metricSuffix {
+  font-size: clamp(1.85rem, 5.5vw, 3.25rem);
+  font-weight: 500;
+  color: #2d6a4f;
+}
+
+.metricAnim {
+  display: block;
+}
+
+.metricLabel {
+  margin: clamp(10px, 1.5vh, 14px) 0 0;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  color: #3d4f5f;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  opacity: 1;
+  visibility: visible;
+}
+
+.metricNote {
+  margin-top: clamp(8px, 1.2vh, 12px);
+  font-size: clamp(0.9rem, 1.4vw, 1rem);
+  font-style: italic;
+  font-weight: 500;
+  color: #5f7180;
+  line-height: 1.45;
+  opacity: 1;
+  visibility: visible;
+}
+
+.secondaryMetric .metricLabel {
+  margin-top: clamp(8px, 1.2vh, 10px);
+}
+
+.secondaryMetric {
+  margin-bottom: clamp(24px, 4vh, 32px);
+}
+
+.secondaryMetric .metricNum {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+}
+
+.bodyCopy {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 1vh, 10px);
+  margin-top: clamp(8px, 1.5vh, 12px);
+}
+
+.bodyText {
+  font-family: "Roboto", system-ui, sans-serif;
+  font-size: clamp(0.95rem, 1.65vw, 1.08rem);
+  line-height: 1.65;
+  color: #5f7180;
+  margin: 0;
+  max-width: 38ch;
+}
+
+.visualCol {
+  position: relative;
+  height: 100%;
+  min-height: clamp(320px, 50vh, 520px);
+}
+
+.visualHero {
+  min-height: clamp(360px, 55vh, 580px);
+}
+
+.imageFrame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #eef1f4;
+  clip-path: inset(0% 0% 100% 0%);
+  will-change: clip-path;
+}
+
+.hero .imageFrame {
+  border-radius: 0;
+}
+
+.split .imageFrame,
+.wide .imageFrame {
+  border-radius: 4px;
+}
+
+.imageInner {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.image {
+  object-fit: cover;
+  object-position: center;
+}
+
+.imagePlaceholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    #eef1f4 0%,
+    #e2e8ed 50%,
+    #eef1f4 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.chapterDivider {
+  height: 1px;
+  background: #e4e9ed;
+  margin-top: clamp(20px, 3vh, 28px);
+}
+
+/* Hero: image overlaps bottom like Dentsu reference */
+.hero .chapterInner {
+  grid-template-columns: 1fr minmax(0, 48%);
+  align-items: end;
+}
+
+.hero .visualCol {
+  position: relative;
+  align-self: end;
+}
+
+.hero .imageFrame {
+  position: relative;
+  min-height: clamp(380px, 58vh, 620px);
+  box-shadow: 0 24px 48px rgba(0, 55, 106, 0.1);
+}
+
+@media (max-width: 1200px) {
+  .topPair {
+    gap: clamp(28px, 5vw, 40px);
+    padding-left: clamp(16px, 4vw, 32px);
+    padding-right: clamp(16px, 4vw, 32px);
+  }
+
+  .chapter {
+    padding-left: clamp(16px, 4vw, 32px);
+    padding-right: clamp(16px, 4vw, 32px);
+  }
+
+  .header {
+    padding-left: clamp(16px, 4vw, 32px);
+    padding-right: clamp(16px, 4vw, 32px);
+  }
+}
+
+@media (max-width: 900px) {
+  .section {
+    margin: clamp(8px, 2vh, 16px) 0 clamp(20px, 3vh, 28px);
+    padding: clamp(16px, 2.5vh, 24px) 0;
+  }
+
+  .topPair {
+    grid-template-columns: 1fr;
+    gap: clamp(36px, 6vh, 48px);
+    padding-left: clamp(12px, 4vw, 20px);
+    padding-right: clamp(12px, 4vw, 20px);
+    padding-bottom: clamp(24px, 4vh, 32px);
+    margin-bottom: clamp(24px, 4vh, 32px);
+  }
+
+  .chapterInner {
+    grid-template-columns: 1fr;
+    gap: clamp(18px, 3vh, 24px);
+  }
+
+  .visualCol {
+    order: -1;
+    min-height: clamp(220px, 38vh, 320px);
+  }
+
+  .hero .chapterInner {
+    grid-template-columns: 1fr;
+  }
+
+  .hero .imageFrame {
+    min-height: clamp(240px, 40vh, 360px);
+  }
+
+  .chapter {
+    min-height: auto;
+    padding: clamp(16px, 3vh, 24px) clamp(12px, 4vw, 20px);
+  }
+
+  .title {
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+  }
+
+  .metricNum {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+
+  .bodyText {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .topPair {
+    gap: clamp(28px, 5vh, 40px);
+  }
+
+  .metricSuffix {
+    font-size: clamp(1.35rem, 6vw, 2rem);
+  }
+
+  .secondaryMetric .metricNum {
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .visualCol,
+  .visualHero {
+    min-height: clamp(200px, 32vh, 280px);
+  }
+
+  .hero .imageFrame {
+    min-height: clamp(220px, 36vh, 300px);
+  }
+}
+
+@media (max-width: 480px) {
+  .header .eyebrow {
+    letter-spacing: 0.16em;
+    font-size: 0.75rem;
+  }
+
+  .metricLabel {
+    font-size: 0.9rem;
+  }
+
+  .metricNote {
+    font-size: 0.85rem;
+  }
+
+  .rule {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .metricLabel {
+    font-size: 0.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header .eyebrow,
+  .metricLabel,
+  .metricNote {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .metricAnim,
+  .secondaryMetric .metricAnim {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+
+  .maskInner {
+    transform: none !important;
+  }
+
+  .imageFrame {
+    clip-path: inset(0 0 0 0) !important;
+  }
+
+  .imageInner {
+    transform: none !important;
+  }
+
+  .imagePlaceholder {
+    animation: none;
+  }
+
+  .rule {
+    transform: none !important;
+  }
+}

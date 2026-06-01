@@ -1,0 +1,84 @@
+.imageWrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #e8ecef;
+  aspect-ratio: 16 / 9;
+  clip-path: inset(0% 0% 100% 0% round 12px);
+  opacity: 1;
+  will-change: clip-path;
+}
+
+.imageWrap[data-revealed="true"] {
+  clip-path: inset(0% 0% 0% 0% round 12px);
+}
+
+.imageShade {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    rgba(0, 55, 106, 0.08) 100%
+  );
+}
+
+.mediaInner {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform, filter;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    #eef1f4 0%,
+    #e2e8ed 45%,
+    #eef1f4 90%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.revealBlock {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .imageWrap {
+    clip-path: inset(0% 0% 0% 0% round 12px) !important;
+  }
+
+  .mediaInner {
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .placeholder {
+    animation: none;
+  }
+}

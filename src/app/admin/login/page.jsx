@@ -18,7 +18,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('/api/auth/login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -43,7 +43,11 @@ export default function LoginPage() {
       display: 'flex', 
       justifyContent: 'center', 
       alignItems: 'center', 
-      minHeight: '100vh', 
+      minHeight: '100dvh',
+      width: '100vw',
+      position: 'fixed',
+      inset: 0,
+      margin: 0,
       background: '#d1d5db',
       padding: '20px',
       fontFamily: 'system-ui, -apple-system, sans-serif'

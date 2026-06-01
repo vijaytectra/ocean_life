@@ -156,6 +156,11 @@ export default function AdminLayout({ children }) {
                   Enquiries & Forms
                 </Link>
               </div>
+              <div className={styles.navItem}>
+                <Link href="/admin/careers" className={navLinkClass('/admin/careers')} aria-current={isActiveNav('/admin/careers') ? 'page' : undefined}>
+                  Careers (ATS)
+                </Link>
+              </div>
             </>
           )}
           

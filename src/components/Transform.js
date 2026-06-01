@@ -4,7 +4,6 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Image from "next/image";
 import Styles from "./Transform.module.css";
-import Link from "next/link";
 
 // Register ScrollTrigger
 if (typeof window !== "undefined") {
@@ -84,13 +83,16 @@ function Transform() {
               vision to life with our commitment to quality craftsmanship and
               client satisfaction.
             </p>
-            <Link
-              href="/contact"
+            <a
+              href="https://oceaninfra.in/"
               className={Styles.linkTransform}
               ref={linkRef}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Learn more about Ocean real estate at oceaninfra.in"
             >
               Learn More
-            </Link>
+            </a>
           </div>
           <div className={Styles.columnTransform}>
             <Image

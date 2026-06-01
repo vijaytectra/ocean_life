@@ -6,7 +6,7 @@
   padding: clamp(10px, 0.7vw, 0.7vw) clamp(20px, 2vw, 2vw);
   border-radius: clamp(10px, 1vw, 1vw);
   position: fixed;
-  z-index: 99;
+  z-index: 500;
   background: #fff;
   width: 94%;
   left: 3%;
@@ -14,7 +14,7 @@
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 .scrolled {
-  background: rgba(255, 255, 255, 0.5);
+  background: #ffffff;
 }
 .logo {
   width: clamp(100px, 10vw, 10vw);
@@ -96,7 +96,7 @@
   width: 100vw;
   height: 100vh;
   background: var(--color-blue);
-  z-index: 100;
+  z-index: 501;
   transition: right 0.5s ease;
   padding: 5vw;
 }

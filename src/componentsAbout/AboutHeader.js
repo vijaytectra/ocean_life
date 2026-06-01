@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 const COUNTER_TARGETS = [
   { id: "employees", end: 650 },
   { id: "projects", end: 550 },
-  { id: "experience", end: 28 },
+  { id: "experience", end: 30 },
 ];
 
 function AboutHeader() {
