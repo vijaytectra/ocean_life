@@ -18,7 +18,9 @@ function Projects() {
     <section className={styles.projects}>
       <div className="container">
         <div className={styles.rowMainProjects}>
-          <ProjectsPageHero className="h2">Our Recent Projects</ProjectsPageHero>
+          <ProjectsPageHero className={styles.pageTitle}>
+            Our Recent Projects
+          </ProjectsPageHero>
           <ProjectsImpactScroll />
         </div>
       </div>

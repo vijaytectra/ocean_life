@@ -80,28 +80,47 @@ const ServiceGrid = () => {
   }, []);
 
   useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
     const context = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      });
+      gsap.fromTo(
+        [heading1Ref.current, headingRef.current].filter(Boolean),
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.75,
+          stagger: 0.08,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 86%",
+            once: true,
+          },
+          clearProps: "opacity",
+        }
+      );
 
-      tl.from([heading1Ref.current, headingRef.current], {
-        opacity: 0,
-        y: 30,
-        duration: 0.8,
-        stagger: 0.2,
-      });
-
-      tl.from(sliderRef.current, {
-        opacity: 0,
-        y: 50,
-        duration: 1,
-      }, "-=0.4");
-    }, sectionRef);
+      if (sliderRef.current) {
+        gsap.fromTo(
+          sliderRef.current,
+          { opacity: 0, y: 32 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 86%",
+              once: true,
+            },
+            clearProps: "opacity",
+          }
+        );
+      }
+    }, section);
 
     return () => context.revert();
   }, []);

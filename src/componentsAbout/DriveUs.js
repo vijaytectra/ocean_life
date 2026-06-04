@@ -1,94 +1,76 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import { useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { isValidScrollTriggerTarget } from "@/lib/scrollTriggerSafe";
+import { revealOnScroll } from "@/lib/aboutAnimations";
 import styles from "./DriveUs.module.css";
 import ImageSlider from "./ImageSlider";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+gsap.registerPlugin(ScrollTrigger);
 
-function DriveUs() {
+export default function DriveUs() {
   const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-  const descriptionRef = useRef(null);
-  const columnRefs = useRef([]);
+  const reducedMotion = useReducedMotion();
 
-  useEffect(() => {
-    const context = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          end: "bottom 100%",
-          scrub: 1,
-        },
-      });
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      if (!section) return;
 
-      // Animation for heading and description
-      tl.from(headingRef.current, {
-        opacity: 0,
-        y: 50,
-        duration: 1,
-      })
-        .from(
-          descriptionRef.current,
-          {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-          },
-          "-=0.5"
-        ) // Start description animation half a second before heading animation ends
+      let ctx = null;
+      let cancelled = false;
 
-        // Staggered animation for columns
-        .from(
-          columnRefs.current,
-          {
-            opacity: 0,
-            y: 50,
-            duration: 0.5,
-            stagger: 0.2,
-          },
-          "-=0.5"
-        ); // Start column animation just after the description
-    }, sectionRef);
+      const init = () => {
+        if (cancelled || !isValidScrollTriggerTarget(section)) {
+          requestAnimationFrame(init);
+          return;
+        }
 
-    return () => {
-      context.revert();
-    };
-  }, []);
+        ctx = gsap.context(() => {
+          if (reducedMotion) {
+            gsap.set("[data-drive-reveal]", { opacity: 1, y: 0 });
+            return;
+          }
+
+          revealOnScroll(section, "[data-drive-reveal]", section, {
+            duration: 0.8,
+            stagger: 0.1,
+          });
+        }, section);
+      };
+
+      requestAnimationFrame(init);
+
+      return () => {
+        cancelled = true;
+        ctx?.revert();
+      };
+    },
+    { scope: sectionRef, dependencies: [reducedMotion] }
+  );
 
   return (
     <section ref={sectionRef} className={styles.driveUs}>
       <div className="container">
         <div className={styles.mainRowDriveUs}>
-          <div className={styles.rowDriveUs}>
-            <h3 className="h3" ref={headingRef}>
-              What Drives Us
-            </h3>
-            <p className="description" ref={descriptionRef}>
-              Our passion for excellence fuels every project we undertake. With
-              a commitment to innovation, quality, and client satisfaction, we
-              craft spaces that inspire and elevate experiences. By blending
-              creativity with precision, we transform visions into reality,
-              ensuring every design reflects our dedication to perfection.
+          <header className={styles.intro} data-drive-reveal>
+            <p className={styles.eyebrow}>Our ethos</p>
+            <h2 className={styles.title}>What Drives Us</h2>
+            <p className={styles.lead}>
+              Our passion for excellence fuels every project we undertake. With a
+              commitment to innovation, quality, and client satisfaction, we craft
+              spaces that inspire and elevate experiences.
             </p>
-          </div>
-          <div className={styles.rowDriveUs}>
-            <div
-              className={styles.columnDriveUs}
-              ref={(el) => (columnRefs.current[1] = el)}
-            >
-              <ImageSlider />
-            </div>
+          </header>
+          <div className={styles.sliderWrap} data-drive-reveal>
+            <ImageSlider />
           </div>
         </div>
       </div>
     </section>
   );
 }
-
-export default DriveUs;

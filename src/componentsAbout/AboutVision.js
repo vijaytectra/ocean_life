@@ -1,98 +1,147 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import Styles from "./AboutVision.module.css";
+import { useRef } from "react";
 import Image from "next/image";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { isValidScrollTriggerTarget } from "@/lib/scrollTriggerSafe";
+import { revealOnScroll } from "@/lib/aboutAnimations";
+import styles from "./AboutVision.module.css";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+gsap.registerPlugin(ScrollTrigger);
 
-function AboutVision() {
-  const visionTopRef = useRef(null);
-  const visionSecRef = useRef(null);
+export default function AboutVision() {
+  const sectionRef = useRef(null);
+  const reducedMotion = useReducedMotion();
 
-  useEffect(() => {
-    const context = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: visionTopRef.current,
-          start: "top 80%", // Trigger when the top of the section reaches 80% of the viewport
-          end: "bottom 80%", // End when the bottom of the section hits the bottom of the viewport
-          scrub: 1, // Smooth scrubbing
-        },
-      });
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      if (!section) return;
 
-      // Animate the first section
-      tl.from(visionTopRef.current, {
-        opacity: 0,
-        y: 100,
-        duration: 1,
-      })
-        // Animate the second section
-        .from(
-          visionSecRef.current,
-          {
-            opacity: 0,
-            y: 100,
-            duration: 1,
-          },
-          "-=0.5"
-        ); // Start this animation half a second before the previous one ends
-    }, visionTopRef);
+      let ctx = null;
+      let cancelled = false;
 
-    return () => {
-      context.revert();
-    };
-  }, []);
+      const init = () => {
+        if (cancelled || !isValidScrollTriggerTarget(section)) {
+          requestAnimationFrame(init);
+          return;
+        }
+
+        ctx = gsap.context(() => {
+          if (reducedMotion) {
+            gsap.set("[data-vision-reveal], [data-vision-mission]", {
+              opacity: 1,
+              y: 0,
+            });
+            return;
+          }
+
+          revealOnScroll(section, "[data-vision-reveal]", section, {
+            duration: 0.75,
+            stagger: 0.1,
+          });
+
+          const mission = section.querySelector(`.${styles.mission}`);
+          if (mission) {
+            revealOnScroll(section, "[data-vision-mission]", mission, {
+              duration: 0.7,
+              stagger: 0.1,
+            });
+          }
+        }, section);
+      };
+
+      requestAnimationFrame(init);
+
+      return () => {
+        cancelled = true;
+        ctx?.revert();
+      };
+    },
+    { scope: sectionRef, dependencies: [reducedMotion] }
+  );
 
   return (
-    <>
-      <section ref={visionTopRef} className={Styles.visionTop}>
-        <div className={Styles.rowVisionTop}>
-          <Image width={54} height={33} src="/about/quote.webp" alt="image" />
-          <p className="h4">
-            We have collaborated with some of the leading Architects and Project
-            Management Consultants (PMCs) in India, on one-of-a-kind projects.
-          </p>
-        </div>
-      </section>
-      <section ref={visionSecRef} className={Styles.visionSec}>
-        <div className={Styles.visionSecRow}>
-          <div className={Styles.columnVsion}>
-            <h3 className="h3">Mission and Vision</h3>
-            <p className="description">
-              We strive for excellence by continuously evolving our systems,
-              processes, and teams to stay ahead of our clients present and
-              future needs. Through innovation and dedication, we ensure
-              unparalleled service and customer satisfaction.
-            </p>
-            <p className="description">
-              To establish ourselves as the most trusted and sought-after name
-              across industries, building lasting partnerships and achieving
-              success that transcends boundaries.
-            </p>
-            <Image
-              width={300}
-              height={100}
-              src="/about/vision-left.webp"
-              alt="image"
-            />
-          </div>
-          <div className={Styles.columnVsion}>
-            <Image
-              width={300}
-              height={100}
-              src="/about/vision-right.webp"
-              alt="image"
-            />
+    <div className={styles.visionWrap} ref={sectionRef}>
+      <section className={styles.quoteSection}>
+        <div className="container">
+          <div className={styles.quoteCard} data-vision-reveal>
+            <span className={styles.quotePill}>Industry partnerships</span>
+            <blockquote className={styles.quoteBlock}>
+              <Image
+                width={48}
+                height={30}
+                src="/about/quote.webp"
+                alt=""
+                className={styles.quoteIcon}
+              />
+              <p className={styles.quoteText}>
+                We have collaborated with some of the leading Architects and
+                Project Management Consultants (PMCs) in India, on one-of-a-kind
+                projects.
+              </p>
+            </blockquote>
           </div>
         </div>
       </section>
-    </>
+
+      <section className={styles.mission}>
+        <div className="container">
+          <div className={styles.missionLayout}>
+            <div className={styles.missionMain} data-vision-mission>
+              <div className={styles.missionHighlight}>
+                <span className={styles.eyebrow}>Our purpose</span>
+                <h2 className={styles.missionTitle}>Mission and Vision</h2>
+
+                <div className={styles.missionPoints}>
+                  <article className={styles.pointCard}>
+      
+                    <p className={styles.missionText}>
+                      We strive for excellence by continuously evolving our
+                      systems, processes, and teams to stay ahead of our
+                      clients&apos; present and future needs. Through innovation
+                      and dedication, we ensure unparalleled service and
+                      customer satisfaction. <br/> 
+
+                      <br/> To establish ourselves as the most trusted and
+                      sought-after name across industries, building lasting
+                      partnerships and achieving success that transcends
+                      boundaries.
+                    </p>
+                  </article>
+                </div>
+              </div>
+
+              <div className={styles.missionImgWide}>
+                <Image
+                  width={560}
+                  height={280}
+                  src="/about/vision-left.webp"
+                  alt="Ocean Lifespaces mission"
+                  className={styles.missionImg}
+                  sizes="(max-width: 900px) 100vw, 60vw"
+                />
+              </div>
+            </div>
+
+            <aside className={styles.missionAside} data-vision-mission>
+              <div className={styles.asideFrame}>
+                <Image
+                  width={420}
+                  height={520}
+                  src="/about/vision-right.webp"
+                  alt="Ocean Lifespaces vision"
+                  className={styles.sideImg}
+                  sizes="(max-width: 900px) 100vw, 40vw"
+                />
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
-
-export default AboutVision;

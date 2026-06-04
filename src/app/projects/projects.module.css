@@ -16,14 +16,15 @@
   height: 100%;
   padding: 0 clamp(12px, 4vw, 0);
 }
+.pageTitle,
 .rowMainProjects h1 {
-  color: var(--color-dark-blue);
+  color: var(--color-dark-blue, #00376a);
   align-self: center;
   margin-bottom: 0;
   text-align: center;
-  font-size: clamp(2rem, 5.5vw, 3.25rem);
-  font-weight: 500;
-  line-height: 1.15;
+  font-size: clamp(1.75rem, 3.2vw, 2.35rem);
+  font-weight: 600;
+  line-height: 1.2;
   letter-spacing: -0.02em;
   padding: 0 clamp(8px, 3vw, 16px);
 }
@@ -165,8 +166,9 @@
     padding-bottom: clamp(16px, 3vh, 24px);
   }
 
+  .pageTitle,
   .rowMainProjects h1 {
-    font-size: clamp(1.75rem, 7vw, 2.25rem);
+    font-size: clamp(1.5rem, 6vw, 1.85rem);
   }
 }
 

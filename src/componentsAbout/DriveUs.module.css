@@ -17,6 +17,39 @@
   row-gap: 10px;
   text-align: center;
 }
+.intro {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-orange, #f5831f);
+}
+
+.title {
+  margin: 0 0 14px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+}
+
+.lead {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+  line-height: 1.65;
+  opacity: 0.9;
+}
+
+.sliderWrap {
+  width: 100%;
+  margin-top: clamp(24px, 4vh, 36px);
+}
+
 .mainRowDriveUs .rowDriveUs:nth-child(1) {
   width: 70%;
   align-self: center;

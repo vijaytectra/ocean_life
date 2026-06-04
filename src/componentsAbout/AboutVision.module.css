@@ -1,79 +1,247 @@
-.visionTop {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(40px, 5vh, 5vh) 0;
-}
-.visionTop img {
-  width: 3vw;
-}
-.rowVisionTop {
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  row-gap: clamp(12px, 2vh, 2vh);
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-.visionSec {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(40px, 5vh, 5vh) 0;
-  background-image: url("../../public/feviconBg.webp");
-  background-repeat: no-repeat;
-  background-position: left bottom;
-}
-.visionSecRow {
-  width: 60%;
-  display: flex;
-  column-gap: 2vw;
-}
-.columnVsion img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.columnVsion h3 {
-  color: var(--color-dark-blue);
-}
-.visionSecRow .columnVsion:nth-child(1) {
-  display: flex;
-  flex-direction: column;
-  row-gap: clamp(12px, 2vh, 2vh);
-  width: 59%;
-  height: 100%;
-}
-.visionSecRow .columnVsion:nth-child(2) {
-  width: 41%;
-  height: 100%;
-}
-.visionSecRow .columnVsion:nth-child(1) img {
-  margin-top: clamp(10px, 5vh, 5vh);
+.visionWrap {
+  --blue: var(--color-dark-blue, #00376a);
+  --orange: var(--color-orange, #f5831f);
+  --white: var(--color-white, #ffffff);
 }
 
-/* media-query-css */
-@media only screen and (max-width: 950px) {
-  .rowVisionTop {
-    width: 90%;
+.quoteSection {
+  padding: clamp(56px, 8vh, 80px) 0;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.quoteCard {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.quotePill {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--orange);
+  border-radius: 100px;
+}
+
+.quoteBlock {
+  margin: 0;
+  padding: clamp(32px, 5vw, 48px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 55, 106, 0.06);
+  box-shadow:
+    0 1px 2px rgba(0, 55, 106, 0.04),
+    0 16px 48px rgba(0, 55, 106, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.quoteBlock::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--orange));
+}
+
+.quoteIcon {
+  width: 44px;
+  height: auto;
+  opacity: 0.9;
+}
+
+.quoteText {
+  margin: 0;
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  color: var(--blue);
+  font-weight: 500;
+  max-width: 36ch;
+}
+
+.mission {
+  padding: clamp(56px, 8vh, 88px) 0;
+  background: var(--white);
+}
+
+.missionLayout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: clamp(28px, 4vw, 48px);
+  align-items: start;
+}
+
+.missionMain {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.missionHighlight {
+  position: relative;
+  padding: clamp(32px, 4vw, 44px);
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid rgba(0, 55, 106, 0.08);
+  box-shadow:
+    0 1px 2px rgba(0, 55, 106, 0.04),
+    0 20px 50px rgba(0, 55, 106, 0.1);
+  overflow: hidden;
+}
+
+.missionHighlight::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(
+    circle at 100% 0%,
+    rgba(245, 131, 31, 0.12) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin: 0 0 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.missionTitle {
+  margin: 0 0 28px;
+  font-size: clamp(1.65rem, 3.2vw, 2.35rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--blue);
+}
+
+.missionPoints {
+  display: grid;
+  gap: 16px;
+}
+
+.pointCard {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px 20px;
+  align-items: start;
+  padding: 20px 22px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 55, 106, 0.06);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.pointCard:hover {
+  border-color: rgba(245, 131, 31, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 55, 106, 0.06);
+}
+
+.pointNum {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--white);
+  background: var(--blue);
+  padding: 8px 10px;
+  border-radius: 8px;
+  line-height: 1;
+}
+
+.pointCard:nth-child(2) .pointNum {
+  background: var(--orange);
+}
+
+.missionText {
+  margin: 0;
+  font-size: clamp(0.92rem, 1.4vw, 1.02rem);
+  line-height: 1.7;
+  color: var(--blue);
+  opacity: 0.88;
+}
+
+.missionImgWide {
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 16 / 7;
+  border: 1px solid rgba(0, 55, 106, 0.08);
+  box-shadow: 0 12px 40px rgba(0, 55, 106, 0.1);
+}
+
+.missionImg,
+.sideImg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.missionAside {
+  position: sticky;
+  top: 120px;
+}
+
+.asideFrame {
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border: 1px solid rgba(0, 55, 106, 0.08);
+  box-shadow: 0 20px 56px rgba(0, 55, 106, 0.14);
+}
+
+@media (max-width: 900px) {
+  .missionLayout {
+    grid-template-columns: 1fr;
   }
-  .visionSecRow {
-    width: 90%;
-    flex-direction: column;
-    row-gap: 20px;
+
+  .missionAside {
+    position: static;
   }
-  .visionSecRow .columnVsion:nth-child(1) img {
-    margin-top: 0;
+
+  .asideFrame {
+    max-height: 400px;
+    aspect-ratio: 16 / 10;
   }
-  .columnVsion {
-    width: 100% !important;
+
+  .quoteBlock {
+    text-align: left;
+    align-items: flex-start;
   }
-  .visionSec {
-    padding-top: 0;
+
+  .quoteText {
+    max-width: none;
   }
-  .visionSecRow .columnVsion:nth-child(2) {
-    display: none;
+}
+
+@media (max-width: 560px) {
+  .pointCard {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .pointNum {
+    justify-self: start;
   }
 }

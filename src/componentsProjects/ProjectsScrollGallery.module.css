@@ -187,10 +187,10 @@
 }
 
 .introTitle {
-  font-size: clamp(2rem, 5vw, 3.25rem);
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.03em;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: #fff;
   margin: 0 0 20px;
 }
@@ -205,9 +205,9 @@
 
 .introLead {
   margin: 0;
-  font-size: clamp(1rem, 1.8vw, 1.12rem);
-  line-height: 1.7;
-  color: #ffffff;
+  font-size: clamp(0.9rem, 1.2vw, 0.98rem);
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.92);
   max-width: 52ch;
 }
 
@@ -405,8 +405,8 @@
 }
 
 .counterCurrent {
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 1.15rem;
+  font-weight: 600;
   color: #fff;
   letter-spacing: -0.03em;
 }
@@ -479,7 +479,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: clamp(5rem, 14vw, 10rem);
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 300;
   line-height: 1;
   letter-spacing: -0.06em;
@@ -653,8 +653,8 @@
 }
 
 .title {
-  font-size: clamp(1.5rem, 3vw, 2.15rem);
-  font-weight: 500;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 600;
   line-height: 1.12;
   letter-spacing: -0.03em;
   margin: 0;
@@ -951,7 +951,7 @@
   }
 
   .watermark {
-    font-size: clamp(3.5rem, 18vw, 5rem);
+    font-size: clamp(2rem, 10vw, 3rem);
     top: 16px;
     left: auto;
     right: 12px;
@@ -995,7 +995,7 @@
   }
 
   .title {
-    font-size: clamp(1.25rem, 5.5vw, 1.6rem);
+    font-size: clamp(1.1rem, 4vw, 1.35rem);
     padding-left: 10px;
   }
 
@@ -1043,7 +1043,7 @@
   }
 
   .introTitle {
-    font-size: clamp(1.65rem, 8vw, 2rem);
+    font-size: clamp(1.35rem, 5vw, 1.65rem);
   }
 
   .introLead {
@@ -1106,7 +1106,7 @@
   }
 
   .watermark {
-    font-size: 3rem;
+    font-size: 2.25rem;
     right: 8px;
   }
 

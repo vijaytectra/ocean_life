@@ -431,7 +431,7 @@ export default function ProjectsImpactScroll() {
       aria-label="Ocean Lifespaces project impact"
     >
       <header className={styles.header} data-dentsu-header>
-        <p className={styles.eyebrow}>Our impact at scale</p>
+        <h2 className={styles.sectionHeading}>Our impact at scale</h2>
       </header>
 
       <div className={styles.topPair}>
