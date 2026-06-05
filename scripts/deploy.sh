@@ -3,6 +3,7 @@ set -euo pipefail
 
 APP_DIR="${APP_DIR:-/home/oceanweb/htdocs/www.olipl.com}"
 PM2_NAME="${PM2_NAME:-olipl}"
+APP_USER="${APP_USER:-oceanweb}"
 
 cd "$APP_DIR"
 
@@ -13,11 +14,20 @@ if [ ! -f .env ]; then
   exit 1
 fi
 
+run_as_app_user() {
+  if [ "$(id -un)" = "$APP_USER" ]; then
+    "$@"
+  else
+    sudo -u "$APP_USER" "$@"
+  fi
+}
+
 echo "==> Pulling latest code..."
-git pull origin main
+git fetch origin main
+git merge origin/main --no-edit || git reset --hard origin/main
 
 echo "==> Installing dependencies..."
-npm ci
+run_as_app_user npm ci
 
 echo "==> Backing up database..."
 if [ -f prisma/dev.db ]; then
@@ -25,18 +35,19 @@ if [ -f prisma/dev.db ]; then
 fi
 
 echo "==> Syncing database schema..."
-npx prisma generate
-npx prisma db push
+run_as_app_user npx prisma generate
+run_as_app_user npx prisma db push
 
 echo "==> Building Next.js app..."
-npm run build
+rm -rf .next
+run_as_app_user npm run build
 
-echo "==> Restarting PM2 process: $PM2_NAME"
-if pm2 describe "$PM2_NAME" >/dev/null 2>&1; then
-  pm2 restart "$PM2_NAME"
+echo "==> Restarting PM2 process: $PM2_NAME (user: $APP_USER)"
+if run_as_app_user pm2 describe "$PM2_NAME" >/dev/null 2>&1; then
+  run_as_app_user pm2 restart "$PM2_NAME"
 else
-  pm2 start ecosystem.config.cjs
+  run_as_app_user pm2 start ecosystem.config.cjs
 fi
 
-pm2 save
-echo "==> Deploy complete. Check: pm2 logs $PM2_NAME --lines 50"
+run_as_app_user pm2 save
+echo "==> Deploy complete. Check: sudo -u $APP_USER pm2 logs $PM2_NAME --lines 50"

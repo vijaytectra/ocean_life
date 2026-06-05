@@ -12,7 +12,6 @@ export default function AdminLayout({ children }) {
     pathname === '/admin/login' || pathname === '/admin/login/';
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const sidebarNavRef = useRef(null);
   const routerRef = useRef(router);
   routerRef.current = router;
 
@@ -62,11 +61,7 @@ export default function AdminLayout({ children }) {
 
   useEffect(() => {
     if (isLoginPage) return;
-
     window.scrollTo(0, 0);
-    if (sidebarNavRef.current) {
-      sidebarNavRef.current.scrollTop = 0;
-    }
   }, [pathname, isLoginPage]);
 
   const isActiveNav = (href) => {
@@ -126,7 +121,7 @@ export default function AdminLayout({ children }) {
           <p style={{ margin: 0, fontSize: '14px', color: '#fff', fontWeight: '600' }}>{user?.name || user?.username}</p>
           <p style={{ margin: '2px 0 0', fontSize: '11px', color: '#38bdf8' }}>{user?.role?.name || 'Full Access'}</p>
         </div>
-        <nav ref={sidebarNavRef} className={styles.sidebarNav}>
+        <nav className={styles.sidebarNav}>
           <div className={styles.navItem}>
             <Link href="/admin" className={navLinkClass('/admin')} aria-current={isActiveNav('/admin') ? 'page' : undefined}>
               Dashboard

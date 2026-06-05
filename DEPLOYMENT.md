@@ -41,7 +41,7 @@ git commit -m "Your message"
 git push origin main
 ```
 
-On the **server** (SSH):
+On the **server** (SSH as root or oceanweb):
 
 ```bash
 cd /home/oceanweb/htdocs/www.olipl.com
@@ -49,16 +49,20 @@ chmod +x scripts/deploy.sh
 ./scripts/deploy.sh
 ```
 
+> **Important:** PM2 runs under the `oceanweb` user. Never run `pm2 restart olipl` as root — use `sudo -u oceanweb pm2 restart olipl`.
+
 Or manually:
 
 ```bash
 cd /home/oceanweb/htdocs/www.olipl.com
-git pull origin main
-npm ci
-npx prisma generate
-npx prisma db push
-npm run build
-pm2 restart olipl
+git fetch origin main
+git merge origin/main --no-edit || git reset --hard origin/main
+rm -rf .next
+sudo -u oceanweb npm ci
+sudo -u oceanweb npx prisma generate
+sudo -u oceanweb npm run build
+sudo -u oceanweb pm2 restart olipl || sudo -u oceanweb pm2 start ecosystem.config.cjs
+sudo -u oceanweb pm2 save
 ```
 
 ## Verify after deploy
