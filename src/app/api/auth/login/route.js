@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { cookies } from 'next/headers';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 export async function POST(request) {
   try {
@@ -31,23 +28,17 @@ export async function POST(request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Set simple session cookies
-    const response = NextResponse.json({ success: true });
-    const cookieStore = await cookies();
-    
-    cookieStore.set('admin_session', 'authenticated', {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24,
-      path: '/'
-    });
+      path: '/',
+      sameSite: 'lax',
+    };
 
-    cookieStore.set('user_id', user.id.toString(), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24,
-      path: '/'
-    });
+    const response = NextResponse.json({ success: true });
+    response.cookies.set('admin_session', 'authenticated', cookieOptions);
+    response.cookies.set('user_id', user.id.toString(), cookieOptions);
 
     return response;
   } catch (error) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import styles from './admin.module.css';
@@ -8,33 +8,66 @@ import styles from './admin.module.css';
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isLoginPage = pathname === '/admin/login';
+  const isLoginPage =
+    pathname === '/admin/login' || pathname === '/admin/login/';
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const sidebarNavRef = useRef(null);
+  const routerRef = useRef(router);
+  routerRef.current = router;
 
   useEffect(() => {
-    if (!isLoginPage) {
-      fetchUser();
-    } else {
+    if (isLoginPage) {
+      setUser(null);
       setLoading(false);
+      return undefined;
     }
+
+    let cancelled = false;
+
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/admin/me', {
+          credentials: 'include',
+          cache: 'no-store',
+        });
+
+        if (cancelled) return;
+
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+        } else {
+          setUser(null);
+          routerRef.current.replace('/admin/login');
+        }
+      } catch (e) {
+        if (!cancelled) {
+          console.error("Auth check failed", e);
+          setUser(null);
+          routerRef.current.replace('/admin/login');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    fetchUser();
+
+    return () => {
+      cancelled = true;
+    };
   }, [isLoginPage]);
 
-  const fetchUser = async () => {
-    try {
-      const res = await fetch('/api/admin/me');
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data);
-      } else if (res.status === 401) {
-        router.push('/admin/login');
-      }
-    } catch (e) {
-      console.error("Auth check failed", e);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (isLoginPage) return;
+
+    window.scrollTo(0, 0);
+    if (sidebarNavRef.current) {
+      sidebarNavRef.current.scrollTop = 0;
     }
-  };
+  }, [pathname, isLoginPage]);
 
   const isActiveNav = (href) => {
     if (href === '/admin') {
@@ -53,14 +86,12 @@ export default function AdminLayout({ children }) {
 
   const hasPermission = (moduleId) => {
     if (!user) return false;
-    // If no role assigned, we assume it's the master admin or default
-    if (!user.role) return true; 
-    // Super admin check by name (optional)
+    if (!user.role) return true;
     if (user.role.name === 'Admin') return true;
-    
+
     const perms = user.role.permissions;
-    if (!perms) return false;
-    
+    if (!perms || typeof perms !== 'object') return true;
+
     return perms[moduleId]?.view === true;
   };
 
@@ -76,16 +107,26 @@ export default function AdminLayout({ children }) {
     );
   }
 
+  if (!user) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
+        <div style={{ color: '#64748b', fontSize: '18px', fontWeight: '500' }}>Redirecting to login...</div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.adminContainer}>
       <aside className={styles.sidebar}>
-        <h2 className={styles.sidebarTitle}>Admin Panel</h2>
-        <div style={{ padding: '0 20px 15px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '15px' }}>
+        <div className={styles.sidebarHeader}>
+          <h2 className={styles.sidebarTitle}>Admin Panel</h2>
+        </div>
+        <div className={styles.sidebarUser}>
           <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>Logged in as:</p>
           <p style={{ margin: 0, fontSize: '14px', color: '#fff', fontWeight: '600' }}>{user?.name || user?.username}</p>
           <p style={{ margin: '2px 0 0', fontSize: '11px', color: '#38bdf8' }}>{user?.role?.name || 'Full Access'}</p>
         </div>
-        <nav style={{ flex: 1 }}>
+        <nav ref={sidebarNavRef} className={styles.sidebarNav}>
           <div className={styles.navItem}>
             <Link href="/admin" className={navLinkClass('/admin')} aria-current={isActiveNav('/admin') ? 'page' : undefined}>
               Dashboard
@@ -183,7 +224,7 @@ export default function AdminLayout({ children }) {
             </div>
           )}
         </nav>
-        <div style={{ padding: '20px 0', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div className={styles.sidebarFooter}>
           <button onClick={handleLogout} className={styles.dangerButton} style={{ width: '100%' }}>Logout</button>
           <Link href="/" className={styles.navLinkBack}>&larr; Exit to Website</Link>
         </div>
