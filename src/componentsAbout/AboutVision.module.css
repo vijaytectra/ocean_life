@@ -66,8 +66,8 @@
   font-size: clamp(1.15rem, 2.2vw, 1.45rem);
   line-height: 1.6;
   letter-spacing: -0.02em;
-  color: var(--blue);
-  font-weight: 500;
+  color: #002a52;
+  font-weight: 600;
   max-width: 36ch;
 }
 
@@ -178,8 +178,8 @@
   margin: 0;
   font-size: clamp(0.92rem, 1.4vw, 1.02rem);
   line-height: 1.7;
-  color: var(--blue);
-  opacity: 0.88;
+  color: #002a52;
+  font-weight: 500;
 }
 
 .missionImgWide {

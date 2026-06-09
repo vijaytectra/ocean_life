@@ -42,7 +42,7 @@
   margin: 0;
   font-size: clamp(0.95rem, 1.5vw, 1.05rem);
   line-height: 1.65;
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.96);
 }
 
 .sliderWrap {

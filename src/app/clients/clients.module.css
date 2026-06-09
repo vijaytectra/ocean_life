@@ -1,7 +1,12 @@
 .page {
   width: 100%;
   overflow-x: hidden;
-  background: #fafbfc;
+  background-color: #fafbfc;
+  background-image: url("/clients/client_bg.png");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 /* ─── Hero ─── */
@@ -43,9 +48,9 @@
   inset: 0;
   background: linear-gradient(
     165deg,
-    #ffffff 0%,
-    #f4f7fa 45%,
-    rgba(45, 106, 79, 0.06) 100%
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(244, 247, 250, 0.78) 45%,
+    rgba(45, 106, 79, 0.08) 100%
   );
   pointer-events: none;
 }
@@ -95,7 +100,8 @@
 .heroLead {
   font-size: clamp(1rem, 1.8vw, 1.15rem);
   line-height: 1.7;
-  color: #5f7180;
+  color: #2f4050;
+  font-weight: 500;
   margin: 0 auto clamp(40px, 6vh, 56px);
   max-width: 52ch;
 }
@@ -148,7 +154,12 @@
 .darkSectionBg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(165deg, #ffffff 0%, #f4f7fa 52%, #eef4f8 100%);
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.94) 0%,
+    rgba(248, 250, 252, 0.92) 52%,
+    rgba(241, 245, 249, 0.94) 100%
+  );
   pointer-events: none;
 }
 
@@ -210,6 +221,11 @@
   position: relative;
   z-index: 1;
   margin-bottom: clamp(32px, 5vh, 48px);
+  padding: clamp(20px, 3vw, 28px);
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 55, 106, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 55, 106, 0.08);
 }
 
 .sectionHead {
@@ -239,23 +255,28 @@
 
 .sectionTitleLight {
   font-size: clamp(1.5rem, 3.5vw, 2.25rem);
-  font-weight: 500;
-  color: var(--color-dark-blue, #00376a);
+  font-weight: 600;
+  color: #002a52;
   margin: 0 0 12px;
   letter-spacing: -0.02em;
+  opacity: 1;
+  visibility: visible;
 }
 
 .sectionSubLight {
   font-size: clamp(0.95rem, 1.6vw, 1.05rem);
   line-height: 1.65;
-  color: #6b7c8a;
+  color: #2f4050;
   margin: 0;
+  font-weight: 500;
+  opacity: 1;
+  visibility: visible;
 }
 
 .sectionTitle {
   font-size: clamp(1.5rem, 3.5vw, 2.25rem);
-  font-weight: 500;
-  color: var(--color-dark-blue, #00376a);
+  font-weight: 600;
+  color: #002a52;
   margin: 0 0 12px;
   letter-spacing: -0.02em;
 }
@@ -263,8 +284,9 @@
 .sectionSub {
   font-size: clamp(0.95rem, 1.6vw, 1.05rem);
   line-height: 1.65;
-  color: #6b7c8a;
+  color: #2f4050;
   margin: 0;
+  font-weight: 500;
 }
 
 .logoCard {
@@ -451,7 +473,7 @@
 /* ─── CTA ─── */
 .ctaSection {
   padding: clamp(48px, 8vh, 72px) 0 clamp(64px, 10vh, 88px);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .ctaBox {
@@ -555,6 +577,12 @@
 
   .statsRow {
     gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    background-attachment: scroll;
   }
 }
 

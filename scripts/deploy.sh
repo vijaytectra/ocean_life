@@ -34,6 +34,10 @@ if [ -f prisma/dev.db ]; then
   cp prisma/dev.db "prisma/dev.db.bak.$(date +%Y%m%d-%H%M%S)"
 fi
 
+echo "==> Fixing permissions for $APP_USER..."
+chown -R "$APP_USER:$APP_USER" prisma .env public/uploads private 2>/dev/null || true
+chmod 640 .env 2>/dev/null || true
+
 echo "==> Syncing database schema..."
 run_as_app_user npx prisma generate
 run_as_app_user npx prisma db push

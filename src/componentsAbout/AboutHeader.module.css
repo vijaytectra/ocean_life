@@ -10,12 +10,29 @@
   padding: clamp(100px, 16vh, 140px) 0 clamp(56px, 8vh, 72px);
   overflow: hidden;
   box-sizing: border-box;
+  background-image: url("/about/header-bg.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.heroBg {
-  object-fit: cover;
-  object-position: center;
-  z-index: 0;
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 25, 50, 0.55) 0%,
+    rgba(0, 35, 70, 0.45) 50%,
+    rgba(0, 25, 50, 0.5) 100%
+  );
+  pointer-events: none;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  width: 100%;
 }
 
 .topBand {
@@ -28,12 +45,6 @@
   background: linear-gradient(90deg, var(--blue) 0%, var(--orange) 100%);
 }
 
-.aboutHeader .container {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-}
-
 .grid {
   display: grid;
   grid-template-columns: 1fr 1.1fr 1fr;
@@ -43,6 +54,8 @@
 
 .mediaCol {
   display: flex;
+  opacity: 1;
+  visibility: visible;
 }
 
 .mediaFrame {
@@ -66,6 +79,9 @@
   justify-content: center;
   padding: clamp(8px, 2vw, 16px) 0;
   color: var(--white);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  opacity: 1;
+  visibility: visible;
 }
 
 .eyebrowLight {
@@ -84,6 +100,7 @@
   line-height: 1.15;
   letter-spacing: -0.03em;
   color: var(--white);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .lead {
@@ -91,7 +108,7 @@
   font-size: clamp(0.95rem, 1.5vw, 1.05rem);
   line-height: 1.65;
   color: var(--white);
-  opacity: 0.92;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 
 .results {
@@ -99,6 +116,7 @@
   font-size: clamp(1rem, 1.8vw, 1.15rem);
   font-weight: 600;
   color: var(--white);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 
 .statsRow {
@@ -133,8 +151,8 @@
 .statLabel {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--blue);
-  opacity: 0.75;
+  color: #002a52;
+  font-weight: 600;
 }
 
 @media (max-width: 960px) {

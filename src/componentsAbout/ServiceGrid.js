@@ -2,14 +2,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Styles from "./ServiceGrid.module.css";
 import Link from "next/link";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 const services = [
   {
@@ -60,7 +54,6 @@ const ServiceGrid = () => {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const heading1Ref = useRef(null);
-  const sliderRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(3);
 
@@ -77,52 +70,6 @@ const ServiceGrid = () => {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const context = gsap.context(() => {
-      gsap.fromTo(
-        [heading1Ref.current, headingRef.current].filter(Boolean),
-        { opacity: 0, y: 24 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.75,
-          stagger: 0.08,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 86%",
-            once: true,
-          },
-          clearProps: "opacity",
-        }
-      );
-
-      if (sliderRef.current) {
-        gsap.fromTo(
-          sliderRef.current,
-          { opacity: 0, y: 32 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: section,
-              start: "top 86%",
-              once: true,
-            },
-            clearProps: "opacity",
-          }
-        );
-      }
-    }, section);
-
-    return () => context.revert();
   }, []);
 
   const nextSlide = () => {
@@ -171,7 +118,7 @@ const ServiceGrid = () => {
           </div>
         </div>
 
-        <div className={Styles.sliderWrapper} ref={sliderRef}>
+        <div className={Styles.sliderWrapper}>
           <div 
             className={Styles.sliderTrack} 
             style={{ transform: `translateX(-${currentIndex * (100 / itemsToShow)}%)` }}

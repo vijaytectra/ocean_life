@@ -18,10 +18,11 @@ async function main() {
   });
 
   // Create/Update Admin User
+  const adminPassword = process.env.ADMIN_PASSWORD || 'password123';
+
   await prisma.user.upsert({
     where: { username: 'admin' },
     update: {
-      password: 'password123',
       name: 'Super Admin',
       roleId: adminRole.id,
       email: 'admin@olipl.com',
@@ -30,7 +31,7 @@ async function main() {
     },
     create: {
       username: 'admin',
-      password: 'password123',
+      password: adminPassword,
       name: 'Super Admin',
       roleId: adminRole.id,
       email: 'admin@olipl.com',

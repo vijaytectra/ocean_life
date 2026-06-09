@@ -159,11 +159,18 @@ export default function ClientContent() {
         const refresh = () => ScrollTrigger.refresh();
 
         if (reducedMotion) {
-          gsap.set("[data-hero-reveal], [data-client-card], [data-cta-reveal]", {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-          });
+          gsap.set(
+            "[data-hero-reveal], [data-client-card], [data-cta-reveal], [data-header-index], [data-header-title], [data-header-desc], [data-marquee], [data-dark-accent]",
+            {
+              opacity: 1,
+              y: 0,
+              x: 0,
+              scale: 1,
+              scaleX: 1,
+              clipPath: "none",
+              clearProps: "opacity,transform,clipPath",
+            }
+          );
           return;
         }
 
@@ -182,26 +189,18 @@ export default function ClientContent() {
               duration: 1.4,
               stagger: 0.2,
               ease: "power2.out",
+              immediateRender: false,
             })
             .from(
               "[data-hero-reveal]",
               {
-                y: 40,
-                opacity: 0,
+                y: 24,
                 duration: 0.95,
                 stagger: 0.11,
-                clearProps: "opacity",
+                immediateRender: false,
+                clearProps: "transform",
               },
               "-=1"
-            )
-            .from(
-              `.${styles.heroTitle}`,
-              {
-                clipPath: "inset(100% 0 0 0)",
-                duration: 1.1,
-                ease: "power4.out",
-              },
-              "-=0.75"
             );
 
           gsap.to("[data-hero-orb]", {
@@ -299,22 +298,35 @@ export default function ClientContent() {
             sectionTl
               .from(
                 indexEl,
-                { x: -32, opacity: 0, duration: 0.85, ease: "power3.out" },
+                {
+                  x: -32,
+                  duration: 0.85,
+                  ease: "power3.out",
+                  immediateRender: false,
+                  clearProps: "transform",
+                },
                 "-=0.5"
               )
               .from(
                 titleEl,
                 {
                   y: 28,
-                  opacity: 0,
                   duration: 0.9,
                   ease: "power3.out",
+                  immediateRender: false,
+                  clearProps: "transform",
                 },
                 "-=0.55"
               )
               .from(
                 descEl,
-                { y: 20, opacity: 0, duration: 0.8, ease: "power2.out" },
+                {
+                  y: 20,
+                  duration: 0.8,
+                  ease: "power2.out",
+                  immediateRender: false,
+                  clearProps: "transform",
+                },
                 "-=0.5"
               );
           }
@@ -323,11 +335,11 @@ export default function ClientContent() {
             sectionTl.from(
               marquee,
               {
-                opacity: 0,
                 y: 24,
-                scale: 0.98,
                 duration: 0.9,
                 ease: "power2.out",
+                immediateRender: false,
+                clearProps: "transform",
               },
               "-=0.4"
             );
@@ -337,11 +349,7 @@ export default function ClientContent() {
             sectionTl.from(
               cards,
               {
-                y: 56,
-                opacity: 0,
-                scale: 0.88,
-                rotationX: 12,
-                transformOrigin: "center bottom",
+                y: 40,
                 duration: 0.85,
                 stagger: {
                   amount: 0.75,
@@ -350,7 +358,8 @@ export default function ClientContent() {
                   ease: "power2.out",
                 },
                 ease: "power3.out",
-                clearProps: "opacity,transform",
+                immediateRender: false,
+                clearProps: "transform",
               },
               "-=0.35"
             );

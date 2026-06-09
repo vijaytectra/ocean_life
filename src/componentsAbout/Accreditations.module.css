@@ -21,7 +21,8 @@
   margin: 0;
   font-size: clamp(0.92rem, 1.5vw, 1.02rem);
   line-height: 1.65;
-  color: #475569;
+  color: #2f4050;
+  font-weight: 500;
 }
 
 .grid {

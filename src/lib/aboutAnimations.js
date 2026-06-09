@@ -4,7 +4,8 @@ import gsap from "gsap";
 export const ABOUT_REVEAL_DURATION = 0.8;
 export const ABOUT_STAGGER = 0.08;
 export const ABOUT_EASE = "power3.out";
-export const ABOUT_SCROLL_START = "top 86%";
+/** Fires when the section enters the viewport (or immediately if already visible). */
+export const ABOUT_SCROLL_START = "top bottom";
 
 export function initAboutStatCounters(section, reducedMotion) {
   if (!section) return;
@@ -48,22 +49,24 @@ export function revealOnScroll(scope, selector, trigger, options = {}) {
     delay = 0,
   } = options;
 
+  const triggerEl = trigger || scope;
+
   gsap.fromTo(
     targets,
-    { y, opacity: 0 },
+    { y, immediateRender: false },
     {
       y: 0,
-      opacity: 1,
       duration,
       stagger,
       delay,
       ease: ABOUT_EASE,
       scrollTrigger: {
-        trigger: trigger || scope,
-        start: ABOUT_SCROLL_START,
+        trigger: triggerEl,
+        start: options.start ?? ABOUT_SCROLL_START,
         once: true,
+        invalidateOnRefresh: true,
       },
-      clearProps: "opacity",
+      clearProps: "transform",
     }
   );
 }

@@ -16,6 +16,16 @@
   row-gap: clamp(12px, 1vh, 1vh);
   width: 70%;
 }
+
+.mainRowTeam .rowTeam:nth-child(1) h3 {
+  color: #002a52;
+}
+
+.mainRowTeam .rowTeam:nth-child(1) .description {
+  color: #2f4050;
+  line-height: 1.65;
+  font-weight: 500;
+}
 .mainRowTeam .rowTeam:nth-child(2) {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
