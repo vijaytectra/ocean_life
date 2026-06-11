@@ -7,7 +7,7 @@ export const metadata = {
     "Chennai's Infrastructure Boom: Discover the latest trends and developments in Chennai's infrastructure landscape. Explore how Ocean Lifespaces is contributing to this growth.",
   keywords: "Ocean Lifespaces India Pvt Ltd",
   alternates: {
-    canonical: "https://www.olipl.com/blogs/chennai-infrastructure-boom",
+    canonical: "https://www.olipl.com/blog/chennai-infrastructure-boom",
   },
 };
 

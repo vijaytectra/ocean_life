@@ -21,9 +21,9 @@ function Projects() {
           <ProjectsPageHero className={styles.pageTitle}>
             Our Recent Projects
           </ProjectsPageHero>
-          <ProjectsImpactScroll />
         </div>
       </div>
+      <ProjectsImpactScroll />
       <ProjectsScrollGallery />
     </section>
   );

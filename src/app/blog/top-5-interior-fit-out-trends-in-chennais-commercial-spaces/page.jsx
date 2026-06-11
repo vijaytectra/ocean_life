@@ -8,7 +8,7 @@ export const metadata = {
     "Discover Ocean Lifespaces' top 5 commercial interior fit-out trends in Chennai, blending biophilic design, smart tech, and sustainable solutions.",
   alternates: {
     canonical:
-      "https://www.olipl.in/blogs/top-5-interior-fit-out-trends-in-chennais-commercial-spaces",
+      "https://www.olipl.com/blog/top-5-interior-fit-out-trends-in-chennais-commercial-spaces",
   },
 };
 

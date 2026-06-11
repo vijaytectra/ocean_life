@@ -20,7 +20,7 @@ const MenuItems = [
   { name: "Clients", path: "/clients" },
   { name: "Our Partners", path: "/partners" },
   { name: "Careers", path: "/careers" },
-  { name: "Blogs", path: "/blogs" },
+  { name: "Blog", path: "/blog" },
 ];
 const MobileMenuItems = [
   { name: "Home", path: "/" },
@@ -30,7 +30,7 @@ const MobileMenuItems = [
   { name: "Clients", path: "/clients" },
   { name: "Our Partners", path: "/partners" },
   { name: "Careers", path: "/careers" },
-  { name: "Blogs", path: "/blogs" },
+  { name: "Blog", path: "/blog" },
   { name: "News", path: "/news" },
   { name: "Contact Us", path: "/contact" },
 ];

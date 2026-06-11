@@ -27,7 +27,7 @@ export default function AdminLayout({ children }) {
     const fetchUser = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/admin/me', {
+        const res = await fetch('/api/admin/me/', {
           credentials: 'include',
           cache: 'no-store',
         });
@@ -75,8 +75,8 @@ export default function AdminLayout({ children }) {
     `${styles.navLink}${isActiveNav(href) ? ` ${styles.navLinkActive}` : ''}`;
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/admin/login');
+    await fetch('/api/auth/logout/', { method: 'POST', credentials: 'include' });
+    router.push('/admin/login/');
   };
 
   const hasPermission = (moduleId) => {

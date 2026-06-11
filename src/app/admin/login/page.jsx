@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function LoginPage() {
@@ -10,7 +9,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,14 +19,19 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        credentials: 'include',
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password.trim(),
+        }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        router.refresh();
-        router.replace('/admin');
+        // Full navigation so session cookies are applied before admin middleware runs
+        window.location.assign('/admin/');
+        return;
       } else {
         setError(data.error || 'Login failed');
       }
@@ -75,10 +78,11 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '25px' }}>
           <div>
-            <label style={{ color: '#4b5563', display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Email</label>
+            <label style={{ color: '#4b5563', display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Email or username</label>
             <input 
               type="text" 
-              placeholder="Email"
+              placeholder="Email or username"
+              autoComplete="username"
               value={username} 
               onChange={(e) => setUsername(e.target.value)}
               style={{

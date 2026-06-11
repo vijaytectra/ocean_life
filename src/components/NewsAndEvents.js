@@ -175,6 +175,7 @@ const NewsAndEvents = ({ list = 3 }) => {
                   height={282}
                   src={news.image}
                   alt={news.title}
+                  className={Styles.blogThumb}
                 />
               </div>
               <div className={Styles.contentDiv}>
@@ -183,15 +184,13 @@ const NewsAndEvents = ({ list = 3 }) => {
                   <p>{news.date.slice(0, 10)}</p>
                 </div>
                 <h3>{news.title}</h3>
-                <p>{news.description}</p>
-                <Link href={news.link}>
-                  <button className={Styles.cta}>
-                    <span>Read More</span>
-                    <svg width="15px" height="10px" viewBox="0 0 13 10">
-                      <path d="M1,5 L11,5"></path>
-                      <polyline points="8 1 12 5 8 9"></polyline>
-                    </svg>
-                  </button>
+                <p className={Styles.cardExcerpt}>{news.description}</p>
+                <Link href={news.link} className={Styles.cta}>
+                  <span>Read More</span>
+                  <svg width="15px" height="10px" viewBox="0 0 13 10">
+                    <path d="M1,5 L11,5"></path>
+                    <polyline points="8 1 12 5 8 9"></polyline>
+                  </svg>
                 </Link>
               </div>
             </div>

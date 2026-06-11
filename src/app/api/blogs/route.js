@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
+import { listAllBlogs, listPublishedBlogs } from "@/lib/blogData";
 import {
   isMysqlBlogEnabled,
-  mysqlListBlogs,
   mysqlCreateBlog,
 } from "@/lib/mysqlBlog";
 
@@ -14,31 +15,10 @@ export async function GET() {
   };
 
   try {
-    if (isMysqlBlogEnabled()) {
-      const blogs = await mysqlListBlogs();
-      return NextResponse.json(blogs, { headers: cacheHeaders });
-    }
-    const blogs = await prisma.$queryRaw`SELECT * FROM Blog ORDER BY createdAt DESC`;
-    return new NextResponse(JSON.stringify(blogs), {
-      headers: {
-        ...cacheHeaders,
-        "Content-Type": "application/json",
-      },
-    });
+    const session = (await cookies()).get("admin_session");
+    const blogs = session ? await listAllBlogs() : await listPublishedBlogs();
+    return NextResponse.json(blogs, { headers: cacheHeaders });
   } catch (error) {
-    if (isMysqlBlogEnabled()) {
-      try {
-        const blogs = await prisma.$queryRaw`SELECT * FROM Blog ORDER BY createdAt DESC`;
-        return new NextResponse(JSON.stringify(blogs), {
-          headers: {
-            ...cacheHeaders,
-            "Content-Type": "application/json",
-          },
-        });
-      } catch {
-        /* fall through */
-      }
-    }
     console.error("GET /api/blogs:", error);
     return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
   }

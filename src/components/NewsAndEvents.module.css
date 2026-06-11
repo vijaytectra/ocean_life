@@ -6,6 +6,13 @@
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 45%, #f1f5f9 100%);
 }
 
+.sectionNews.sectionCompact {
+  height: auto;
+  margin-top: clamp(24px, 3vh, 32px);
+  padding: 0 0 clamp(48px, 8vh, 80px);
+  background: #fff;
+}
+
 .rowNews {
   display: flex;
   flex-direction: column;
@@ -66,8 +73,8 @@
   width: 100%;
   position: relative;
   background: linear-gradient(145deg, #e0f2fe 0%, #f8fafc 50%, #e2e8f0 100%);
-  min-height: 200px;
-  max-height: 320px;
+  height: clamp(200px, 22vw, 260px);
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,8 +84,8 @@
 .blogThumb {
   display: block;
   width: 100%;
-  height: auto;
-  max-height: 300px;
+  height: 100%;
+  max-height: 100%;
   object-fit: contain;
   object-position: center;
   border-radius: 12px;
@@ -95,6 +102,7 @@
   row-gap: 14px;
   padding: 22px 22px 26px;
   flex: 1;
+  min-height: 0;
 }
 
 .dateBarNews {
@@ -104,6 +112,11 @@
   color: #94a3b8;
   font-size: 13px;
   font-weight: 500;
+  flex-shrink: 0;
+}
+
+.dateBarNews p {
+  margin: 0;
 }
 
 .card h3 {
@@ -112,22 +125,25 @@
   color: #0c4a6e;
   line-height: 1.35;
   margin: 0;
+  min-height: calc(2 * 1.35em);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.card p {
+.cardExcerpt {
   font-size: 15px;
   line-height: 1.65;
   color: #64748b;
   font-weight: 400;
   margin: 0;
+  min-height: calc(3 * 1.65em);
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex: 1;
 }
 
 .cta {
@@ -144,7 +160,8 @@
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.25s ease;
   width: fit-content;
-  margin-top: 6px;
+  margin-top: auto;
+  flex-shrink: 0;
   box-shadow: 0 8px 22px rgba(3, 105, 161, 0.28);
   text-decoration: none;
 }

@@ -8,7 +8,7 @@ export const metadata = {
   keywords: "Ocean Lifespaces India Pvt Ltd",
   alternates: {
     canonical:
-      "https://www.olipl.com/blogs/best-civil-construction-company-chennai",
+      "https://www.olipl.com/blog/best-civil-construction-company-chennai",
   },
 };
 

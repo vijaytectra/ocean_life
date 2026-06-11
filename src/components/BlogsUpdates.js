@@ -34,19 +34,39 @@ const timeAgo = (date) => {
   return `${diffInYears} year${diffInYears > 1 ? "s" : ""} ago`;
 };
 
-const BlogsUpdates = ({ list = 3 }) => {
-  const [latestNews, setLatestNews] = useState([]);
+const stripHtml = (html) => {
+  if (!html || typeof html !== "string") return "";
+  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+};
+
+const excerpt = (content, max = 120) => {
+  const text = stripHtml(content);
+  if (!text) return "";
+  return text.length > max ? `${text.slice(0, max)}...` : text;
+};
+
+const BlogsUpdates = ({ list = 3, initialBlogs = null, showHeading = true, animate = true, compact = false }) => {
+  const [latestNews, setLatestNews] = useState(() =>
+    Array.isArray(initialBlogs) ? initialBlogs.slice(0, list) : []
+  );
   const newsEventsRef = useRef(null);
   const headingRef = useRef(null);
   const cardsRef = useRef([]);
+  const timelineRef = useRef(null);
 
   useEffect(() => {
+    if (Array.isArray(initialBlogs)) {
+      setLatestNews(initialBlogs.slice(0, list));
+      return;
+    }
+
     const fetchBlogs = async () => {
       try {
         const res = await fetch("/api/blogs", { cache: "no-store" });
         const data = await res.json();
         if (Array.isArray(data)) {
-          const sortedNews = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          const published = data.filter((blog) => (blog.status || "published") === "published");
+          const sortedNews = published.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setLatestNews(sortedNews.slice(0, list));
         }
       } catch {
@@ -54,85 +74,113 @@ const BlogsUpdates = ({ list = 3 }) => {
       }
     };
     fetchBlogs();
-  }, [list]);
+  }, [list, initialBlogs]);
 
   useLayoutEffect(() => {
-    if (
-      newsEventsRef.current &&
-      headingRef.current &&
-      cardsRef.current.length > 0 &&
-      latestNews.length > 0
-    ) {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: newsEventsRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      });
+    if (!animate || latestNews.length === 0) return;
 
-      tl.from(headingRef.current, {
+    const section = newsEventsRef.current;
+    const heading = headingRef.current;
+    const cards = cardsRef.current.filter(Boolean);
+
+    if (!section || !heading || cards.length === 0) return;
+
+    timelineRef.current?.scrollTrigger?.kill();
+    timelineRef.current?.kill();
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top 85%",
+        toggleActions: "play none none none",
+        invalidateOnRefresh: true,
+      },
+    });
+
+    tl.from(heading, {
+      opacity: 0,
+      y: 40,
+      duration: 0.8,
+      ease: "power2.out",
+      immediateRender: false,
+    }).from(
+      cards,
+      {
         opacity: 0,
-        y: 50,
-        duration: 1,
+        y: 40,
+        duration: 0.8,
+        stagger: 0.15,
         ease: "power2.out",
-      }).from(
-        cardsRef.current,
-        {
-          opacity: 0,
-          y: 50,
-          duration: 1,
-          stagger: 0.2,
-          ease: "power2.out",
-        },
-        "-=0.5"
-      );
-    }
-  }, [latestNews]);
+        immediateRender: false,
+      },
+      "-=0.4"
+    );
+
+    timelineRef.current = tl;
+    ScrollTrigger.refresh();
+
+    return () => {
+      timelineRef.current?.scrollTrigger?.kill();
+      timelineRef.current?.kill();
+      timelineRef.current = null;
+    };
+  }, [latestNews, animate]);
 
   return (
-    <section className={Styles.sectionNews} ref={newsEventsRef} id="news">
+    <section
+      className={`${Styles.sectionNews} ${compact ? Styles.sectionCompact : ""}`}
+      ref={newsEventsRef}
+      id={compact ? undefined : "news"}
+    >
       <div className="container">
-        <div className={Styles.rowNews} ref={headingRef}>
-          <h4>Latest updates & Inspiring achievements</h4>
-          <h2>Blogs</h2>
-        </div>
-        <div className={Styles.grid}>
-          {latestNews.map((news, index) => (
-            <div
-              key={news.id ?? index}
-              className={Styles.card}
-              ref={(el) => {
-                cardsRef.current[index] = el;
-              }}
-            >
-              <div className={Styles.imageDiv}>
-                <img
-                  src={news.image || "/blogs/top5.webp"}
-                  alt={news.title ? `Cover: ${news.title}` : "Blog cover"}
-                  className={Styles.blogThumb}
-                  loading={index < 2 ? "eager" : "lazy"}
-                  decoding="async"
-                />
-              </div>
-              <div className={Styles.contentDiv}>
-                <div className={Styles.dateBarNews}>
-                  <p>{timeAgo(news.createdAt)}</p>
-                  <p>{new Date(news.createdAt || Date.now()).toISOString().slice(0, 10)}</p>
+        {showHeading ? (
+          <div className={Styles.rowNews} ref={headingRef}>
+            <h4>Latest updates & Inspiring achievements</h4>
+            <h2>Blog</h2>
+          </div>
+        ) : (
+          <div ref={headingRef} aria-hidden="true" style={{ height: 0, overflow: "hidden" }} />
+        )}
+        {latestNews.length === 0 ? (
+          <p style={{ color: "#64748b", fontSize: "1.05rem", margin: 0 }}>No blog posts yet. Check back soon.</p>
+        ) : (
+          <div className={Styles.grid}>
+            {latestNews.map((news, index) => (
+              <div
+                key={news.id ?? index}
+                className={Styles.card}
+                ref={(el) => {
+                  cardsRef.current[index] = el;
+                }}
+              >
+                <div className={Styles.imageDiv}>
+                  <img
+                    src={news.image || "/blogs/top5.webp"}
+                    alt={news.title ? `Cover: ${news.title}` : "Blog cover"}
+                    className={Styles.blogThumb}
+                    loading={index < 2 ? "eager" : "lazy"}
+                    decoding="async"
+                  />
                 </div>
-                <h3>{news.title}</h3>
-                <p>{news.content ? `${news.content.substring(0, 120)}...` : ""}</p>
-                <Link href={`/blogs/${news.id}`} className={Styles.cta}>
-                  <span>Read more</span>
-                  <svg width="15px" height="10px" viewBox="0 0 13 10" aria-hidden>
-                    <path d="M1,5 L11,5" stroke="currentColor" strokeWidth="1.5" fill="none" />
-                    <polyline points="8 1 12 5 8 9" stroke="currentColor" strokeWidth="1.5" fill="none" />
-                  </svg>
-                </Link>
+                <div className={Styles.contentDiv}>
+                  <div className={Styles.dateBarNews}>
+                    <p>{timeAgo(news.createdAt)}</p>
+                    <p>{new Date(news.createdAt || Date.now()).toISOString().slice(0, 10)}</p>
+                  </div>
+                  <h3>{news.title}</h3>
+                  <p className={Styles.cardExcerpt}>{excerpt(news.content)}</p>
+                  <Link href={`/blog/${news.id}`} className={Styles.cta}>
+                    <span>Read more</span>
+                    <svg width="15px" height="10px" viewBox="0 0 13 10" aria-hidden>
+                      <path d="M1,5 L11,5" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                      <polyline points="8 1 12 5 8 9" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                    </svg>
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
