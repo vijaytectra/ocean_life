@@ -5,6 +5,7 @@ import Script from "next/script";
 import ImageCropper from "@/components/ImageCropper";
 import ConfirmModal from "@/components/admin/ConfirmModal";
 import styles from "../admin.module.css";
+import blogStyles from "./blogsAdmin.module.css";
 import { resolveBlogImageUrl } from "@/lib/blogImage";
 
 const TINYMCE_VERSION = "6.8.3";
