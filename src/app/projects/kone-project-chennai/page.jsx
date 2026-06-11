@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-Image width={500} height={200}-element */
 import Image from "next/image";
 import Link from "next/link";
 import { LuChevronRight } from "react-icons/lu";

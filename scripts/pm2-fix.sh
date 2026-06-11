@@ -41,6 +41,7 @@ fi
 
 echo "==> Building..."
 npm run build
+bash scripts/verify-build.sh "$APP_DIR"
 
 if [[ ! -d .next ]]; then
   echo "ERROR: Build failed — .next folder missing."

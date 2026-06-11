@@ -24,7 +24,7 @@ function isPlaceholderUrl(url) {
   );
 }
 
-function useSnakeColumns() {
+function snakeColumnsEnabled() {
   const v = process.env.MYSQL_EMPLOYEE_SNAKE_COLUMNS;
   return v === "1" || v === "true" || v === "yes";
 }
@@ -35,7 +35,7 @@ function tableName() {
 }
 
 function selectExpr() {
-  if (useSnakeColumns()) {
+  if (snakeColumnsEnabled()) {
     return [
       "`id`",
       "`name`",
@@ -94,7 +94,7 @@ export async function mysqlListEmployees() {
   const pool = getMysqlEmployeePool();
   if (!pool) throw new Error("MySQL employee pool not configured");
   const t = tableName();
-  const orderCol = useSnakeColumns() ? "`priority` DESC, `created_at` DESC" : "`priority` DESC, `createdAt` DESC";
+  const orderCol = snakeColumnsEnabled() ? "`priority` DESC, `created_at` DESC" : "`priority` DESC, `createdAt` DESC";
   const [rows] = await pool.execute(
     `SELECT ${selectExpr()} FROM \`${t}\` ORDER BY ${orderCol}`
   );
@@ -118,7 +118,7 @@ export async function mysqlCreateEmployee({ name, role, image, priority }) {
   const t = tableName();
   const p = priority ?? 0;
 
-  if (useSnakeColumns()) {
+  if (snakeColumnsEnabled()) {
     const [result] = await pool.execute(
       `INSERT INTO \`${t}\` (\`name\`, \`role\`, \`image\`, \`priority\`, \`created_at\`, \`updated_at\`)
        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP(3), CURRENT_TIMESTAMP(3))`,
@@ -140,7 +140,7 @@ export async function mysqlUpdateEmployee(id, { name, role, image, priority }) {
   if (!pool) throw new Error("MySQL employee pool not configured");
   const t = tableName();
 
-  if (useSnakeColumns()) {
+  if (snakeColumnsEnabled()) {
     await pool.execute(
       `UPDATE \`${t}\` SET \`name\` = ?, \`role\` = ?, \`image\` = ?, \`priority\` = ?, \`updated_at\` = CURRENT_TIMESTAMP(3) WHERE \`id\` = ?`,
       [name, role, image ?? null, priority ?? 0, id]

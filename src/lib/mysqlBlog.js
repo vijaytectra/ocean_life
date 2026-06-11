@@ -11,7 +11,7 @@ const globalForMysql = globalThis;
  * - `MYSQL_BLOG_SNAKE_COLUMNS=true` — DB uses snake_case (`meta_title`, `created_at`, …)
  */
 
-function useSnakeColumns() {
+function snakeColumnsEnabled() {
   const v = process.env.MYSQL_BLOG_SNAKE_COLUMNS;
   return v === "1" || v === "true" || v === "yes";
 }
@@ -22,7 +22,7 @@ function tableName() {
 }
 
 function selectExpr() {
-  if (useSnakeColumns()) {
+  if (snakeColumnsEnabled()) {
     return [
       "`id`",
       "`title`",
@@ -91,7 +91,7 @@ export async function mysqlListBlogs() {
   if (!pool) throw new Error("MySQL blog pool not configured");
   const t = tableName();
   const [rows] = await pool.execute(`SELECT ${selectExpr()} FROM \`${t}\` ORDER BY ${
-    useSnakeColumns() ? "`created_at`" : "`createdAt`"
+    snakeColumnsEnabled() ? "`created_at`" : "`createdAt`"
   } DESC`);
   return (rows || []).map(rowToBlog);
 }
@@ -109,7 +109,7 @@ export async function mysqlCreateBlog({ title, content, image, metaTitle, metaDe
   const pool = getMysqlBlogPool();
   if (!pool) throw new Error("MySQL blog pool not configured");
   const t = tableName();
-  const snake = useSnakeColumns();
+  const snake = snakeColumnsEnabled();
 
   if (snake) {
     const [result] = await pool.execute(
@@ -134,7 +134,7 @@ export async function mysqlUpdateBlog(id, { title, content, image, metaTitle, me
   const pool = getMysqlBlogPool();
   if (!pool) throw new Error("MySQL blog pool not configured");
   const t = tableName();
-  const snake = useSnakeColumns();
+  const snake = snakeColumnsEnabled();
 
   if (snake) {
     await pool.execute(

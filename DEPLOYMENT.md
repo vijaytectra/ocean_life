@@ -100,6 +100,18 @@ sudo -u oceanweb pm2 restart olipl --update-env
 
 Never run `npm run build` or `npm ci` as root in the app folder.
 
+### Broken site: `webpack-*.js` returns 400
+
+HTML references a webpack chunk that is **missing or corrupt** in `.next` (usually after a failed build). Other `/_next/static/chunks/*.js` files may still return 200.
+
+```bash
+chown -R oceanweb:oceanweb /home/oceanweb/htdocs/www.olipl.com
+sudo -u oceanweb bash -c 'cd /home/oceanweb/htdocs/www.olipl.com && rm -rf .next && npm run build && bash scripts/verify-build.sh'
+sudo -u oceanweb pm2 restart olipl --update-env
+```
+
+Then hard-refresh the browser (Cmd+Shift+R) or clear CDN cache.
+
 Then open https://www.olipl.com/admin/login/ and log in again.
 
 ## Email (Microsoft 365 / Office 365)

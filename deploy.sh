@@ -37,6 +37,9 @@ npm ci
 echo "==> Building..."
 npm run build
 
+echo "==> Verifying build..."
+bash scripts/verify-build.sh "$APP_DIR"
+
 echo "==> Restarting PM2 process: $APP_NAME"
 pm2 delete oceanlife 2>/dev/null || true
 if pm2 describe "$APP_NAME" >/dev/null 2>&1; then

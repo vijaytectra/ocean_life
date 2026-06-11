@@ -136,7 +136,7 @@ export default function AdminBlogs() {
     }
 
     window.tinymce.init(initConfig);
-  }, [plainEditorFallback, tinymceCloudKey]);
+  }, [plainEditorFallback]);
 
   useLayoutEffect(() => {
     if (plainEditorFallback) return;
