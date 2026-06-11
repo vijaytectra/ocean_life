@@ -7,9 +7,9 @@ module.exports = {
     {
       name: "olipl",
       cwd: appRoot,
-      script: path.join(appRoot, "node_modules/next/dist/bin/next"),
-      args: "start -p 3000",
-      interpreter: "node",
+      script: "npm",
+      args: "run start",
+      interpreter: "none",
       env: {
         NODE_ENV: "production",
         PORT: 3000,
