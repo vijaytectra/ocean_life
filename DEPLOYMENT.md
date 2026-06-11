@@ -83,11 +83,22 @@ sudo -u oceanweb pm2 save
 ## Verify after deploy
 
 ```bash
-pm2 status
-pm2 logs olipl --lines 50
-curl -I http://127.0.0.1:3000/admin/login/
-curl http://127.0.0.1:3000/api/test-db/
+sudo -u oceanweb pm2 status
+sudo -u oceanweb pm2 logs olipl --lines 50
+curl -I http://127.0.0.1:3000/
 ```
+
+### Build error: `EACCES permission denied` on `.next`
+
+This means **`npm run build` was run as root** but the app runs as `oceanweb`. Fix:
+
+```bash
+chown -R oceanweb:oceanweb /home/oceanweb/htdocs/www.olipl.com
+sudo -u oceanweb bash -c 'cd /home/oceanweb/htdocs/www.olipl.com && rm -rf .next && npm run build'
+sudo -u oceanweb pm2 restart olipl --update-env
+```
+
+Never run `npm run build` or `npm ci` as root in the app folder.
 
 Then open https://www.olipl.com/admin/login/ and log in again.
 

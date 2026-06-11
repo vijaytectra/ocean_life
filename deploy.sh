@@ -15,13 +15,18 @@ APP_NAME="olipl"
 
 if [[ "$(id -un)" == "root" ]]; then
   echo "==> Re-running deploy as $APP_USER (never use root PM2 for this app)"
+  chown -R "$APP_USER:$APP_USER" "$APP_DIR"
   exec sudo -u "$APP_USER" bash "$APP_DIR/deploy.sh"
 fi
 
 cd "$APP_DIR"
 
 echo "==> Pulling latest code..."
-git pull origin main
+if ! git pull origin main; then
+  echo "WARN: git pull failed (local changes on server?). Stashing and retrying..."
+  git stash push -u -m "deploy-stash-$(date +%Y%m%d-%H%M%S)" || true
+  git pull origin main
+fi
 
 echo "==> Cleaning old build..."
 rm -rf .next
