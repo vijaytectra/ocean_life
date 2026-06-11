@@ -22,6 +22,8 @@
 
 # uploaded resumes (ATS)
 /private/
+/public/uploads/resumes/*
+!/public/uploads/resumes/.gitkeep
 
 # misc
 .DS_Store

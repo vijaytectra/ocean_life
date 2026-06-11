@@ -77,6 +77,9 @@ export default function AdminClients() {
             onImageCropped={handleImageCropped} 
             onCancel={() => setShowCropper(false)} 
             aspectRatio={184/104}
+            previewMode="client-logo"
+            previewSectionTitle={category === 'corporate' ? 'Corporate Clients' : 'Ongoing Projects'}
+            enableBgRemoval
           />
         </div>
       )}

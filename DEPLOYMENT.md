@@ -76,6 +76,34 @@ curl http://127.0.0.1:3000/api/test-db/
 
 Then open https://www.olipl.com/admin/login/ and log in again.
 
+## Email (Microsoft 365 / Office 365)
+
+Add to `.env` on the server:
+
+```env
+SMTP_HOST=smtp.office365.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=salesinfra@olipl.com
+SMTP_PASS=your-mailbox-password
+MAIL_FROM=salesinfra@olipl.com
+CAREERS_NOTIFY_EMAIL=HRrecruiter@olipl.com
+NEXT_PUBLIC_SITE_URL=https://www.olipl.com
+```
+
+- **Port 587** + `SMTP_SECURE=false` = STARTTLS (correct for Office 365).
+- **Send from:** `salesinfra@olipl.com` (SMTP login + From address).
+- **Careers notify:** `HRrecruiter@olipl.com` receives application alerts.
+- **Contact/newsletter notify:** `salesinfra@olipl.com` (default admin notification email).
+
+After updating `.env`:
+
+```bash
+sudo -u oceanweb pm2 restart olipl --update-env
+```
+
+Test from **Admin → Careers (ATS) → Test careers email**.
+
 ## Important notes
 
 - **Never** run `prisma/seed.js` on production after go-live (it resets admin/content).

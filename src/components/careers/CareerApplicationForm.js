@@ -37,6 +37,7 @@ export default function CareerApplicationForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [successNote, setSuccessNote] = useState(null);
 
   const updateField = (e) => {
     const { name, value } = e.target;
@@ -47,6 +48,7 @@ export default function CareerApplicationForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccessNote(null);
 
     if (!resume) {
       setError("Please attach your resume (PDF, DOC, or DOCX).");
@@ -64,6 +66,12 @@ export default function CareerApplicationForm() {
 
       if (!res.ok || !data.success) {
         throw new Error(data.error || "Submission failed");
+      }
+
+      if (data.emailWarning) {
+        setSuccessNote(data.emailWarning);
+      } else {
+        setSuccessNote(null);
       }
 
       setForm({
@@ -254,6 +262,11 @@ export default function CareerApplicationForm() {
               Thank you for applying to Ocean Lifespaces. We have received your
               resume and will contact you if your profile matches our openings.
             </p>
+            {successNote && (
+              <p className={styles.error} style={{ marginTop: 12 }}>
+                {successNote}
+              </p>
+            )}
             <button
               type="button"
               className={styles.closeBtn}

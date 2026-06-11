@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import styles from '../admin.module.css';
 import ConfirmModal from '@/components/admin/ConfirmModal';
+import EnquiryDetailModal from './EnquiryDetailModal';
 
 const STATUS_COLORS = {
   new: { bg: '#fee2e2', text: '#991b1b', border: '#fecaca' },
@@ -184,74 +185,19 @@ export default function AdminEnquiries() {
         </table>
       </div>
 
-      {/* Detail Modal */}
       {selectedEnquiry && (
-        <div style={{ 
-          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
-          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', 
-          justifyContent: 'center', zIndex: 1000, padding: '20px' 
-        }}>
-          <div style={{ 
-            background: '#fff', width: '100%', maxWidth: '600px', 
-            borderRadius: '16px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-            overflow: 'hidden'
-          }}>
-            <div style={{ padding: '20px 25px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, color: '#1e293b' }}>Enquiry Details</h3>
-              <button onClick={() => setSelectedEnquiry(null)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#94a3b8' }}>&times;</button>
-            </div>
-            <div style={{ padding: '25px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Type</label>
-                  <p style={{ margin: '5px 0 0', fontWeight: '600', color: '#0ea5e9' }}>{selectedEnquiry.type}</p>
-                </div>
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Status</label>
-                  <p style={{ margin: '5px 0 0', fontWeight: '600' }}>{selectedEnquiry.status.toUpperCase()}</p>
-                </div>
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Name</label>
-                  <p style={{ margin: '5px 0 0' }}>{selectedEnquiry.name}</p>
-                </div>
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Date</label>
-                  <p style={{ margin: '5px 0 0' }}>{new Date(selectedEnquiry.createdAt).toLocaleString()}</p>
-                </div>
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Email</label>
-                  <p style={{ margin: '5px 0 0' }}>{selectedEnquiry.email}</p>
-                </div>
-                <div>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Mobile</label>
-                  <p style={{ margin: '5px 0 0' }}>{selectedEnquiry.mobile || 'N/A'}</p>
-                </div>
-              </div>
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Subject</label>
-                <p style={{ margin: '5px 0 0', fontWeight: '600' }}>{selectedEnquiry.subject || 'No Subject'}</p>
-              </div>
-              <div>
-                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', textTransform: 'uppercase' }}>Message</label>
-                <div style={{ 
-                  margin: '8px 0 0', padding: '15px', background: '#f1f5f9', 
-                  borderRadius: '10px', border: '1px solid #e2e8f0', lineHeight: '1.6', color: '#334155' 
-                }}>
-                  {selectedEnquiry.message}
-                </div>
-              </div>
-            </div>
-            <div style={{ padding: '20px 25px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <button onClick={() => setSelectedEnquiry(null)} className={styles.editButton}>Close</button>
-              {selectedEnquiry.status === 'new' && (
-                <button onClick={() => { handleUpdateStatus(selectedEnquiry.id, 'read'); setSelectedEnquiry(null); }} className={styles.primaryButton}>Mark as Read</button>
-              )}
-              {selectedEnquiry.status !== 'resolved' && (
-                <button onClick={() => { handleUpdateStatus(selectedEnquiry.id, 'resolved'); setSelectedEnquiry(null); }} className={styles.primaryButton} style={{ background: '#10b981' }}>Mark Resolved</button>
-              )}
-            </div>
-          </div>
-        </div>
+        <EnquiryDetailModal
+          enquiry={selectedEnquiry}
+          onClose={() => setSelectedEnquiry(null)}
+          onMarkRead={() => {
+            handleUpdateStatus(selectedEnquiry.id, 'read');
+            setSelectedEnquiry(null);
+          }}
+          onMarkResolved={() => {
+            handleUpdateStatus(selectedEnquiry.id, 'resolved');
+            setSelectedEnquiry(null);
+          }}
+        />
       )}
 
       <ConfirmModal 

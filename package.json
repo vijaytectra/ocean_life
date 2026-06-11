@@ -20,7 +20,9 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@imgly/background-removal": "^1.7.0",
     "@prisma/client": "^6.19.3",
+    "html-to-image": "^1.11.13",
     "mysql2": "^3.22.3",
     "next": "15.1.7",
     "nodemailer": "^7.0.2",

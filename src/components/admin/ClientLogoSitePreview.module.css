@@ -1,0 +1,93 @@
+.wrap {
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.section {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 55, 106, 0.12);
+  padding: clamp(24px, 4vw, 32px) 0 clamp(28px, 4vw, 36px);
+}
+
+.sectionInner {
+  position: relative;
+  z-index: 1;
+  padding: 0 clamp(16px, 3vw, 24px);
+}
+
+.sectionHead {
+  margin-bottom: 20px !important;
+  padding: clamp(16px, 2.5vw, 20px) !important;
+}
+
+.marqueeWrap {
+  margin-bottom: 20px;
+}
+
+.marqueeTrackStatic {
+  animation: none !important;
+  transform: none !important;
+  padding: 12px 0;
+}
+
+.gridWrap {
+  margin-top: 8px;
+}
+
+.previewGrid {
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 0;
+  max-width: 420px;
+}
+
+@media (min-width: 640px) {
+  .previewGrid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 640px;
+  }
+}
+
+.gridLogoImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sectionCompact {
+  padding: 16px 0 20px;
+}
+
+.previewGridCompact {
+  grid-template-columns: 1fr;
+  max-width: 280px;
+}
+
+.caption {
+  margin: 10px 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}

@@ -25,6 +25,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  transpilePackages: ["@imgly/background-removal"],
 };
 
 export default nextConfig;

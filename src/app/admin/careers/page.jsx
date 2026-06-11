@@ -24,10 +24,25 @@ export default function AdminCareersPage() {
   const [selected, setSelected] = useState(null);
   const [notesDraft, setNotesDraft] = useState("");
   const [modal, setModal] = useState({ isOpen: false, id: null });
+  const [mailTest, setMailTest] = useState({ loading: false, message: null, error: null });
 
   useEffect(() => {
     fetchApplications();
   }, []);
+
+  const sendMailTest = async () => {
+    setMailTest({ loading: true, message: null, error: null });
+    try {
+      const res = await fetch("/api/admin/careers/test-mail/", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Mail test failed");
+      }
+      setMailTest({ loading: false, message: data.message, error: null });
+    } catch (err) {
+      setMailTest({ loading: false, message: null, error: err.message });
+    }
+  };
 
   const fetchApplications = async () => {
     const res = await fetch("/api/admin/careers/");
@@ -57,9 +72,27 @@ export default function AdminCareersPage() {
     setSelected((prev) => (prev ? { ...prev, notes: notesDraft } : null));
   };
 
+  const markViewed = async (id) => {
+    const res = await fetch(`/api/admin/careers/${id}/`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ markViewed: true }),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setApplications((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, ...updated } : a))
+      );
+      setSelected((prev) => (prev?.id === id ? { ...prev, ...updated } : prev));
+    }
+  };
+
   const openDetail = (app) => {
     setSelected(app);
     setNotesDraft(app.notes || "");
+    if (!app.viewedAt) {
+      markViewed(app.id);
+    }
   };
 
   const confirmDelete = async () => {
@@ -87,7 +120,15 @@ export default function AdminCareersPage() {
     <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
       <div className={styles.header}>
         <h2 className={styles.pageTitle}>Careers — ATS</h2>
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+          <button
+            type="button"
+            onClick={sendMailTest}
+            className={styles.editButton}
+            disabled={mailTest.loading}
+          >
+            {mailTest.loading ? "Testing mail…" : "Test careers email"}
+          </button>
           <select
             value={positionFilter}
             onChange={(e) => setPositionFilter(e.target.value)}
@@ -116,6 +157,13 @@ export default function AdminCareersPage() {
         </div>
       </div>
 
+      {mailTest.message && (
+        <p style={{ color: "#166534", marginBottom: 16, fontSize: 14 }}>{mailTest.message}</p>
+      )}
+      {mailTest.error && (
+        <p style={{ color: "#b91c1c", marginBottom: 16, fontSize: 14 }}>{mailTest.error}</p>
+      )}
+
       <div
         className={styles.formCard}
         style={{ padding: 0, overflowX: "auto", marginBottom: 24 }}
@@ -128,13 +176,14 @@ export default function AdminCareersPage() {
               <th style={thStyle}>Position</th>
               <th style={thStyle}>Experience</th>
               <th style={thStyle}>Status</th>
+              <th style={thStyle}>Resume</th>
               <th style={{ ...thStyle, textAlign: "right" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>
+                <td colSpan={7} style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>
                   No applications yet.
                 </td>
               </tr>
@@ -146,11 +195,30 @@ export default function AdminCareersPage() {
                     key={app.id}
                     style={{
                       borderBottom: "1px solid #f1f5f9",
-                      background: app.status === "new" ? "#fffbeb" : "transparent",
+                      background:
+                        app.status === "new" && !app.viewedAt
+                          ? "#fffbeb"
+                          : "transparent",
                     }}
                   >
                     <td style={tdStyle}>
                       {new Date(app.createdAt).toLocaleDateString()}
+                      {!app.viewedAt && (
+                        <span
+                          style={{
+                            display: "inline-block",
+                            marginLeft: 6,
+                            padding: "2px 6px",
+                            borderRadius: 10,
+                            fontSize: 10,
+                            fontWeight: 700,
+                            background: "#fee2e2",
+                            color: "#991b1b",
+                          }}
+                        >
+                          NEW
+                        </span>
+                      )}
                     </td>
                     <td style={tdStyle}>
                       <div style={{ fontWeight: 600, color: "#1e293b" }}>
@@ -174,6 +242,20 @@ export default function AdminCareersPage() {
                       >
                         {st.label}
                       </span>
+                    </td>
+                    <td style={tdStyle}>
+                      <a
+                        href={app.resumeUrl || `/api/resumes/${encodeURIComponent(app.resumePath)}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.editButton}
+                        style={{ textDecoration: "none", fontSize: 12 }}
+                        onClick={() => {
+                          if (!app.viewedAt) markViewed(app.id);
+                        }}
+                      >
+                        Download
+                      </a>
                     </td>
                     <td style={{ ...tdStyle, textAlign: "right" }}>
                       <button
@@ -328,9 +410,17 @@ export default function AdminCareersPage() {
 
           <div style={{ marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <a
-              href={`/api/admin/careers/${selected.id}/?download=resume`}
+              href={
+                selected.resumeUrl ||
+                `/api/resumes/${encodeURIComponent(selected.resumePath)}/`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
               className={styles.primaryButton}
               style={{ textDecoration: "none", display: "inline-block" }}
+              onClick={() => {
+                if (!selected.viewedAt) markViewed(selected.id);
+              }}
             >
               Download resume
             </a>
