@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 import { listAllBlogs, listPublishedBlogs } from "@/lib/blogData";
+import { normalizeBlogImagePath } from "@/lib/blogImage";
 import {
   isMysqlBlogEnabled,
   mysqlCreateBlog,
@@ -35,7 +36,7 @@ export async function POST(request) {
     const payload = {
       title: body.title,
       content: body.content,
-      image: body.image || null,
+      image: normalizeBlogImagePath(body.image),
       metaTitle: body.metaTitle || null,
       metaDesc: body.metaDesc || null,
       status: mapStatus(body.status),

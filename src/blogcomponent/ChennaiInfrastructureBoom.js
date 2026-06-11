@@ -38,7 +38,7 @@ export default function ChennaiInfrastructureBoom() {
           </h1>
           <div className={styles.heroImage}>
             <Image
-              src="/blogs/boom-projects.webp"
+              src="/blog-images/boom-projects.webp"
               alt="Chennai city skyline"
               width={1200}
               height={600}

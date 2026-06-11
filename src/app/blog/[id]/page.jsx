@@ -1,15 +1,23 @@
 import prisma from "@/lib/prisma";
 import { isMysqlBlogEnabled, mysqlGetBlogById } from "@/lib/mysqlBlog";
+import { resolveBlogImageUrl, normalizeBlogImagePath } from "@/lib/blogImage";
 
 async function loadBlog(id) {
   const numericId = parseInt(id, 10);
   if (Number.isNaN(numericId)) return null;
+  let blog;
   if (isMysqlBlogEnabled()) {
-    return mysqlGetBlogById(numericId);
+    blog = await mysqlGetBlogById(numericId);
+  } else {
+    blog = await prisma.blog.findUnique({
+      where: { id: numericId },
+    });
   }
-  return prisma.blog.findUnique({
-    where: { id: numericId },
-  });
+  if (!blog) return null;
+  return {
+    ...blog,
+    image: blog.image ? normalizeBlogImagePath(blog.image) : blog.image,
+  };
 }
 
 export async function generateMetadata({ params }) {
@@ -64,7 +72,7 @@ export default async function BlogPage({ params }) {
               }}
             >
               <img
-                src={blog.image}
+                src={resolveBlogImageUrl(blog.image)}
                 alt=""
                 style={{
                   width: "100%",

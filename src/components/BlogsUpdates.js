@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Styles from "./NewsAndEvents.module.css";
+import { resolveBlogImageUrl } from "@/lib/blogImage";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -155,7 +156,7 @@ const BlogsUpdates = ({ list = 3, initialBlogs = null, showHeading = true, anima
               >
                 <div className={Styles.imageDiv}>
                   <img
-                    src={news.image || "/blogs/top5.webp"}
+                    src={resolveBlogImageUrl(news.image)}
                     alt={news.title ? `Cover: ${news.title}` : "Blog cover"}
                     className={Styles.blogThumb}
                     loading={index < 2 ? "eager" : "lazy"}

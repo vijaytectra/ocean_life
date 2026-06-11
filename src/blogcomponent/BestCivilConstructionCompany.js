@@ -40,7 +40,7 @@ export default function BestCivilConstructionCompany() {
           </p>
           <div className={styles.heroImage}>
             <Image
-              src="/blogs/right-civil.webp"
+              src="/blog-images/right-civil.webp"
               alt="Construction site in Chennai"
               width={1200}
               height={600}

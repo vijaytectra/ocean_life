@@ -11,6 +11,14 @@ const nextConfig = {
     formats: ["image/webp"],
     minimumCacheTTL: 3600,
   },
+  async rewrites() {
+    return [
+      {
+        source: "/blogs/:file*",
+        destination: "/blog-images/:file*",
+      },
+    ];
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

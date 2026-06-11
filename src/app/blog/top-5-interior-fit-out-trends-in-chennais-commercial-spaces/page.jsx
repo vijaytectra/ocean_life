@@ -31,7 +31,7 @@ export default function InteriorFitOutTrends() {
           <h1>Top 5 Interior Fit-Out Trends in Chennai's Commercial Spaces</h1>
           <div className={styles.heroImage}>
             <img
-              src="/blogs/top5.webp"
+              src="/blog-images/top5.webp"
               alt="Modern commercial interior space"
               width={1200}
               height={600}

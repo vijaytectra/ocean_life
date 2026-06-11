@@ -5,7 +5,7 @@ import Script from "next/script";
 import ImageCropper from "@/components/ImageCropper";
 import ConfirmModal from "@/components/admin/ConfirmModal";
 import styles from "../admin.module.css";
-import blogStyles from "./blogsAdmin.module.css";
+import { resolveBlogImageUrl } from "@/lib/blogImage";
 
 const TINYMCE_VERSION = "6.8.3";
 const TINYMCE_CDN_BASE = `https://cdn.jsdelivr.net/npm/tinymce@${TINYMCE_VERSION}`;
@@ -14,12 +14,8 @@ const BANNER_FALLBACK = "/foot-logo.svg";
 const tinymceCloudKey = process.env.NEXT_PUBLIC_TINYMCE_API_KEY?.trim();
 
 function resolveBannerSrc(url) {
-  if (!url || typeof url !== "string") return BANNER_FALLBACK;
-  const u = url.trim();
-  if (!u) return BANNER_FALLBACK;
-  if (u.startsWith("http://") || u.startsWith("https://")) return u;
-  if (u.startsWith("/")) return u;
-  return `/${u}`;
+  if (!url || typeof url !== "string" || !url.trim()) return BANNER_FALLBACK;
+  return resolveBlogImageUrl(url);
 }
 
 function normalizeStatusForForm(status) {

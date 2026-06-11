@@ -1,19 +1,28 @@
 import prisma from "@/lib/prisma";
 import { isMysqlBlogEnabled, mysqlListBlogs } from "@/lib/mysqlBlog";
+import { normalizeBlogImagePath } from "@/lib/blogImage";
+
+function withNormalizedImage(blog) {
+  if (!blog) return blog;
+  return {
+    ...blog,
+    image: blog.image ? normalizeBlogImagePath(blog.image) : blog.image,
+  };
+}
 
 async function listAllBlogs() {
   try {
     if (isMysqlBlogEnabled()) {
-      return mysqlListBlogs();
+      return (await mysqlListBlogs()).map(withNormalizedImage);
     }
-    return prisma.blog.findMany({
+    return (await prisma.blog.findMany({
       orderBy: { createdAt: "desc" },
-    });
+    })).map(withNormalizedImage);
   } catch (error) {
     if (isMysqlBlogEnabled()) {
-      return prisma.blog.findMany({
+      return (await prisma.blog.findMany({
         orderBy: { createdAt: "desc" },
-      });
+      })).map(withNormalizedImage);
     }
     throw error;
   }

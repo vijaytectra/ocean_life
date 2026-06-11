@@ -6,6 +6,7 @@ import {
   mysqlDeleteBlog,
   mysqlGetBlogById,
 } from "@/lib/mysqlBlog";
+import { normalizeBlogImagePath } from "@/lib/blogImage";
 
 function mapStatus(bodyStatus) {
   if (!bodyStatus || typeof bodyStatus !== "string") return "published";
@@ -22,7 +23,7 @@ export async function PUT(request, { params }) {
     const payload = {
       title: body.title,
       content: body.content,
-      image: body.image ?? null,
+      image: normalizeBlogImagePath(body.image),
       metaTitle: body.metaTitle ?? null,
       metaDesc: body.metaDesc ?? null,
       status: mapStatus(body.status),

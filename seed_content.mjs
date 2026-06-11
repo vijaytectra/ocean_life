@@ -6,17 +6,17 @@ const Blogs = [
   {
     title: "Top 5 Interior Fit-Out Trends in Chennai’s Commercial Spaces",
     content: "The commercial landscape in Chennai is transforming drastically and is on the rise. With the enormous...",
-    image: "/blogs/top5.webp",
+    image: "/blog-images/top5.webp",
   },
   {
     title: "Chennai’s Infrastructure Boom: Projects That Will Shape the Next Decade",
     content: "Chennai is considered one of the fastest-growing urban hubs in India. The next decade is planned to transform ...",
-    image: "/blogs/boom-projects.webp",
+    image: "/blog-images/boom-projects.webp",
   },
   {
     title: "8 Tips to Choose the Best Civil Construction Company in Chennai",
     content: "It is essential to choose the best civil company for your real estate project. Choosing the right company ...",
-    image: "/blogs/right-civil.webp",
+    image: "/blog-images/right-civil.webp",
   },
 ];
 
