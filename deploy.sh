@@ -1,12 +1,22 @@
 #!/usr/bin/env bash
 # Deploy Ocean Lifespaces Next.js app on the production server.
 # Run from: /home/oceanweb/htdocs/www.olipl.com
-# Usage: sudo -u oceanweb bash deploy.sh
+#
+# IMPORTANT — always deploy as oceanweb (not root):
+#   sudo -u oceanweb bash deploy.sh
+#
+# If you run as root, this script re-execs as oceanweb automatically.
 
 set -euo pipefail
 
 APP_DIR="/home/oceanweb/htdocs/www.olipl.com"
+APP_USER="oceanweb"
 APP_NAME="olipl"
+
+if [[ "$(id -un)" == "root" ]]; then
+  echo "==> Re-running deploy as $APP_USER (never use root PM2 for this app)"
+  exec sudo -u "$APP_USER" bash "$APP_DIR/deploy.sh"
+fi
 
 cd "$APP_DIR"
 
@@ -33,4 +43,4 @@ fi
 pm2 save
 pm2 list
 
-echo "==> Deploy complete. App: $APP_NAME"
+echo "==> Deploy complete. App: $APP_NAME (user: $(id -un))"

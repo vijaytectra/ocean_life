@@ -31,6 +31,22 @@ pm2 start ecosystem.config.cjs
 pm2 save
 ```
 
+> **Important:** PM2 runs under the `oceanweb` user. Never run `pm2 restart olipl` as root — use `sudo -u oceanweb pm2 restart olipl`.
+
+If `pm2 status` as root shows `oceanlife` errored but `olipl` looked online a moment ago, you have **two PM2 daemons** (root vs oceanweb). Fix once:
+
+```bash
+cd /home/oceanweb/htdocs/www.olipl.com
+chmod +x scripts/pm2-fix.sh
+bash scripts/pm2-fix.sh
+```
+
+After that, only check status as oceanweb:
+
+```bash
+sudo -u oceanweb pm2 status
+```
+
 ## Regular deploy (after pushing code to GitHub)
 
 On your **local machine**:
@@ -45,8 +61,7 @@ On the **server** (SSH as root or oceanweb):
 
 ```bash
 cd /home/oceanweb/htdocs/www.olipl.com
-chmod +x scripts/deploy.sh
-./scripts/deploy.sh
+sudo -u oceanweb bash deploy.sh
 ```
 
 > **Important:** PM2 runs under the `oceanweb` user. Never run `pm2 restart olipl` as root — use `sudo -u oceanweb pm2 restart olipl`.
