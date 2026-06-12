@@ -7,6 +7,23 @@
   margin: 40px auto;
 }
 
+.embedded {
+  margin: 0;
+  max-width: none;
+}
+
+.embedded .form {
+  margin-top: 0;
+}
+
+.formTitle {
+  margin: 0 0 8px;
+  font-size: clamp(1.5rem, 3vw, 1.75rem);
+  font-weight: 600;
+  color: var(--color-dark-blue, #00376a);
+  letter-spacing: -0.02em;
+}
+
 .form {
   display: flex;
   flex-direction: column;

@@ -34,6 +34,13 @@ rm -rf .next
 echo "==> Installing dependencies..."
 npm ci
 
+echo "==> Syncing database schema..."
+npx prisma generate
+npx prisma db push
+
+echo "==> Ensuring upload directories..."
+mkdir -p public/uploads/resumes public/uploads
+
 echo "==> Building..."
 npm run build
 

@@ -62,7 +62,7 @@ function getFormCopy(type) {
   return { ...base, ...extra };
 }
 
-const ContactForm = ({ type = "Contact", title = "Get in Touch" }) => {
+const ContactForm = ({ type = "Contact", title = "Get in Touch", embedded = false }) => {
   const copy = getFormCopy(type);
   const [formData, setFormData] = useState({
     name: "",
@@ -126,8 +126,8 @@ const ContactForm = ({ type = "Contact", title = "Get in Touch" }) => {
   }, [submitted]);
 
   return (
-    <div className={styles.formContainer}>
-      <h2 className="h2">{title}</h2>
+    <div className={`${styles.formContainer} ${embedded ? styles.embedded : ""}`}>
+      {title ? <h2 className={styles.formTitle}>{title}</h2> : null}
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.fieldGroup}>
           <div className={styles.inputWrapper}>

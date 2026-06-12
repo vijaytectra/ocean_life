@@ -76,7 +76,7 @@ export default function AdminClients() {
           <ImageCropper 
             onImageCropped={handleImageCropped} 
             onCancel={() => setShowCropper(false)} 
-            aspectRatio={184/104}
+            aspectRatio={1}
             previewMode="client-logo"
             previewSectionTitle={category === 'corporate' ? 'Corporate Clients' : 'Ongoing Projects'}
             enableBgRemoval

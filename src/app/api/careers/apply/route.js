@@ -84,8 +84,19 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error("Career application save:", error);
+    const message = error?.message || "";
+    const needsDbSync =
+      message.includes("no such table") ||
+      message.includes("CareerApplication") ||
+      message.includes("viewedAt");
+
     return Response.json(
-      { success: false, error: "Could not save your application" },
+      {
+        success: false,
+        error: needsDbSync
+          ? "Applications are temporarily unavailable. Please try again later or email HRrecruiter@olipl.com."
+          : "Could not save your application. Please try again.",
+      },
       { status: 500 }
     );
   }

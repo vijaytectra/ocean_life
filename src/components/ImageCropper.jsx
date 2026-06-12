@@ -326,7 +326,13 @@ export default function ImageCropper({
                 image={imageSrc}
                 crop={crop}
                 zoom={zoom}
-                aspect={freeAspect ? undefined : aspectRatio ?? 1}
+                aspect={
+                  freeAspect
+                    ? undefined
+                    : previewMode === "client-logo"
+                      ? 1
+                      : aspectRatio ?? 1
+                }
                 minZoom={ZOOM_MIN}
                 maxZoom={ZOOM_MAX}
                 onCropChange={setCrop}

@@ -25,6 +25,8 @@ export default function AdminCareersPage() {
   const [notesDraft, setNotesDraft] = useState("");
   const [modal, setModal] = useState({ isOpen: false, id: null });
   const [mailTest, setMailTest] = useState({ loading: false, message: null, error: null });
+  const [loadError, setLoadError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchApplications();
@@ -45,9 +47,28 @@ export default function AdminCareersPage() {
   };
 
   const fetchApplications = async () => {
-    const res = await fetch("/api/admin/careers/");
-    const data = await res.json();
-    if (Array.isArray(data)) setApplications(data);
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const res = await fetch("/api/admin/careers/", { credentials: "include" });
+      const data = await res.json();
+      if (!res.ok) {
+        setApplications([]);
+        setLoadError(data.error || `Could not load applications (${res.status})`);
+        return;
+      }
+      if (Array.isArray(data)) {
+        setApplications(data);
+      } else {
+        setApplications([]);
+        setLoadError("Unexpected response from server.");
+      }
+    } catch (err) {
+      setApplications([]);
+      setLoadError(err.message || "Could not load applications.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleStatusChange = async (id, status) => {
@@ -163,6 +184,21 @@ export default function AdminCareersPage() {
       {mailTest.error && (
         <p style={{ color: "#b91c1c", marginBottom: 16, fontSize: 14 }}>{mailTest.error}</p>
       )}
+      {loadError && (
+        <p
+          style={{
+            color: "#b91c1c",
+            marginBottom: 16,
+            fontSize: 14,
+            padding: "12px 16px",
+            background: "#fef2f2",
+            borderRadius: 8,
+            border: "1px solid #fecaca",
+          }}
+        >
+          {loadError}
+        </p>
+      )}
 
       <div
         className={styles.formCard}
@@ -181,10 +217,16 @@ export default function AdminCareersPage() {
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 ? (
+            {loading ? (
               <tr>
                 <td colSpan={7} style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>
-                  No applications yet.
+                  Loading applications…
+                </td>
+              </tr>
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td colSpan={7} style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>
+                  {loadError ? "Fix the error above, then refresh this page." : "No applications yet."}
                 </td>
               </tr>
             ) : (

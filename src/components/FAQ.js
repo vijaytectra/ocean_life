@@ -6,29 +6,44 @@ import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 
 const faqData = [
   {
-    question: "What types of services do you provide?",
+    question: "What services does Ocean Lifespaces provide?",
     answer:
-      "At Ocean Lifespaces, we offer Turnkey Solutions, Fit-Out Services, Civil Construction, Real Estate Development, and Infrastructure Development for both residential and commercial projects.",
+      "We deliver turnkey construction, commercial and corporate interior fit-outs, civil construction, design-build solutions, and project management — from concept and planning through handover for offices, campuses, retail, and industrial spaces.",
   },
   {
-    question: "Do you offer customization options?",
+    question: "Do you offer end-to-end turnkey project delivery?",
     answer:
-      "Yes, we offer customized construction solutions to meet your unique project requirements, whether it's the design, layout, materials, or execution, ensuring your vision is brought to life exactly as you envision.",
+      "Yes. Our turnkey model covers design coordination, procurement, civil works, MEP, interiors, quality checks, and final commissioning — so you work with a single accountable partner from start to finish.",
   },
   {
-    question: "What materials do you use?",
+    question: "Which cities and regions do you operate in?",
     answer:
-      "We use only high-quality, durable materials suited to each project, ensuring the best results for both functionality and aesthetics. Our materials range from premium construction-grade materials to sustainable options, all chosen based on the project’s requirements.",
+      "Our head office is in Chennai, with regional presence across South India including Hyderabad and Bengaluru. We support pan-India projects for corporate and commercial clients depending on scope and timelines.",
   },
   {
-    question: "Do you provide delivery and assembly services?",
+    question: "What kinds of projects do you typically deliver?",
     answer:
-      "Yes, we manage complete project delivery and assembly, ensuring timely and efficient completion of construction, from the groundwork to the final finishing, making sure every element of the project is assembled and ready for use.",
+      "We specialise in corporate offices, IT parks, commercial interiors, institutional buildings, and large-scale fit-outs for brands that need precision, scale, and on-time delivery — including ongoing and multi-location engagements.",
   },
   {
-    question: "How do we book a project with you?",
+    question: "How can I request a quote or schedule a site visit?",
     answer:
-      "Booking a project with Ocean Lifespaces is simple: Contact us via website or phone, arrange a consultation, receive a tailored proposal, approve the design, and we handle the entire process from start to finish, ensuring timely and quality execution.",
+      "Use the contact form on this page, email us at info@ocean.net.in, or call +91 98410 22110. Share your location, approximate area, timeline, and scope — our team will arrange a consultation and site visit where required.",
+  },
+  {
+    question: "How long does a commercial fit-out or construction project take?",
+    answer:
+      "Timelines depend on size, complexity, and approvals. A phased office fit-out may take a few weeks to several months; larger turnkey builds are planned with milestone schedules shared at proposal stage. We prioritise realistic planning and transparent progress updates.",
+  },
+  {
+    question: "Can you execute work while our premises stay operational?",
+    answer:
+      "Yes. For occupied offices and live facilities we plan phased execution, after-hours work where needed, and clear safety and access protocols to minimise disruption to your teams and operations.",
+  },
+  {
+    question: "How do I explore careers or partnerships with Ocean Lifespaces?",
+    answer:
+      "For career opportunities, visit our Careers page and submit your application with a resume. For joint ventures, vendor partnerships, or collaboration enquiries, contact us through this page and mention your proposal in the message.",
   },
 ];
 
@@ -41,22 +56,36 @@ const FAQ = () => {
 
   return (
     <div className={styles.faqContainer}>
-      <h2 className="h2">FAQs</h2>
-      {faqData.map((item, index) => (
-        <div key={index} className={styles.faqItem}>
-          <div className={styles.faqQuestion} onClick={() => toggleFAQ(index)}>
-            {item.question}
-            {openIndex === index ? (
-              <AiOutlineMinus className={styles.faqIcon} />
-            ) : (
-              <AiOutlinePlus className={styles.faqIcon} />
-            )}
-          </div>
-          {openIndex === index && (
-            <p className={styles.faqAnswer}>{item.answer}</p>
-          )}
-        </div>
-      ))}
+      <h2 className={styles.faqHeading}>FAQs</h2>
+      <p className={styles.faqLead}>
+        Common questions about our services, locations, and how to work with us.
+      </p>
+      <div className={styles.faqList}>
+        {faqData.map((item, index) => {
+          const isOpen = openIndex === index;
+          return (
+            <div
+              key={item.question}
+              className={`${styles.faqItem} ${isOpen ? styles.faqItemOpen : ""}`}
+            >
+              <button
+                type="button"
+                className={styles.faqQuestion}
+                onClick={() => toggleFAQ(index)}
+                aria-expanded={isOpen}
+              >
+                <span>{item.question}</span>
+                {isOpen ? (
+                  <AiOutlineMinus className={styles.faqIcon} aria-hidden />
+                ) : (
+                  <AiOutlinePlus className={styles.faqIcon} aria-hidden />
+                )}
+              </button>
+              {isOpen && <p className={styles.faqAnswer}>{item.answer}</p>}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

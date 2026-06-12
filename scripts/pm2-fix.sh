@@ -34,6 +34,12 @@ echo "==> Clean install node_modules..."
 rm -rf node_modules .next
 npm ci
 
+echo "==> Syncing database schema..."
+npx prisma generate
+npx prisma db push
+
+mkdir -p public/uploads/resumes public/uploads
+
 if [[ ! -f node_modules/next/dist/bin/next ]]; then
   echo "ERROR: Next.js not installed after npm ci. Check npm errors above."
   exit 1

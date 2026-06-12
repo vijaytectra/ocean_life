@@ -1,127 +1,507 @@
-.contact {
-  position: relative;
+.page {
   width: 100%;
+  overflow-x: hidden;
+  background-color: #f4f7fa;
+}
+
+/* ─── Hero ─── */
+.hero {
+  position: relative;
   overflow: hidden;
-  padding-top: clamp(100px, 22vh, 22vh);
-  background-image: url("../../../public/contact/contact-pg-head.webp");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  padding-bottom: clamp(50px, 7vh, 7vh);
-  margin-bottom: clamp(-100px, -20vh, -20vh);
-}
-.rowMainContact {
-  position: relative;
-  backdrop-filter: blur(10px);
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.78) 0%,
-    rgba(244, 246, 247, 0.78) 100%
-  );
-  padding: clamp(20px, 2vw, 2vw);
-  border-top-left-radius: clamp(10px, 1vw, 1vw);
-  border-top-right-radius: clamp(10px, 1vw, 1vw);
-  z-index: 9;
-}
-.rowContact {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 1vw;
-  width: 100%;
-  height: 100%;
-}
-.columnContact {
+  min-height: 58vh;
   display: flex;
-  column-gap: clamp(10px, 1vw, 1vw);
   align-items: center;
   justify-content: center;
-}
-.columnContact img {
-  width: clamp(35px, 3.5vw, 3.5vw);
-  height: auto;
-}
-.columnContact .content {
-  display: flex;
-  flex-direction: column;
-  row-gap: clamp(5px, 0.2vw, 0.2vw);
-}
-.columnContact .content h5 {
-  color: var(--color-dark-blue);
-  font-weight: bold;
-}
-.contactForm {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  padding: clamp(40px, 15vh, 15vh) 0;
-  background-color: #f8f8f8;
-  padding-bottom: clamp(50px, 7vh, 7vh);
-}
-.faqSection {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  padding: clamp(40px, 5vh, 5vh) 0;
-  background-color: var(--color-grey);
-  background-image: url("../../../public/feviconBg.webp");
-  background-repeat: no-repeat;
-  background-position: left bottom;
+  padding: clamp(100px, 14vh, 130px) 20px clamp(48px, 7vh, 64px);
+  box-sizing: border-box;
+  color: #fff;
+  text-align: center;
 }
 
-/* other-location-css-starts-here */
-.otherLocations {
-  padding-bottom: 40px;
+.heroImage {
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    105deg,
+    rgba(0, 55, 106, 0.88) 0%,
+    rgba(0, 55, 106, 0.55) 45%,
+    rgba(0, 42, 82, 0.78) 100%
+  );
+  pointer-events: none;
+}
+
+.heroInner {
   position: relative;
-  max-width: 800px;
+  z-index: 2;
+  max-width: 720px;
+  width: 100%;
   margin: 0 auto;
 }
-.otherLocations h2 {
-  color: var(--color-dark-blue);
-  margin-bottom: 20px;
+
+.eyebrow {
+  font-size: clamp(0.7rem, 1.1vw, 0.8rem);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0 0 clamp(14px, 2vh, 20px);
 }
-.rowOtherLocations {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 2vw;
+
+.heroTitle {
+  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin: 0 0 clamp(16px, 2.5vh, 22px);
+  line-height: 1.1;
+}
+
+.heroLead {
+  font-size: clamp(1rem, 1.8vw, 1.12rem);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+  margin: 0 auto;
+  max-width: 52ch;
+}
+
+/* ─── Head office ─── */
+.headOfficeSection {
+  position: relative;
+  padding: clamp(48px, 8vh, 72px) 0;
+  margin-top: clamp(-40px, -6vh, -56px);
+  z-index: 3;
+}
+
+.sectionHead {
+  margin-bottom: clamp(28px, 4vh, 40px);
+  max-width: 720px;
+}
+
+.sectionTitle {
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  font-weight: 600;
+  color: #002a52;
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+}
+
+.sectionSub {
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.65;
+  color: #475569;
+  margin: 0;
+  font-weight: 500;
+}
+
+.headOfficeCard {
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 55, 106, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 55, 106, 0.1);
+  overflow: hidden;
+}
+
+.mapBlock {
+  padding: clamp(24px, 3.5vw, 32px) clamp(24px, 3.5vw, 32px) 0;
+}
+
+.mapBlockHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: clamp(16px, 2.5vh, 20px);
+}
+
+.mapEyebrow {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #2d6a4f;
+}
+
+.mapTitle {
+  margin: 0 0 4px;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  color: var(--color-dark-blue, #00376a);
+  letter-spacing: -0.02em;
+}
+
+.mapSub {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.openMapsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: var(--color-dark-blue, #00376a);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.openMapsBtn:hover {
+  background: #fff;
+  border-color: rgba(245, 131, 31, 0.45);
+  color: #002a52;
+}
+
+.mapFrame {
+  position: relative;
+  width: 100%;
+  height: clamp(200px, 26vw, 280px);
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid #e2e8f0;
+  border-bottom: none;
+}
+
+.mapIframe {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  border: 0;
 }
-.columnOtherLocations {
+
+.headOfficeDivider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 55, 106, 0.12) 20%,
+    rgba(245, 131, 31, 0.2) 50%,
+    rgba(0, 55, 106, 0.12) 80%,
+    transparent
+  );
+}
+
+.headOfficePanel {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: clamp(16px, 2.5vw, 24px);
+  align-items: stretch;
+  padding: clamp(24px, 3.5vw, 32px);
+}
+
+.headOfficeMain {
+  position: relative;
+  padding: clamp(20px, 3vw, 28px);
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #e8ecef;
+  overflow: hidden;
+}
+
+.headOfficeMain::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #2d6a4f, #f5831f);
+}
+
+.hqBadge {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(45, 106, 79, 0.1);
+  color: #2d6a4f;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.headOfficeTitleRow {
   display: flex;
-  row-gap: clamp(15px, 2vh, 2vh);
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.headOfficeIcon {
+  width: 40px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.headOfficeCity {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.5vw, 1.65rem);
+  font-weight: 700;
+  color: var(--color-dark-blue, #00376a);
+  letter-spacing: -0.02em;
+}
+
+.headOfficeLabel {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.headOfficeAddress {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #334155;
+  max-width: 46ch;
+}
+
+.headOfficeActions {
+  display: flex;
   flex-direction: column;
+  gap: clamp(14px, 2vw, 18px);
 }
-.columnOtherLocations .columnContact {
+
+.actionTile {
+  display: flex;
   align-items: flex-start;
-  justify-content: flex-start;
+  gap: 16px;
+  flex: 1;
+  padding: clamp(18px, 2.5vw, 24px);
+  background: #f8fafc;
+  border: 1px solid #e8ecef;
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
 }
-.getDirection {
-  margin-top: 10px;
-}
-/* media-query-css */
 
-@media only screen and (min-width: 551px) and (max-width: 1024px) {
-  .rowContact {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.actionTile:hover {
+  border-color: rgba(245, 131, 31, 0.45);
+  background: #fff;
 }
 
-@media only screen and (max-width: 550px) {
-  .rowContact {
-    grid-template-columns: repeat(1, 1fr);
-    row-gap: 30px;
-  }
-  .columnContact {
-    justify-content: flex-start;
-  }
-  .rowOtherLocations {
+.actionIcon {
+  width: 36px;
+  height: auto;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.actionCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.actionLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.actionValue {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-dark-blue, #00376a);
+  line-height: 1.45;
+}
+
+.actionValue a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.actionValue a:hover {
+  color: var(--color-orange, #f5831f);
+}
+
+/* ─── Sections ─── */
+.section {
+  position: relative;
+  padding: clamp(48px, 8vh, 72px) 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.sectionAccent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 2;
+  background: linear-gradient(90deg, #2d6a4f, #f5831f, #7dd3a8);
+}
+
+.sectionInner {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Location cards ─── */
+.locationsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(16px, 2.5vw, 24px);
+}
+
+.locationCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(24px, 3vw, 32px);
+  background: #f8fafc;
+  border: 1px solid #e8ecef;
+  border-radius: 14px;
+  transition:
+    transform 0.35s ease,
+    border-color 0.3s ease,
+    box-shadow 0.35s ease;
+  height: 100%;
+}
+
+.locationCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(245, 131, 31, 0.4);
+  box-shadow: 0 14px 32px rgba(0, 55, 106, 0.1);
+  background: #fff;
+}
+
+.locationState {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-dark-blue, #00376a);
+}
+
+.locationAddress {
+  margin: 0;
+  flex: 1;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #475569;
+}
+
+.directionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: var(--color-dark-blue, #00376a);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.directionBtn:hover {
+  background: #002a52;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 55, 106, 0.25);
+}
+
+.directionBtn svg {
+  flex-shrink: 0;
+}
+
+/* ─── Form ─── */
+.formSection {
+  padding: clamp(48px, 8vh, 80px) 0 clamp(64px, 10vh, 96px);
+  background: #eef2f6;
+}
+
+.formHeader {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto clamp(32px, 5vh, 48px);
+}
+
+.formHeader h2 {
+  margin: 0 0 10px;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 600;
+  color: var(--color-dark-blue, #00376a);
+  letter-spacing: -0.02em;
+}
+
+.formHeader p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.formWrap {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+/* ─── FAQ ─── */
+.faqSection {
+  padding: clamp(48px, 8vh, 72px) 0 clamp(64px, 10vh, 88px);
+  background-color: var(--color-grey, #e9e9e9);
+  background-image: url("/feviconBg.webp");
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: auto;
+}
+
+@media only screen and (max-width: 900px) {
+  .headOfficePanel {
     grid-template-columns: 1fr;
-    row-gap: 20px;
   }
-  .contact {
-    padding-bottom: 30px;
+
+  .mapBlockHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .mapFrame {
+    height: clamp(180px, 42vw, 240px);
+  }
+}
+
+@media only screen and (max-width: 640px) {
+  .locationsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    min-height: 52vh;
   }
 }
