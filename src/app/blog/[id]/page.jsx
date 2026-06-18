@@ -1,18 +1,8 @@
-import prisma from "@/lib/prisma";
-import { isMysqlBlogEnabled, mysqlGetBlogById } from "@/lib/mysqlBlog";
+import { getBlogBySlugOrId } from "@/lib/blogSlugResolve";
 import { resolveBlogImageUrl, normalizeBlogImagePath } from "@/lib/blogImage";
 
-async function loadBlog(id) {
-  const numericId = parseInt(id, 10);
-  if (Number.isNaN(numericId)) return null;
-  let blog;
-  if (isMysqlBlogEnabled()) {
-    blog = await mysqlGetBlogById(numericId);
-  } else {
-    blog = await prisma.blog.findUnique({
-      where: { id: numericId },
-    });
-  }
+async function loadBlog(identifier) {
+  const blog = await getBlogBySlugOrId(identifier);
   if (!blog) return null;
   return {
     ...blog,
@@ -26,6 +16,9 @@ export async function generateMetadata({ params }) {
   return {
     title: blog?.metaTitle || (blog ? `${blog.title} | Ocean Lifespaces` : "Blog Not Found"),
     description: blog?.metaDesc || "",
+    alternates: blog?.slug
+      ? { canonical: `https://www.olipl.com/blog/${blog.slug}/` }
+      : undefined,
   };
 }
 

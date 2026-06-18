@@ -7,6 +7,7 @@ import {
   mysqlGetBlogById,
 } from "@/lib/mysqlBlog";
 import { normalizeBlogImagePath } from "@/lib/blogImage";
+import { resolveBlogSlug } from "@/lib/blogSlugResolve";
 
 function mapStatus(bodyStatus) {
   if (!bodyStatus || typeof bodyStatus !== "string") return "published";
@@ -20,8 +21,14 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
     const body = await request.json();
+    const slug = await resolveBlogSlug({
+      title: body.title,
+      slug: body.slug,
+      excludeId: id,
+    });
     const payload = {
       title: body.title,
+      slug,
       content: body.content,
       image: normalizeBlogImagePath(body.image),
       metaTitle: body.metaTitle ?? null,

@@ -3,6 +3,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Styles from "./NewsAndEvents.module.css";
 import { resolveBlogImageUrl } from "@/lib/blogImage";
+import { blogPublicPath } from "@/lib/blogSlug";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -170,7 +171,7 @@ const BlogsUpdates = ({ list = 3, initialBlogs = null, showHeading = true, anima
                   </div>
                   <h3>{news.title}</h3>
                   <p className={Styles.cardExcerpt}>{excerpt(news.content)}</p>
-                  <Link href={`/blog/${news.id}`} className={Styles.cta}>
+                  <Link href={blogPublicPath(news)} className={Styles.cta}>
                     <span>Read more</span>
                     <svg width="15px" height="10px" viewBox="0 0 13 10" aria-hidden>
                       <path d="M1,5 L11,5" stroke="currentColor" strokeWidth="1.5" fill="none" />

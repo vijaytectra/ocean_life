@@ -133,6 +133,7 @@ NEXT_PUBLIC_SITE_URL=https://www.olipl.com
 - **Send from:** `salesinfra@olipl.com` (SMTP login + From address).
 - **Careers notify:** `HRrecruiter@olipl.com` receives application alerts.
 - **Contact/newsletter notify:** `salesinfra@olipl.com` (default admin notification email).
+- **Remove** `GMAIL_USER` and `GMAIL_PASSWORD` from production `.env` — stale Gmail vars cause `535 BadCredentials` errors.
 
 After updating `.env`:
 

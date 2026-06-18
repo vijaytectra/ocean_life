@@ -35,7 +35,11 @@ export async function POST(request) {
   } catch (error) {
     console.error("Newsletter mail config:", error);
     return Response.json(
-      { success: false, error: error.message },
+      {
+        success: false,
+        error:
+          "Newsletter is temporarily unavailable. Please try again later or email salesinfra@olipl.com.",
+      },
       { status: 500 }
     );
   }
@@ -76,7 +80,6 @@ export async function POST(request) {
   };
 
   try {
-    await transporter.verify();
     await transporter.sendMail(subscriberMailOptions);
     await transporter.sendMail(adminMailOptions);
 
@@ -89,7 +92,8 @@ export async function POST(request) {
     return Response.json(
       {
         success: false,
-        error: error.message,
+        error:
+          "We could not complete your subscription right now. Please try again later or email salesinfra@olipl.com.",
       },
       { status: 500 }
     );

@@ -4,6 +4,13 @@ import prisma from "@/lib/prisma";
 const DEFAULT_ADMIN_EMAIL = "salesinfra@olipl.com";
 const DEFAULT_CAREER_EMAIL = "HRrecruiter@olipl.com";
 
+/** Trim and strip surrounding quotes from .env values. */
+function envVal(key) {
+  const raw = process.env[key];
+  if (raw == null) return "";
+  return String(raw).trim().replace(/^["']|["']$/g, "");
+}
+
 /** Extract bare email from "Name <email@domain.com>" or plain address. */
 export function parseMailAddress(value) {
   const raw = (value || "").trim();
@@ -17,27 +24,55 @@ export function formatMailFrom(displayName, fromEnv) {
   return `${displayName} <${email}>`;
 }
 
+function createSmtpTransport(host, port, secure, user, pass) {
+  const isOffice365 =
+    host.includes("office365") || host.includes("outlook");
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    requireTLS: port === 587 && !secure,
+    auth: { user, pass },
+    tls: isOffice365
+      ? { minVersion: "TLSv1.2", rejectUnauthorized: true }
+      : undefined,
+  });
+}
+
 export function getMailTransporter() {
-  const smtpHost = process.env.SMTP_HOST?.trim();
-  const smtpPort = Number(process.env.SMTP_PORT || 587);
+  const smtpHost = envVal("SMTP_HOST");
+  const smtpPort = Number(envVal("SMTP_PORT") || 587);
   const smtpSecure =
-    process.env.SMTP_SECURE === "true" || process.env.SMTP_SECURE === "1";
-  const smtpUser = process.env.SMTP_USER?.trim();
-  const smtpPass = process.env.SMTP_PASS?.trim();
+    envVal("SMTP_SECURE") === "true" || envVal("SMTP_SECURE") === "1";
+  const smtpUser = envVal("SMTP_USER");
+  const smtpPass = envVal("SMTP_PASS");
 
-  const gmailUser = process.env.GMAIL_USER?.trim();
-  const gmailPass = process.env.GMAIL_PASSWORD?.trim();
+  const gmailUser = envVal("GMAIL_USER");
+  const gmailPass = envVal("GMAIL_PASSWORD");
 
-  if (smtpHost && smtpUser && smtpPass) {
+  // Prefer Office 365 / SMTP — do not silently fall back to Gmail if SMTP is partially set
+  if (smtpHost || smtpUser || smtpPass) {
+    if (!smtpHost || !smtpUser || !smtpPass) {
+      const missing = [];
+      if (!smtpHost) missing.push("SMTP_HOST");
+      if (!smtpUser) missing.push("SMTP_USER");
+      if (!smtpPass) missing.push("SMTP_PASS");
+      throw new Error(
+        `Incomplete SMTP config. Set all of: ${missing.join(", ")} in .env and restart PM2.`
+      );
+    }
+
     return {
-      transporter: nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpSecure,
-        requireTLS: smtpPort === 587 && !smtpSecure,
-        auth: { user: smtpUser, pass: smtpPass },
-      }),
-      fromEmail: process.env.MAIL_FROM?.trim() || smtpUser,
+      transporter: createSmtpTransport(
+        smtpHost,
+        smtpPort,
+        smtpSecure,
+        smtpUser,
+        smtpPass
+      ),
+      fromEmail: envVal("MAIL_FROM") || smtpUser,
+      provider: smtpHost,
     };
   }
 
@@ -47,27 +82,20 @@ export function getMailTransporter() {
         service: "gmail",
         auth: { user: gmailUser, pass: gmailPass },
       }),
-      fromEmail: process.env.MAIL_FROM?.trim() || gmailUser,
+      fromEmail: envVal("MAIL_FROM") || gmailUser,
+      provider: "gmail",
     };
   }
 
-  const missing = [];
-  if (!smtpHost) missing.push("SMTP_HOST");
-  if (!smtpUser) missing.push("SMTP_USER");
-  if (!smtpPass) missing.push("SMTP_PASS");
-  if (!gmailUser) missing.push("GMAIL_USER");
-  if (!gmailPass) missing.push("GMAIL_PASSWORD");
-
   throw new Error(
-    `Mail not configured. Add to .env: SMTP_HOST, SMTP_USER, SMTP_PASS (and restart npm run dev). Missing: ${missing.join(", ") || "credentials"}.`
+    "Mail not configured. Add SMTP_HOST, SMTP_USER, SMTP_PASS to .env (Office 365: smtp.office365.com, port 587), remove GMAIL_* vars, then restart PM2."
   );
 }
 
 /** Where newsletter / form notifications are sent (default: salesinfra@olipl.com). */
 export async function getAdminNotificationEmail() {
   const fromEnv =
-    process.env.NEWSLETTER_NOTIFY_EMAIL?.trim() ||
-    process.env.ADMIN_NOTIFICATION_EMAIL?.trim();
+    envVal("NEWSLETTER_NOTIFY_EMAIL") || envVal("ADMIN_NOTIFICATION_EMAIL");
   if (fromEnv) return fromEnv;
 
   try {
@@ -85,8 +113,7 @@ export async function getAdminNotificationEmail() {
 /** Where career / job application notifications are sent (default: HRrecruiter@olipl.com). */
 export async function getCareerNotificationEmail() {
   const fromEnv =
-    process.env.CAREERS_NOTIFY_EMAIL?.trim() ||
-    process.env.HR_NOTIFICATION_EMAIL?.trim();
+    envVal("CAREERS_NOTIFY_EMAIL") || envVal("HR_NOTIFICATION_EMAIL");
   if (fromEnv) return fromEnv;
 
   try {

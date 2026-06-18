@@ -7,6 +7,33 @@ export const createImage = (url) =>
     image.src = url;
   });
 
+/** Fit image inside a square canvas so the cropper never includes empty/black bars. */
+export async function padImageToSquare(imageSrc, background = '#ffffff') {
+  const image = await createImage(imageSrc);
+  const size = Math.max(image.width, image.height);
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  if (background === 'transparent') {
+    ctx.clearRect(0, 0, size, size);
+  } else {
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, size, size);
+  }
+
+  ctx.drawImage(
+    image,
+    (size - image.width) / 2,
+    (size - image.height) / 2,
+    image.width,
+    image.height
+  );
+
+  return canvas.toDataURL('image/png');
+}
+
 export function getRadianAngle(degreeValue) {
   return (degreeValue * Math.PI) / 180;
 }

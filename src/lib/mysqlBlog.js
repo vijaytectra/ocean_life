@@ -26,6 +26,7 @@ function selectExpr() {
     return [
       "`id`",
       "`title`",
+      "`slug`",
       "`content`",
       "`image`",
       "`status`",
@@ -38,6 +39,7 @@ function selectExpr() {
   return [
     "`id`",
     "`title`",
+    "`slug`",
     "`content`",
     "`image`",
     "`status`",
@@ -76,6 +78,7 @@ function rowToBlog(row) {
   return {
     id: row.id,
     title: row.title,
+    slug: row.slug ?? null,
     content: row.content,
     image: row.image ?? null,
     status: row.status ?? "published",
@@ -105,7 +108,25 @@ export async function mysqlGetBlogById(id) {
   return rowToBlog(row);
 }
 
-export async function mysqlCreateBlog({ title, content, image, metaTitle, metaDesc, status }) {
+export async function mysqlFindBlogBySlug(slug) {
+  const pool = getMysqlBlogPool();
+  if (!pool) throw new Error("MySQL blog pool not configured");
+  const t = tableName();
+  const [rows] = await pool.execute(`SELECT ${selectExpr()} FROM \`${t}\` WHERE \`slug\` = ? LIMIT 1`, [slug]);
+  return rowToBlog(rows?.[0]);
+}
+
+export async function mysqlSlugExists(slug, excludeId) {
+  const pool = getMysqlBlogPool();
+  if (!pool) throw new Error("MySQL blog pool not configured");
+  const t = tableName();
+  const [rows] = excludeId
+    ? await pool.execute(`SELECT \`id\` FROM \`${t}\` WHERE \`slug\` = ? AND \`id\` <> ? LIMIT 1`, [slug, excludeId])
+    : await pool.execute(`SELECT \`id\` FROM \`${t}\` WHERE \`slug\` = ? LIMIT 1`, [slug]);
+  return Boolean(rows?.[0]);
+}
+
+export async function mysqlCreateBlog({ title, slug, content, image, metaTitle, metaDesc, status }) {
   const pool = getMysqlBlogPool();
   if (!pool) throw new Error("MySQL blog pool not configured");
   const t = tableName();
@@ -113,24 +134,24 @@ export async function mysqlCreateBlog({ title, content, image, metaTitle, metaDe
 
   if (snake) {
     const [result] = await pool.execute(
-      `INSERT INTO \`${t}\` (\`title\`, \`content\`, \`image\`, \`status\`, \`meta_title\`, \`meta_desc\`, \`created_at\`, \`updated_at\`)
-       VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(3), CURRENT_TIMESTAMP(3))`,
-      [title, content, image ?? null, status, metaTitle ?? null, metaDesc ?? null]
+      `INSERT INTO \`${t}\` (\`title\`, \`slug\`, \`content\`, \`image\`, \`status\`, \`meta_title\`, \`meta_desc\`, \`created_at\`, \`updated_at\`)
+       VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(3), CURRENT_TIMESTAMP(3))`,
+      [title, slug ?? null, content, image ?? null, status, metaTitle ?? null, metaDesc ?? null]
     );
     const insertId = result.insertId;
     return mysqlGetBlogById(insertId);
   }
 
   const [result] = await pool.execute(
-    `INSERT INTO \`${t}\` (\`title\`, \`content\`, \`image\`, \`status\`, \`metaTitle\`, \`metaDesc\`, \`createdAt\`, \`updatedAt\`)
-     VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(3), CURRENT_TIMESTAMP(3))`,
-    [title, content, image ?? null, status, metaTitle ?? null, metaDesc ?? null]
+    `INSERT INTO \`${t}\` (\`title\`, \`slug\`, \`content\`, \`image\`, \`status\`, \`metaTitle\`, \`metaDesc\`, \`createdAt\`, \`updatedAt\`)
+     VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(3), CURRENT_TIMESTAMP(3))`,
+    [title, slug ?? null, content, image ?? null, status, metaTitle ?? null, metaDesc ?? null]
   );
   const insertId = result.insertId;
   return mysqlGetBlogById(insertId);
 }
 
-export async function mysqlUpdateBlog(id, { title, content, image, metaTitle, metaDesc, status }) {
+export async function mysqlUpdateBlog(id, { title, slug, content, image, metaTitle, metaDesc, status }) {
   const pool = getMysqlBlogPool();
   if (!pool) throw new Error("MySQL blog pool not configured");
   const t = tableName();
@@ -138,13 +159,13 @@ export async function mysqlUpdateBlog(id, { title, content, image, metaTitle, me
 
   if (snake) {
     await pool.execute(
-      `UPDATE \`${t}\` SET \`title\` = ?, \`content\` = ?, \`image\` = ?, \`status\` = ?, \`meta_title\` = ?, \`meta_desc\` = ?, \`updated_at\` = CURRENT_TIMESTAMP(3) WHERE \`id\` = ?`,
-      [title, content, image ?? null, status, metaTitle ?? null, metaDesc ?? null, id]
+      `UPDATE \`${t}\` SET \`title\` = ?, \`slug\` = ?, \`content\` = ?, \`image\` = ?, \`status\` = ?, \`meta_title\` = ?, \`meta_desc\` = ?, \`updated_at\` = CURRENT_TIMESTAMP(3) WHERE \`id\` = ?`,
+      [title, slug ?? null, content, image ?? null, status, metaTitle ?? null, metaDesc ?? null, id]
     );
   } else {
     await pool.execute(
-      `UPDATE \`${t}\` SET \`title\` = ?, \`content\` = ?, \`image\` = ?, \`status\` = ?, \`metaTitle\` = ?, \`metaDesc\` = ?, \`updatedAt\` = CURRENT_TIMESTAMP(3) WHERE \`id\` = ?`,
-      [title, content, image ?? null, status, metaTitle ?? null, metaDesc ?? null, id]
+      `UPDATE \`${t}\` SET \`title\` = ?, \`slug\` = ?, \`content\` = ?, \`image\` = ?, \`status\` = ?, \`metaTitle\` = ?, \`metaDesc\` = ?, \`updatedAt\` = CURRENT_TIMESTAMP(3) WHERE \`id\` = ?`,
+      [title, slug ?? null, content, image ?? null, status, metaTitle ?? null, metaDesc ?? null, id]
     );
   }
   return mysqlGetBlogById(id);

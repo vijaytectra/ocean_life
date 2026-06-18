@@ -2,12 +2,12 @@
 
 import React, { useState, useCallback, useId, useEffect, useRef } from "react";
 import Cropper from "react-easy-crop";
-import getCroppedImg from "@/utils/cropImage";
+import getCroppedImg, { padImageToSquare } from "@/utils/cropImage";
 import { blobToDataUrl, removeImageBackground } from "@/utils/removeImageBackground";
 import ClientLogoSitePreview from "@/components/admin/ClientLogoSitePreview";
 import styles from "./ImageCropper.module.css";
 
-const ZOOM_MIN = 0.5;
+const ZOOM_MIN = 1;
 const ZOOM_MAX = 5;
 
 export default function ImageCropper({
@@ -62,8 +62,12 @@ export default function ImageCropper({
     setRemovingBg(false);
     try {
       const imageDataUrl = await readFile(file);
+      const prepared =
+        previewMode === "client-logo"
+          ? await padImageToSquare(imageDataUrl, "#ffffff")
+          : imageDataUrl;
       setOriginalImageSrc(imageDataUrl);
-      setImageSrc(imageDataUrl);
+      setImageSrc(prepared);
       setCrop({ x: 0, y: 0 });
       setZoom(ZOOM_MIN);
       setCroppedAreaPixels(null);
@@ -131,20 +135,25 @@ export default function ImageCropper({
   ]);
 
   const handleRemoveBackground = useCallback(async () => {
-    if (!imageSrc || removingBg) return;
+    const source = originalImageSrc || imageSrc;
+    if (!source || removingBg) return;
     setErrorMessage("");
     setRemovingBg(true);
     setBgProgress(0);
     try {
-      const blob = await removeImageBackground(imageSrc, setBgProgress);
+      const blob = await removeImageBackground(source, setBgProgress);
       const dataUrl = await blobToDataUrl(blob);
+      const prepared =
+        previewMode === "client-logo"
+          ? await padImageToSquare(dataUrl, "transparent")
+          : dataUrl;
       revokePreviewUrl();
       setPreviewSrc(null);
       setPreviewBlob(null);
       setCroppedAreaPixels(null);
       setCrop({ x: 0, y: 0 });
       setZoom(ZOOM_MIN);
-      setImageSrc(dataUrl);
+      setImageSrc(prepared);
       setBgRemoved(true);
     } catch (error) {
       console.error("Background removal:", error);
@@ -155,9 +164,9 @@ export default function ImageCropper({
       setRemovingBg(false);
       setBgProgress(0);
     }
-  }, [imageSrc, removingBg, revokePreviewUrl]);
+  }, [imageSrc, originalImageSrc, previewMode, removingBg, revokePreviewUrl]);
 
-  const handleRestoreOriginal = useCallback(() => {
+  const handleRestoreOriginal = useCallback(async () => {
     if (!originalImageSrc) return;
     revokePreviewUrl();
     setPreviewSrc(null);
@@ -165,10 +174,18 @@ export default function ImageCropper({
     setCroppedAreaPixels(null);
     setCrop({ x: 0, y: 0 });
     setZoom(ZOOM_MIN);
-    setImageSrc(originalImageSrc);
+    try {
+      const prepared =
+        previewMode === "client-logo"
+          ? await padImageToSquare(originalImageSrc, "#ffffff")
+          : originalImageSrc;
+      setImageSrc(prepared);
+    } catch {
+      setImageSrc(originalImageSrc);
+    }
     setBgRemoved(false);
     setErrorMessage("");
-  }, [originalImageSrc, revokePreviewUrl]);
+  }, [originalImageSrc, previewMode, revokePreviewUrl]);
 
   const goToPreview = useCallback(async () => {
     if (!imageSrc || !croppedAreaPixels) return;
@@ -315,7 +332,9 @@ export default function ImageCropper({
       ) : (
         <div className={styles.cropShell}>
           <div className={showClientLogoPreview ? styles.cropWithPreview : undefined}>
-            <div className={styles.cropStage} style={bgRemoved ? {
+            <div
+              className={`${styles.cropStage} ${showClientLogoPreview ? styles.cropStageLogo : ""}`}
+              style={bgRemoved ? {
               backgroundColor: "#fff",
               backgroundImage:
                 "linear-gradient(45deg, #d1d5db 25%, transparent 25%), linear-gradient(-45deg, #d1d5db 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d1d5db 75%), linear-gradient(-45deg, transparent 75%, #d1d5db 75%)",
@@ -333,6 +352,8 @@ export default function ImageCropper({
                       ? 1
                       : aspectRatio ?? 1
                 }
+                objectFit={showClientLogoPreview ? "cover" : "contain"}
+                restrictPosition
                 minZoom={ZOOM_MIN}
                 maxZoom={ZOOM_MAX}
                 onCropChange={setCrop}

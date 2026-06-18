@@ -34,6 +34,7 @@ model Role {
 model Blog {
   id           Int      @id @default(autoincrement())
   title        String
+  slug         String?  @unique
   content      String
   image        String?
   status       String   @default("published") // draft, published

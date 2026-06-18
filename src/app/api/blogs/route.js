@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 import { listAllBlogs, listPublishedBlogs } from "@/lib/blogData";
 import { normalizeBlogImagePath } from "@/lib/blogImage";
+import { resolveBlogSlug } from "@/lib/blogSlugResolve";
 import {
   isMysqlBlogEnabled,
   mysqlCreateBlog,
@@ -33,8 +34,13 @@ function mapStatus(bodyStatus) {
 export async function POST(request) {
   try {
     const body = await request.json();
+    const slug = await resolveBlogSlug({
+      title: body.title,
+      slug: body.slug,
+    });
     const payload = {
       title: body.title,
+      slug,
       content: body.content,
       image: normalizeBlogImagePath(body.image),
       metaTitle: body.metaTitle || null,
@@ -52,6 +58,7 @@ export async function POST(request) {
     });
     return NextResponse.json(blog);
   } catch (error) {
+    console.error("POST /api/blogs:", error);
     return NextResponse.json({ error: "Failed to create blog" }, { status: 500 });
   }
 }

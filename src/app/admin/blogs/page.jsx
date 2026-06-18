@@ -7,6 +7,7 @@ import ConfirmModal from "@/components/admin/ConfirmModal";
 import styles from "../admin.module.css";
 import blogStyles from "./blogsAdmin.module.css";
 import { resolveBlogImageUrl } from "@/lib/blogImage";
+import { slugifyBlog, blogPublicPath } from "@/lib/blogSlug";
 
 const TINYMCE_VERSION = "6.8.3";
 const TINYMCE_CDN_BASE = `https://cdn.jsdelivr.net/npm/tinymce@${TINYMCE_VERSION}`;
@@ -47,12 +48,14 @@ export default function AdminBlogs() {
   const [blogs, setBlogs] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
+    slug: "",
     content: "",
     image: "",
     metaTitle: "",
     metaDesc: "",
     status: "Published",
   });
+  const [slugTouched, setSlugTouched] = useState(false);
   const [showCropper, setShowCropper] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState("");
@@ -182,6 +185,7 @@ export default function AdminBlogs() {
 
     const empty = {
       title: "",
+      slug: "",
       content: "",
       image: "",
       metaTitle: "",
@@ -189,6 +193,7 @@ export default function AdminBlogs() {
       status: "Published",
     };
     setFormData(empty);
+    setSlugTouched(false);
     const editor = typeof window !== "undefined" ? window.tinymce?.get?.("blog-editor") : null;
     if (editor && !editor.removed) editor.setContent("");
     setEditingId(null);
@@ -208,8 +213,10 @@ export default function AdminBlogs() {
 
   const editBlog = (blog) => {
     setEditingId(blog.id);
+    setSlugTouched(Boolean(blog.slug));
     setFormData({
       title: blog.title || "",
+      slug: blog.slug || "",
       content: blog.content || "",
       image: blog.image || "",
       metaTitle: blog.metaTitle || "",
@@ -225,8 +232,10 @@ export default function AdminBlogs() {
 
   const cancelEdit = () => {
     setEditingId(null);
+    setSlugTouched(false);
     setFormData({
       title: "",
+      slug: "",
       content: "",
       image: "",
       metaTitle: "",
@@ -237,7 +246,21 @@ export default function AdminBlogs() {
     if (editor && !editor.removed) editor.setContent("");
   };
 
-  const filtered = blogs.filter((b) => (b.title || "").toLowerCase().includes(search.toLowerCase()));
+  const filtered = blogs.filter((b) => {
+    const q = search.toLowerCase();
+    return (
+      (b.title || "").toLowerCase().includes(q) ||
+      (b.slug || "").toLowerCase().includes(q)
+    );
+  });
+
+  const handleTitleChange = (title) => {
+    setFormData((prev) => ({
+      ...prev,
+      title,
+      slug: slugTouched ? prev.slug : slugifyBlog(title),
+    }));
+  };
 
   return (
     <div className={blogStyles.page}>
@@ -287,11 +310,31 @@ export default function AdminBlogs() {
                 type="text"
                 placeholder="Enter a catchy title..."
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) => handleTitleChange(e.target.value)}
                 required
                 className={styles.inputField}
                 style={{ width: '100%' }}
               />
+            </div>
+            <div className={styles.inputWrapper}>
+              <label className={blogStyles.docLabel}>URL Slug</label>
+              <input
+                type="text"
+                placeholder="my-blog-post"
+                value={formData.slug}
+                onChange={(e) => {
+                  setSlugTouched(true);
+                  setFormData({ ...formData, slug: slugifyBlog(e.target.value) });
+                }}
+                className={styles.inputField}
+                style={{ width: '100%' }}
+              />
+              <p className={blogStyles.slugHint}>
+                Public URL:{" "}
+                <code>
+                  {blogPublicPath({ slug: formData.slug || slugifyBlog(formData.title) || "your-slug" })}
+                </code>
+              </p>
             </div>
             <div className={styles.inputWrapper}>
               <label className={blogStyles.docLabel}>Status</label>
@@ -429,6 +472,11 @@ export default function AdminBlogs() {
               </div>
               <div className={blogStyles.postBody}>
                 <h4 className={blogStyles.postTitle}>{blog.title}</h4>
+                {blog.slug ? (
+                  <p className={blogStyles.postSlug}>
+                    <code>{blogPublicPath(blog)}</code>
+                  </p>
+                ) : null}
                 <div className={blogStyles.postMeta}>
                   <span
                     className={`${blogStyles.statusPill} ${
