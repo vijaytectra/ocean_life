@@ -1,154 +1,115 @@
 # Production Deployment (www.olipl.com)
 
 Server path: `/home/oceanweb/htdocs/www.olipl.com`  
-Process manager: **PM2** (`olipl`)
+Process manager: **PM2** (`olipl`, user `oceanweb`)
 
-## What gets deployed
+## Full workflow (push + pull + deploy)
+
+### Step 1 — Local Mac (push to GitHub)
+
+```bash
+bash scripts/push.sh "Your commit message"
+```
+
+This runs: `git add` → `git commit` → `git push origin main`  
+(Safe: never commits `prisma/dev.db`)
+
+### Step 2 — Server SSH (pull + deploy)
+
+```bash
+cd /home/oceanweb/htdocs/www.olipl.com
+bash deploy.sh
+```
+
+This runs: **`git pull origin main`** → permissions fix → build → PM2 restart → verify
+
+Run as **root** or **oceanweb**. Root is recommended.
+
+---
+
+## Quick reference
+
+| Where | Command | What it does |
+|-------|---------|--------------|
+| **Mac** | `bash scripts/push.sh "msg"` | Push code to GitHub |
+| **Server** | `bash deploy.sh` | Pull + build + deploy + verify |
+| **Server** | `bash deploy.sh --fix-only` | Fix DB/PM2 only (no pull/build) |
+
+### What `deploy.sh` does automatically
+
+1. Kills root PM2 (prevents readonly database errors)
+2. Fixes file ownership (`oceanweb:oceanweb`)
+3. Fixes SQLite + upload folder permissions
+4. Backs up `prisma/dev.db` before schema sync
+5. `git pull`, `npm ci`, `prisma db push`, `npm run build`
+6. Verifies build + restarts PM2 as `oceanweb` only
+7. Tests database write access + site responds on port 3000
+
+### Quick fix (no rebuild)
+
+If the site is up but admin can't save (readonly DB, wrong PM2 user):
+
+```bash
+cd /home/oceanweb/htdocs/www.olipl.com
+bash deploy.sh --fix-only
+```
+
+---
+
+## What lives on the server
 
 | Component | Location |
 |-----------|----------|
-| Next.js frontend + API routes | Built into `.next/` |
-| SQLite database (CMS data) | `prisma/dev.db` |
-| Uploaded images/videos | `public/uploads/` |
-| Career resumes | `private/` |
-| Environment secrets | `.env` (not in git) |
+| Next.js app | `.next/` |
+| SQLite database | `prisma/dev.db` (not in git) |
+| Uploads | `public/uploads/` |
+| Resumes | `private/` |
+| Secrets | `.env` (not in git) |
+
+> **`prisma/dev.db` is never committed to git.** Production data stays on the server only.
+
+---
 
 ## First-time server setup
 
 ```bash
 cd /home/oceanweb/htdocs/www.olipl.com
-git pull origin main
+git clone <repo-url> .   # or git pull if already cloned
 cp .env.production.example .env
-# Edit .env with real SMTP and DATABASE_URL values
-nano .env
-
-npm ci
-npx prisma generate
-npx prisma db push
-node prisma/seed.js   # only on first setup
-npm run build
-pm2 start ecosystem.config.cjs
-pm2 save
+nano .env                  # SMTP, SITE_URL, etc.
+bash deploy.sh
+node prisma/seed.js        # first setup only — creates admin user
 ```
 
-> **Important:** PM2 runs under the `oceanweb` user. Never run `pm2 restart olipl` as root — use `sudo -u oceanweb pm2 restart olipl`.
+Default admin (after seed): `admin` / `password123` — change immediately.
 
-If `pm2 status` as root shows `oceanlife` errored but `olipl` looked online a moment ago, you have **two PM2 daemons** (root vs oceanweb). Fix once:
-
-```bash
-cd /home/oceanweb/htdocs/www.olipl.com
-chmod +x scripts/pm2-fix.sh
-bash scripts/pm2-fix.sh
-```
-
-After that, only check status as oceanweb:
-
-```bash
-sudo -u oceanweb pm2 status
-```
-
-## Regular deploy (after pushing code to GitHub)
-
-On your **local machine**:
-
-```bash
-git add .
-git commit -m "Your message"
-git push origin main
-```
-
-On the **server** (SSH as root or oceanweb):
-
-```bash
-cd /home/oceanweb/htdocs/www.olipl.com
-sudo -u oceanweb bash deploy.sh
-```
-
-> **Important:** PM2 runs under the `oceanweb` user. Never run `pm2 restart olipl` as root — use `sudo -u oceanweb pm2 restart olipl`.
-
-Or manually:
-
-```bash
-cd /home/oceanweb/htdocs/www.olipl.com
-git fetch origin main
-git merge origin/main --no-edit || git reset --hard origin/main
-rm -rf .next
-sudo -u oceanweb npm ci
-sudo -u oceanweb npx prisma generate
-sudo -u oceanweb npm run build
-sudo -u oceanweb pm2 restart olipl || sudo -u oceanweb pm2 start ecosystem.config.cjs
-sudo -u oceanweb pm2 save
-```
+---
 
 ## Verify after deploy
 
 ```bash
 sudo -u oceanweb pm2 status
-sudo -u oceanweb pm2 logs olipl --lines 50
+sudo -u oceanweb pm2 logs olipl --lines 30
 curl -I http://127.0.0.1:3000/
 ```
 
-### Build error: `EACCES permission denied` on `.next`
+Open https://www.olipl.com/admin/login/ and test add/remove logo.
 
-This means **`npm run build` was run as root** but the app runs as `oceanweb`. Fix:
+---
 
-```bash
-chown -R oceanweb:oceanweb /home/oceanweb/htdocs/www.olipl.com
-sudo -u oceanweb bash -c 'cd /home/oceanweb/htdocs/www.olipl.com && rm -rf .next && npm run build'
-sudo -u oceanweb pm2 restart olipl --update-env
-```
+## Rules (do not break these)
 
-Never run `npm run build` or `npm ci` as root in the app folder.
+| Do | Don't |
+|----|-------|
+| `bash deploy.sh` | `npm run build` as root |
+| `bash deploy.sh --fix-only` | `pm2 restart olipl` as root |
+| `sudo -u oceanweb pm2 logs olipl` | Commit `prisma/dev.db` to git |
 
-### SQLite: `attempt to write a readonly database`
+---
 
-The app user (`oceanweb`) cannot write to `prisma/dev.db`. Common causes:
+## Email (Microsoft 365)
 
-- `npm run build`, `prisma db push`, or `pm2 restart` was run as **root**
-- Root PM2 is running `olipl` instead of oceanweb's PM2
-
-**Fix on the server:**
-
-```bash
-cd /home/oceanweb/htdocs/www.olipl.com
-git pull origin main
-chmod +x scripts/fix-db-permissions.sh
-bash scripts/fix-db-permissions.sh
-```
-
-Or manually:
-
-```bash
-sudo -u oceanweb pm2 stop olipl
-pm2 kill   # stops root PM2 if present
-chown -R oceanweb:oceanweb /home/oceanweb/htdocs/www.olipl.com/prisma
-chown -R oceanweb:oceanweb /home/oceanweb/htdocs/www.olipl.com/public/uploads
-chmod 775 /home/oceanweb/htdocs/www.olipl.com/prisma
-chmod 664 /home/oceanweb/htdocs/www.olipl.com/prisma/dev.db
-sudo -u oceanweb pm2 restart olipl --update-env
-```
-
-Then try adding a logo again in admin.
-
-> **Never** run `pm2 restart olipl` as root. Always: `sudo -u oceanweb pm2 restart olipl --update-env`
-
-### Broken site: `webpack-*.js` returns 400
-
-HTML references a webpack chunk that is **missing or corrupt** in `.next` (usually after a failed build). Other `/_next/static/chunks/*.js` files may still return 200.
-
-```bash
-chown -R oceanweb:oceanweb /home/oceanweb/htdocs/www.olipl.com
-sudo -u oceanweb bash -c 'cd /home/oceanweb/htdocs/www.olipl.com && rm -rf .next && npm run build && bash scripts/verify-build.sh'
-sudo -u oceanweb pm2 restart olipl --update-env
-```
-
-Then hard-refresh the browser (Cmd+Shift+R) or clear CDN cache.
-
-Then open https://www.olipl.com/admin/login/ and log in again.
-
-## Email (Microsoft 365 / Office 365)
-
-Add to `.env` on the server:
+In server `.env`:
 
 ```env
 SMTP_HOST=smtp.office365.com
@@ -161,23 +122,38 @@ CAREERS_NOTIFY_EMAIL=HRrecruiter@olipl.com
 NEXT_PUBLIC_SITE_URL=https://www.olipl.com
 ```
 
-- **Port 587** + `SMTP_SECURE=false` = STARTTLS (correct for Office 365).
-- **Send from:** `salesinfra@olipl.com` (SMTP login + From address).
-- **Careers notify:** `HRrecruiter@olipl.com` receives application alerts.
-- **Contact/newsletter notify:** `salesinfra@olipl.com` (default admin notification email).
-- **Remove** `GMAIL_USER` and `GMAIL_PASSWORD` from production `.env` — stale Gmail vars cause `535 BadCredentials` errors.
-
-After updating `.env`:
+After editing `.env`:
 
 ```bash
-sudo -u oceanweb pm2 restart olipl --update-env
+bash deploy.sh --fix-only
 ```
 
-Test from **Admin → Careers (ATS) → Test careers email**.
+Test from **Admin → Careers → Test careers email**.
 
-## Important notes
+---
 
-- **Never** run `prisma/seed.js` on production after go-live (it resets admin/content).
-- `prisma/dev.db` and `public/uploads/` are preserved by `deploy.sh` (db is backed up before schema sync).
-- Admin auth requires both cookies: `admin_session` + `user_id`. Log out and log in after deploy if admin hangs on loading.
-- Nginx should proxy `www.olipl.com` → `http://127.0.0.1:3000`.
+## Troubleshooting
+
+### `attempt to write a readonly database`
+
+```bash
+bash deploy.sh --fix-only
+```
+
+### `webpack-*.js` returns 400 (broken site)
+
+```bash
+bash deploy.sh
+```
+
+Hard-refresh browser (Cmd+Shift+R).
+
+### Admin login hangs after deploy
+
+Log out and log in again (cookies reset after deploy).
+
+### Never run on production after go-live
+
+```bash
+node prisma/seed.js   # resets admin and content
+```

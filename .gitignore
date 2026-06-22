@@ -25,6 +25,11 @@
 /public/uploads/resumes/*
 !/public/uploads/resumes/.gitkeep
 
+# SQLite database — lives on server only, never commit
+/prisma/dev.db
+/prisma/dev.db-*
+/prisma/*.db-journal
+
 # misc
 .DS_Store
 *.pem
