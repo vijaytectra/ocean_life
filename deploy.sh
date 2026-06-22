@@ -100,10 +100,74 @@ backup_database() {
     local backup="$APP_DIR/prisma/dev.db.bak-$(date +%Y%m%d-%H%M%S)"
     log "Backing up database to $(basename "$backup")..."
     cp -a "$DB_PATH" "$backup"
-    chown "$APP_USER:$APP_USER" "$backup"
+    chown "$APP_USER:$APP_USER" "$backup" 2>/dev/null || true
     # Keep last 5 backups
     ls -1t "$APP_DIR"/prisma/dev.db.bak-* 2>/dev/null | tail -n +6 | xargs -r rm -f
   fi
+}
+
+db_count() {
+  local table="$1"
+  if [[ ! -f "$DB_PATH" ]]; then
+    echo 0
+    return
+  fi
+  if command -v sqlite3 >/dev/null 2>&1; then
+    sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM ${table};" 2>/dev/null || echo 0
+  else
+    echo 0
+  fi
+}
+
+protect_database_for_pull() {
+  PREDEPLOY_DB=""
+  if [[ -f "$DB_PATH" ]]; then
+    PREDEPLOY_DB=$(mktemp)
+    cp -a "$DB_PATH" "$PREDEPLOY_DB"
+    log "Saved pre-pull database snapshot."
+  fi
+}
+
+restore_database_if_wiped() {
+  local logo_count pre_logos bak bak_logos
+
+  logo_count=$(db_count "ClientLogo")
+  if [[ "${logo_count:-0}" -gt 0 ]]; then
+    [[ -n "${PREDEPLOY_DB:-}" ]] && rm -f "$PREDEPLOY_DB"
+    return
+  fi
+
+  log "WARN: ClientLogo table is empty."
+
+  if [[ -n "${PREDEPLOY_DB:-}" && -f "$PREDEPLOY_DB" ]]; then
+    pre_logos=$(sqlite3 "$PREDEPLOY_DB" "SELECT COUNT(*) FROM ClientLogo;" 2>/dev/null || echo 0)
+    if [[ "${pre_logos:-0}" -gt 0 ]]; then
+      log "Restoring database from pre-pull snapshot (${pre_logos} logos)..."
+      cp -a "$PREDEPLOY_DB" "$DB_PATH"
+      rm -f "$PREDEPLOY_DB"
+      export DATABASE_URL="file:$DB_PATH"
+      npx prisma db push
+      return
+    fi
+    rm -f "$PREDEPLOY_DB"
+  fi
+
+  local latest
+  latest=$(ls -1t "$APP_DIR"/prisma/dev.db.bak-* 2>/dev/null | head -1 || true)
+  if [[ -n "$latest" ]]; then
+    bak_logos=$(sqlite3 "$latest" "SELECT COUNT(*) FROM ClientLogo;" 2>/dev/null || echo 0)
+    if [[ "${bak_logos:-0}" -gt 0 ]]; then
+      log "Restoring database from backup $(basename "$latest") (${bak_logos} logos)..."
+      cp -a "$latest" "$DB_PATH"
+      export DATABASE_URL="file:$DB_PATH"
+      npx prisma db push
+      return
+    fi
+  fi
+
+  log "Seeding logos from public/clients + public/logo..."
+  export DATABASE_URL="file:$DB_PATH"
+  node scripts/restore-logos.js
 }
 
 # ---------------------------------------------------------------------------
@@ -113,6 +177,8 @@ deploy_app() {
   cd "$APP_DIR"
 
   if [[ "$FIX_ONLY" == "false" ]]; then
+    protect_database_for_pull
+
     log "Pulling latest code..."
     if ! git pull origin main; then
       log "WARN: git pull failed — stashing local changes and retrying..."
@@ -138,6 +204,8 @@ deploy_app() {
     export DATABASE_URL="file:$DB_PATH"
     npx prisma generate
     npx prisma db push
+
+    restore_database_if_wiped
 
     log "Ensuring upload directories..."
     mkdir -p public/uploads/resumes public/uploads private
@@ -183,6 +251,18 @@ verify_deployment() {
   fi
 
   verify_database_writable
+
+  local logo_count
+  logo_count=$(db_count "ClientLogo")
+  if [[ "${logo_count:-0}" -eq 0 ]]; then
+    log "No client logos in database — restoring..."
+    sudo -u "$APP_USER" bash <<EOF
+set -euo pipefail
+cd "$APP_DIR"
+export DATABASE_URL="file:$DB_PATH"
+node scripts/restore-logos.js
+EOF
+  fi
 
   log "Waiting for app on port $PORT..."
   local i

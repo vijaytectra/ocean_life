@@ -134,6 +134,25 @@ Test from **Admin → Careers → Test careers email**.
 
 ## Troubleshooting
 
+### Corporate / ongoing logos missing
+
+The database was wiped (often by `git pull` overwriting `dev.db` or a bad deploy). Restore logos:
+
+```bash
+cd /home/oceanweb/htdocs/www.olipl.com
+export DATABASE_URL="file:/home/oceanweb/htdocs/www.olipl.com/prisma/dev.db"
+sudo -u oceanweb node scripts/restore-logos.js
+sudo -u oceanweb pm2 restart olipl --update-env
+```
+
+Or run a full deploy (auto-restores logos if empty):
+
+```bash
+bash deploy.sh
+```
+
+Future deploys auto-restore logos from backup or re-seed from `public/clients/` + `public/logo/`.
+
 ### `attempt to write a readonly database`
 
 ```bash
