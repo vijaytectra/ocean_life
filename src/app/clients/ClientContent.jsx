@@ -37,6 +37,7 @@ function ClientLogoCard({ logo, index }) {
             className={styles.logoImgDark}
             sizes="(max-width: 768px) 45vw, (max-width: 1100px) 30vw, 22vw"
             loading="lazy"
+            unoptimized={logo.image?.startsWith("/uploads/")}
           />
         </div>
       </div>
@@ -62,6 +63,7 @@ function MarqueeTrack({ logos, reverse = false }) {
               height={80}
               className={styles.marqueeImg}
               loading="lazy"
+              unoptimized={logo.image?.startsWith("/uploads/")}
             />
           </div>
         ))}
@@ -138,7 +140,7 @@ export default function ClientContent() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/clients/logos/")
+    fetch("/api/clients/logos/", { cache: "no-store", credentials: "same-origin" })
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {

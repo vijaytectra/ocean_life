@@ -1,6 +1,8 @@
 import { getBlogBySlugOrId } from "@/lib/blogSlugResolve";
 import { resolveBlogImageUrl, normalizeBlogImagePath } from "@/lib/blogImage";
 
+export const dynamic = "force-dynamic";
+
 async function loadBlog(identifier) {
   const blog = await getBlogBySlugOrId(identifier);
   if (!blog) return null;

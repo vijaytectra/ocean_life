@@ -10,27 +10,22 @@ function withNormalizedImage(blog) {
   };
 }
 
+export function isBlogPublished(status) {
+  return (status || "published").toLowerCase() === "published";
+}
+
 async function listAllBlogs() {
-  try {
-    if (isMysqlBlogEnabled()) {
-      return (await mysqlListBlogs()).map(withNormalizedImage);
-    }
-    return (await prisma.blog.findMany({
-      orderBy: { createdAt: "desc" },
-    })).map(withNormalizedImage);
-  } catch (error) {
-    if (isMysqlBlogEnabled()) {
-      return (await prisma.blog.findMany({
-        orderBy: { createdAt: "desc" },
-      })).map(withNormalizedImage);
-    }
-    throw error;
+  if (isMysqlBlogEnabled()) {
+    return (await mysqlListBlogs()).map(withNormalizedImage);
   }
+  return (await prisma.blog.findMany({
+    orderBy: { createdAt: "desc" },
+  })).map(withNormalizedImage);
 }
 
 export async function listPublishedBlogs() {
   const blogs = await listAllBlogs();
-  return blogs.filter((blog) => (blog.status || "published") === "published");
+  return blogs.filter((blog) => isBlogPublished(blog.status));
 }
 
 export { listAllBlogs };

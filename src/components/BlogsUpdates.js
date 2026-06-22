@@ -57,18 +57,20 @@ const BlogsUpdates = ({ list = 3, initialBlogs = null, showHeading = true, anima
   const timelineRef = useRef(null);
 
   useEffect(() => {
-    if (Array.isArray(initialBlogs)) {
-      setLatestNews(initialBlogs.slice(0, list));
-      return;
-    }
-
     const fetchBlogs = async () => {
       try {
-        const res = await fetch("/api/blogs", { cache: "no-store" });
+        const res = await fetch("/api/blogs/", {
+          cache: "no-store",
+          credentials: "same-origin",
+        });
         const data = await res.json();
         if (Array.isArray(data)) {
-          const published = data.filter((blog) => (blog.status || "published") === "published");
-          const sortedNews = published.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          const published = data.filter(
+            (blog) => (blog.status || "published").toLowerCase() === "published"
+          );
+          const sortedNews = published.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
           setLatestNews(sortedNews.slice(0, list));
         }
       } catch {
@@ -76,7 +78,7 @@ const BlogsUpdates = ({ list = 3, initialBlogs = null, showHeading = true, anima
       }
     };
     fetchBlogs();
-  }, [list, initialBlogs]);
+  }, [list]);
 
   useLayoutEffect(() => {
     if (!animate || latestNews.length === 0) return;

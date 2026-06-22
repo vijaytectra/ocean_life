@@ -11,14 +11,14 @@ export default function LogoScroll() {
   const [images, setImages] = useState([]);
 
   useEffect(() => {
-    fetch('/api/clients/logos')
-      .then(res => res.json())
-      .then(data => {
+    fetch("/api/clients/logos/", { cache: "no-store", credentials: "same-origin" })
+      .then((res) => res.json())
+      .then((data) => {
         if (Array.isArray(data)) {
-          setImages(data.map(l => l.image));
+          setImages(data.map((l) => l.image));
         }
       })
-      .catch(err => console.error("LogoScroll fetch error:", err));
+      .catch((err) => console.error("LogoScroll fetch error:", err));
   }, []);
 
   useEffect(() => {
@@ -83,6 +83,7 @@ export default function LogoScroll() {
               fill
               style={{ objectFit: "contain" }}
               sizes={logoWidth}
+              unoptimized={src?.startsWith("/uploads/")}
             />
           </div>
         ))}

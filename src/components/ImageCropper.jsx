@@ -209,9 +209,10 @@ export default function ImageCropper({
       const formData = new FormData();
       formData.append("file", croppedImageBlob, "cropped.png");
 
-      const response = await fetch("/api/upload", {
+      const response = await fetch("/api/upload/", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
       const data = await response.json().catch(() => ({}));
 
@@ -241,9 +242,10 @@ export default function ImageCropper({
       const formData = new FormData();
       formData.append("file", croppedImageBlob, "cropped.png");
 
-      const response = await fetch("/api/upload", {
+      const response = await fetch("/api/upload/", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
       const data = await response.json().catch(() => ({}));
 

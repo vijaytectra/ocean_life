@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { listAllBlogs, listPublishedBlogs } from "@/lib/blogData";
 import { normalizeBlogImagePath } from "@/lib/blogImage";
 import { resolveBlogSlug } from "@/lib/blogSlugResolve";
+import { revalidateBlogPages } from "@/lib/revalidateContent";
 import {
   isMysqlBlogEnabled,
   mysqlCreateBlog,
@@ -13,7 +14,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const cacheHeaders = {
-    "Cache-Control": "no-store, max-age=0, must-revalidate",
+    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+    Pragma: "no-cache",
   };
 
   try {
@@ -50,12 +52,14 @@ export async function POST(request) {
 
     if (isMysqlBlogEnabled()) {
       const blog = await mysqlCreateBlog(payload);
+      revalidateBlogPages();
       return NextResponse.json(blog);
     }
 
     const blog = await prisma.blog.create({
       data: payload,
     });
+    revalidateBlogPages();
     return NextResponse.json(blog);
   } catch (error) {
     console.error("POST /api/blogs:", error);

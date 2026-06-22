@@ -1,5 +1,7 @@
 import ClientContent from "./ClientContent";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Clients | Ocean Lifespaces India Pvt Ltd",
   description:

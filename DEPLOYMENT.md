@@ -100,6 +100,38 @@ sudo -u oceanweb pm2 restart olipl --update-env
 
 Never run `npm run build` or `npm ci` as root in the app folder.
 
+### SQLite: `attempt to write a readonly database`
+
+The app user (`oceanweb`) cannot write to `prisma/dev.db`. Common causes:
+
+- `npm run build`, `prisma db push`, or `pm2 restart` was run as **root**
+- Root PM2 is running `olipl` instead of oceanweb's PM2
+
+**Fix on the server:**
+
+```bash
+cd /home/oceanweb/htdocs/www.olipl.com
+git pull origin main
+chmod +x scripts/fix-db-permissions.sh
+bash scripts/fix-db-permissions.sh
+```
+
+Or manually:
+
+```bash
+sudo -u oceanweb pm2 stop olipl
+pm2 kill   # stops root PM2 if present
+chown -R oceanweb:oceanweb /home/oceanweb/htdocs/www.olipl.com/prisma
+chown -R oceanweb:oceanweb /home/oceanweb/htdocs/www.olipl.com/public/uploads
+chmod 775 /home/oceanweb/htdocs/www.olipl.com/prisma
+chmod 664 /home/oceanweb/htdocs/www.olipl.com/prisma/dev.db
+sudo -u oceanweb pm2 restart olipl --update-env
+```
+
+Then try adding a logo again in admin.
+
+> **Never** run `pm2 restart olipl` as root. Always: `sudo -u oceanweb pm2 restart olipl --update-env`
+
 ### Broken site: `webpack-*.js` returns 400
 
 HTML references a webpack chunk that is **missing or corrupt** in `.next` (usually after a failed build). Other `/_next/static/chunks/*.js` files may still return 200.

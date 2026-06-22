@@ -16,6 +16,8 @@ APP_NAME="olipl"
 if [[ "$(id -un)" == "root" ]]; then
   echo "==> Re-running deploy as $APP_USER (never use root PM2 for this app)"
   chown -R "$APP_USER:$APP_USER" "$APP_DIR"
+  chmod 775 "$APP_DIR/prisma" 2>/dev/null || true
+  [[ -f "$APP_DIR/prisma/dev.db" ]] && chmod 664 "$APP_DIR/prisma/dev.db" || true
   exec sudo -u "$APP_USER" bash "$APP_DIR/deploy.sh"
 fi
 
@@ -40,6 +42,7 @@ npx prisma db push
 
 echo "==> Ensuring upload directories..."
 mkdir -p public/uploads/resumes public/uploads
+chmod -R u+rwX public/uploads 2>/dev/null || true
 
 echo "==> Building..."
 npm run build

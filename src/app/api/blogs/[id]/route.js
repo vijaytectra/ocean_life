@@ -8,6 +8,9 @@ import {
 } from "@/lib/mysqlBlog";
 import { normalizeBlogImagePath } from "@/lib/blogImage";
 import { resolveBlogSlug } from "@/lib/blogSlugResolve";
+import { revalidateBlogPages } from "@/lib/revalidateContent";
+
+export const dynamic = "force-dynamic";
 
 function mapStatus(bodyStatus) {
   if (!bodyStatus || typeof bodyStatus !== "string") return "published";
@@ -42,6 +45,7 @@ export async function PUT(request, { params }) {
         return NextResponse.json({ error: "Blog not found" }, { status: 404 });
       }
       const blog = await mysqlUpdateBlog(id, payload);
+      revalidateBlogPages();
       return NextResponse.json(blog);
     }
 
@@ -49,6 +53,7 @@ export async function PUT(request, { params }) {
       where: { id },
       data: payload,
     });
+    revalidateBlogPages();
     return NextResponse.json(blog);
   } catch (error) {
     return NextResponse.json({ error: "Failed to update blog" }, { status: 500 });
@@ -68,12 +73,14 @@ export async function DELETE(request, { params }) {
         return NextResponse.json({ error: "Blog not found" }, { status: 404 });
       }
       await mysqlDeleteBlog(id);
+      revalidateBlogPages();
       return NextResponse.json({ success: true });
     }
 
     await prisma.blog.delete({
       where: { id },
     });
+    revalidateBlogPages();
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: "Failed to delete blog" }, { status: 500 });

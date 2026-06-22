@@ -17,23 +17,33 @@ export default function AdminClients() {
   }, []);
 
   const fetchLogos = async () => {
-    const res = await fetch('/api/clients/logos');
+    const res = await fetch("/api/clients/logos/", { cache: "no-store", credentials: "include" });
     const data = await res.json();
     if (Array.isArray(data)) setLogos(data);
   };
 
   const handleImageCropped = async (url) => {
-    setShowCropper(false);
+    if (!url) {
+      alert("Upload did not return an image URL. Please try again.");
+      return;
+    }
     setLoading(true);
     try {
-      await fetch('/api/clients/logos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: url, category })
+      const res = await fetch("/api/clients/logos/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ image: url, category }),
       });
-      fetchLogos();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || `Save failed (${res.status})`);
+      }
+      setShowCropper(false);
+      await fetchLogos();
     } catch (e) {
       console.error(e);
+      alert(e.message || "Could not save the logo. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -46,8 +56,20 @@ export default function AdminClients() {
   const confirmDelete = async () => {
     const id = modal.logoId;
     setModal({ isOpen: false, logoId: null });
-    await fetch(`/api/clients/logos/${id}`, { method: 'DELETE' });
-    fetchLogos();
+    try {
+      const res = await fetch(`/api/clients/logos/${id}/`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Delete failed (${res.status})`);
+      }
+      await fetchLogos();
+    } catch (e) {
+      console.error(e);
+      alert(e.message || "Could not remove the logo. Please try again.");
+    }
   };
 
   return (
@@ -69,6 +91,12 @@ export default function AdminClients() {
           </button>
         </div>
       </div>
+
+      {loading ? (
+        <p className={styles.cardDescription} style={{ marginBottom: "1rem" }}>
+          Saving logo…
+        </p>
+      ) : null}
 
       {showCropper && (
         <div className={styles.formCard}>
