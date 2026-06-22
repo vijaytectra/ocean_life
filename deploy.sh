@@ -168,6 +168,7 @@ restore_database_if_wiped() {
   log "Seeding logos from public/clients + public/logo..."
   export DATABASE_URL="file:$DB_PATH"
   node scripts/restore-logos.js
+  node scripts/restore-blogs.js
 }
 
 # ---------------------------------------------------------------------------
@@ -261,6 +262,18 @@ set -euo pipefail
 cd "$APP_DIR"
 export DATABASE_URL="file:$DB_PATH"
 node scripts/restore-logos.js
+EOF
+  fi
+
+  local blog_count
+  blog_count=$(db_count "Blog")
+  if [[ "${blog_count:-0}" -eq 0 ]]; then
+    log "No blogs in database — restoring..."
+    sudo -u "$APP_USER" bash <<EOF
+set -euo pipefail
+cd "$APP_DIR"
+export DATABASE_URL="file:$DB_PATH"
+node scripts/restore-blogs.js
 EOF
   fi
 

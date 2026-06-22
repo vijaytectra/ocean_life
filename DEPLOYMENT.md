@@ -153,6 +153,17 @@ bash deploy.sh
 
 Future deploys auto-restore logos from backup or re-seed from `public/clients/` + `public/logo/`.
 
+### Blogs missing from admin / blog page
+
+```bash
+cd /home/oceanweb/htdocs/www.olipl.com
+export DATABASE_URL="file:/home/oceanweb/htdocs/www.olipl.com/prisma/dev.db"
+sudo -u oceanweb node scripts/restore-blogs.js
+sudo -u oceanweb pm2 restart olipl --update-env
+```
+
+Or run `bash deploy.sh` (auto-restores if blog count is zero).
+
 ### `attempt to write a readonly database`
 
 ```bash
