@@ -25,10 +25,13 @@
 /public/uploads/resumes/*
 !/public/uploads/resumes/.gitkeep
 
-# SQLite database — lives on server only, never commit
+# SQLite database — lives only on server only, never commit
 /prisma/dev.db
 /prisma/dev.db-*
 /prisma/*.db-journal
+
+# Stray SQLite file if DATABASE_URL was misconfigured
+/dev.db
 
 # misc
 .DS_Store

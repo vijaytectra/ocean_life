@@ -3,21 +3,38 @@ import {
   isMysqlEmployeeEnabled,
   mysqlCreateEmployee,
   mysqlDeleteEmployee,
+  mysqlGetEmployeeById,
   mysqlListEmployees,
   mysqlUpdateEmployee,
 } from "@/lib/mysqlEmployee";
 import {
   FALLBACK_EMPLOYEES,
+  normalizeEmployeeImagePath,
   serializeEmployee,
   serializeEmployees,
 } from "@/lib/employeesShared";
 
 export {
   FALLBACK_EMPLOYEES,
+  normalizeEmployeeImagePath,
   resolveEmployeeImageSrc,
   serializeEmployee,
   serializeEmployees,
 } from "@/lib/employeesShared";
+
+function parsePriority(value) {
+  const parsed = parseInt(String(value ?? 0), 10);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function buildEmployeePayload(data) {
+  return {
+    name: String(data.name ?? "").trim(),
+    role: String(data.role ?? "").trim(),
+    image: data.image ? normalizeEmployeeImagePath(data.image) : null,
+    priority: parsePriority(data.priority),
+  };
+}
 
 export function isEmployeeMysqlActive() {
   return isMysqlEmployeeEnabled();
@@ -33,12 +50,12 @@ export async function listEmployees() {
 }
 
 export async function createEmployee(data) {
-  const payload = {
-    name: data.name,
-    role: data.role,
-    image: data.image ?? null,
-    priority: data.priority ? parseInt(String(data.priority), 10) : 0,
-  };
+  const payload = buildEmployeePayload(data);
+  if (!payload.name || !payload.role) {
+    const err = new Error("Name and role are required");
+    err.status = 400;
+    throw err;
+  }
   if (isMysqlEmployeeEnabled()) {
     return mysqlCreateEmployee(payload);
   }
@@ -46,32 +63,42 @@ export async function createEmployee(data) {
 }
 
 export async function updateEmployee(id, data) {
-  const payload = {
-    name: data.name,
-    role: data.role,
-    image: data.image,
-    priority:
-      data.priority !== undefined
-        ? parseInt(String(data.priority), 10)
-        : undefined,
-  };
-  if (isMysqlEmployeeEnabled()) {
-    return mysqlUpdateEmployee(id, {
-      name: payload.name,
-      role: payload.role,
-      image: payload.image ?? null,
-      priority: payload.priority ?? 0,
-    });
+  if (!Number.isInteger(id) || id < 1) {
+    const err = new Error("Invalid employee id");
+    err.status = 400;
+    throw err;
   }
-  return prisma.employee.update({
-    where: { id },
-    data: {
-      name: payload.name,
-      role: payload.role,
-      image: payload.image,
-      ...(payload.priority !== undefined ? { priority: payload.priority } : {}),
-    },
-  });
+
+  const payload = buildEmployeePayload(data);
+  if (!payload.name || !payload.role) {
+    const err = new Error("Name and role are required");
+    err.status = 400;
+    throw err;
+  }
+
+  if (isMysqlEmployeeEnabled()) {
+    const existing = await mysqlGetEmployeeById(id);
+    if (!existing) {
+      const err = new Error("Employee not found");
+      err.status = 404;
+      throw err;
+    }
+    return mysqlUpdateEmployee(id, payload);
+  }
+
+  try {
+    return await prisma.employee.update({
+      where: { id },
+      data: payload,
+    });
+  } catch (error) {
+    if (error?.code === "P2025") {
+      const err = new Error("Employee not found");
+      err.status = 404;
+      throw err;
+    }
+    throw error;
+  }
 }
 
 export async function deleteEmployee(id) {

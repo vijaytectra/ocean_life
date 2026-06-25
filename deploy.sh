@@ -169,6 +169,7 @@ restore_database_if_wiped() {
   export DATABASE_URL="file:$DB_PATH"
   node scripts/restore-logos.js
   node scripts/restore-blogs.js
+  node scripts/restore-employees.js
 }
 
 # ---------------------------------------------------------------------------
@@ -274,6 +275,18 @@ set -euo pipefail
 cd "$APP_DIR"
 export DATABASE_URL="file:$DB_PATH"
 node scripts/restore-blogs.js
+EOF
+  fi
+
+  local employee_count
+  employee_count=$(db_count "Employee")
+  if [[ "${employee_count:-0}" -eq 0 ]]; then
+    log "No employees in database — restoring..."
+    sudo -u "$APP_USER" bash <<EOF
+set -euo pipefail
+cd "$APP_DIR"
+export DATABASE_URL="file:$DB_PATH"
+node scripts/restore-employees.js
 EOF
   fi
 

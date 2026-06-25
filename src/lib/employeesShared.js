@@ -20,6 +20,20 @@ export function resolveEmployeeImageSrc(url) {
   return encodeURI(`/${u}`);
 }
 
+/** Normalize image path before saving to the database. */
+export function normalizeEmployeeImagePath(url) {
+  if (typeof url !== "string") return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
+  if (trimmed.startsWith("/uploads/")) {
+    const filename = trimmed.split("/").pop();
+    return filename ? `/api/images/${filename}` : trimmed;
+  }
+  if (trimmed.startsWith("/")) return trimmed;
+  return `/${trimmed}`;
+}
+
 export function serializeEmployee(row) {
   if (!row) return null;
   return {
