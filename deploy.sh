@@ -170,6 +170,7 @@ restore_database_if_wiped() {
   node scripts/restore-logos.js
   node scripts/restore-blogs.js
   node scripts/restore-employees.js
+  node scripts/restore-accreditations.js
 }
 
 # ---------------------------------------------------------------------------
@@ -287,6 +288,18 @@ set -euo pipefail
 cd "$APP_DIR"
 export DATABASE_URL="file:$DB_PATH"
 node scripts/restore-employees.js
+EOF
+  fi
+
+  local accreditation_count
+  accreditation_count=$(db_count "Accreditation")
+  if [[ "${accreditation_count:-0}" -eq 0 ]]; then
+    log "No accreditations in database — restoring..."
+    sudo -u "$APP_USER" bash <<EOF
+set -euo pipefail
+cd "$APP_DIR"
+export DATABASE_URL="file:$DB_PATH"
+node scripts/restore-accreditations.js
 EOF
   fi
 

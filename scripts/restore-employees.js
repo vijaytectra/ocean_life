@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
- * Seed management team into SQLite when empty (fixes admin edit 500 on fallback IDs).
+ * Seed management team into SQLite when empty.
  * Usage: node scripts/restore-employees.js
  */
 const path = require("path");
+const fs = require("fs");
 const { PrismaClient } = require("@prisma/client");
 const DEFAULT_EMPLOYEES = require("./employee-data");
 
@@ -13,6 +14,12 @@ function resolveDatabaseUrl() {
   let filePath = raw.slice(5).split("?")[0];
   if (filePath !== ":memory:" && !path.isAbsolute(filePath)) {
     filePath = path.join(process.cwd(), filePath.replace(/^\.\//, ""));
+  }
+  const prismaDb = path.join(process.cwd(), "prisma", "dev.db");
+  const rootDevDb = path.join(process.cwd(), "dev.db");
+  if (filePath === rootDevDb && fs.existsSync(prismaDb)) {
+    const rootStat = fs.existsSync(rootDevDb) ? fs.statSync(rootDevDb) : null;
+    if (!rootStat || rootStat.size === 0) filePath = prismaDb;
   }
   return `file:${filePath}`;
 }
@@ -24,7 +31,6 @@ async function main() {
   const count = await prisma.employee.count();
   if (count > 0) {
     console.log(`Employee table already has ${count} row(s) — nothing to do.`);
-    console.log("To re-sync missing members, add them in Admin → Management Team.");
     return;
   }
 

@@ -259,7 +259,11 @@ export default function AdminContent() {
         <h3 className={styles.cardTitle}>Masters Image Plan</h3>
         <p className={styles.cardDescription}>Upload the main master plan image for the projects section.</p>
         {showCropper && activeItem === "master-plan" ? (
-          <ImageCropper onImageCropped={handleImageCropped} onCancel={() => { setShowCropper(false); setActiveItem(null); }} />
+          <ImageCropper
+            uploadFullImage
+            onImageCropped={handleImageCropped}
+            onCancel={() => { setShowCropper(false); setActiveItem(null); }}
+          />
         ) : (
           <div style={{ marginTop: "15px" }}>
             {findValue("master-plan") ? (

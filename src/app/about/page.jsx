@@ -6,6 +6,7 @@ import Team from "../../componentsAbout/Team";
 import Accreditations from "../../componentsAbout/Accreditations";
 import Newsletter from "../../components/Newsletter";
 import { listEmployeesForPublic } from "@/lib/employees";
+import { listAccreditationsForPublic } from "@/lib/accreditations";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,10 @@ export const metadata = {
 };
 
 export default async function About() {
-  const teamMembers = await listEmployeesForPublic();
+  const [teamMembers, accreditations] = await Promise.all([
+    listEmployeesForPublic(),
+    listAccreditationsForPublic(),
+  ]);
 
   return (
     <>
@@ -29,7 +33,7 @@ export default async function About() {
       <ServiceGrid />
       <DriveUs />
       <Team initialMembers={teamMembers} />
-      <Accreditations />
+      <Accreditations initialItems={accreditations} />
       <Newsletter />
     </>
   );

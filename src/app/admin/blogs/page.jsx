@@ -438,7 +438,7 @@ export default function AdminBlogs() {
         >
           <div className={blogStyles.cropDialog} onMouseDown={(e) => e.stopPropagation()}>
             <ImageCropper
-              freeAspect
+              uploadFullImage
               onImageCropped={(url) => {
                 setFormData((prev) => ({ ...prev, image: url }));
                 setShowCropper(false);

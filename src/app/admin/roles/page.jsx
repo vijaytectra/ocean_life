@@ -8,6 +8,7 @@ const MODULES = [
   { id: 'blogs', name: 'Blogs' },
   { id: 'services', name: 'Services' },
   { id: 'team', name: 'Team Members' },
+  { id: 'accreditations', name: 'Accreditations' },
   { id: 'employees', name: 'Employees' },
   { id: 'enquiries', name: 'Enquiries' },
   { id: 'content', name: 'Site Content (Logos, Videos)' },

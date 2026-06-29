@@ -1,47 +1,10 @@
 import styles from "./Accreditations.module.css";
+import { DEFAULT_ACCREDITATIONS } from "@/lib/defaultAccreditations";
 
-const ACCRED_ITEMS = [
-  {
-    image: "/about/awr-2.png.webp",
-    title: "IMS",
-    description: `
-      ISO 9001:2015 - Quality <br>
-      ISO 14001:2015 - EMS <br>
-      ISO 45001:2018 Certified for Occupational Health and Safety Management System.
-    `,
-  },
-  {
-    image: "/about/awr-1.png.webp",
-    title: "CCR A- / STABLE RATING",
-    description:
-      "CRISIL has upgraded our corporate credit rating to CCR A Stable from CCR BBB+/Positive.",
-  },
-  {
-    image: "/about/awr-3.png.webp",
-    title: "D&B D-U-N-S",
-    description:
-      "Ocean has been evaluated and is now part of the Dun & Bradstreet Global Database.",
-  },
-  {
-    image: "/about/awr-4.png.webp",
-    title: "IGBC",
-    description: "Ocean is a member of Indian Green Building Council.",
-  },
-  {
-    image: "/about/awr-8.png.webp",
-    title: "ESA License",
-    description:
-      "Ocean has an in-house electrical team and SA grade license to carry out electrical works of any kind.",
-  },
-  {
-    image: "/about/awr-9.png.webp",
-    title: "FIDIC",
-    description:
-      "Ocean is a member of the Consulting Engineers Association of India.",
-  },
-];
+/** Server-rendered accreditations section on the About page. */
+export default function Accreditations({ initialItems = [] }) {
+  const items = initialItems?.length > 0 ? initialItems : DEFAULT_ACCREDITATIONS;
 
-export default function Accreditations() {
   return (
     <section className={styles.accreditations} aria-labelledby="accreditations-heading">
       <div className="container">
@@ -56,8 +19,8 @@ export default function Accreditations() {
         </header>
 
         <ul className={styles.grid}>
-          {ACCRED_ITEMS.map((item) => (
-            <li key={item.title} className={styles.card}>
+          {items.map((item) => (
+            <li key={item.id ?? item.title} className={styles.card}>
               <div className={styles.logoWrap}>
                 <img
                   src={item.image}

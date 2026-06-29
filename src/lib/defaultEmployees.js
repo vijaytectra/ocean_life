@@ -1,5 +1,5 @@
-/** @deprecated Use src/lib/defaultEmployees.js — kept for older scripts. */
-module.exports = [
+/** Default management team — used when DB is empty (matches public About page fallback). */
+export const DEFAULT_EMPLOYEES = [
   { name: "Mr. S. K. Peter ", role: "Managing Director & CEO", image: "/peter k.jpeg", priority: 80 },
   { name: "Mrs. Anitha Peter", role: "Director I Operations", image: "/about/anitha-peter.png", priority: 70 },
   { name: "Mr. Durai Raj L", role: "Chief Financial Officer", image: "/about/durai.png", priority: 60 },

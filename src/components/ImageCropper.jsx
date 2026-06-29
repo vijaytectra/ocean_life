@@ -16,6 +16,7 @@ export default function ImageCropper({
   onUploadStart,
   aspectRatio,
   freeAspect,
+  uploadFullImage,
   previewMode,
   previewSectionTitle,
   enableBgRemoval,
@@ -35,6 +36,7 @@ export default function ImageCropper({
   const [step, setStep] = useState("crop");
   const [previewSrc, setPreviewSrc] = useState(null);
   const [previewBlob, setPreviewBlob] = useState(null);
+  const [originalFile, setOriginalFile] = useState(null);
   const previewUrlRef = useRef(null);
   const previewTimerRef = useRef(null);
 
@@ -53,7 +55,6 @@ export default function ImageCropper({
       return;
     }
     setErrorMessage("");
-    setStep("crop");
     revokePreviewUrl();
     setPreviewSrc(null);
     setPreviewBlob(null);
@@ -62,6 +63,7 @@ export default function ImageCropper({
     setRemovingBg(false);
     try {
       const imageDataUrl = await readFile(file);
+      setOriginalFile(file);
       const prepared =
         previewMode === "client-logo"
           ? await padImageToSquare(imageDataUrl, "#ffffff")
@@ -71,6 +73,11 @@ export default function ImageCropper({
       setCrop({ x: 0, y: 0 });
       setZoom(ZOOM_MIN);
       setCroppedAreaPixels(null);
+      if (uploadFullImage) {
+        setStep("full");
+        return;
+      }
+      setStep("crop");
     } catch {
       setErrorMessage("Could not read this file. Try another image.");
     }
@@ -261,6 +268,34 @@ export default function ImageCropper({
     }
   }, [previewMode, goToPreview, imageSrc, croppedAreaPixels, onImageCropped, onUploadStart]);
 
+  const uploadOriginalFile = useCallback(async () => {
+    if (!originalFile) return;
+    setErrorMessage("");
+    setUploading(true);
+    if (onUploadStart) onUploadStart();
+    try {
+      const formData = new FormData();
+      formData.append("file", originalFile, originalFile.name);
+
+      const response = await fetch("/api/upload/", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok && data.url) {
+        onImageCropped(data.url);
+      } else {
+        setErrorMessage(data.error || "Upload failed. Try again or use a smaller image.");
+      }
+    } catch {
+      setErrorMessage("Something went wrong while uploading. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  }, [originalFile, onImageCropped, onUploadStart]);
+
   const showClientLogoPreview = previewMode === "client-logo";
 
   return (
@@ -302,6 +337,39 @@ export default function ImageCropper({
             </button>
           </div>
           {errorMessage ? <p className={styles.errorBanner}>{errorMessage}</p> : null}
+        </div>
+      ) : step === "full" && uploadFullImage ? (
+        <div className={styles.fullPreviewShell}>
+          <p className={styles.fullPreviewHint}>
+            Full image preview — the entire banner will be uploaded as-is (no cropping).
+          </p>
+          <div className={styles.fullPreviewFrame}>
+            <img src={imageSrc} alt="Full image preview" className={styles.fullPreviewImg} />
+          </div>
+          <div className={styles.controlsBar}>
+            <div className={styles.cropActions}>
+              <button type="button" className={styles.secondaryBtn} onClick={onCancel} disabled={uploading}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.secondaryBtn}
+                onClick={() => setStep("crop")}
+                disabled={uploading}
+              >
+                Crop manually
+              </button>
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                onClick={uploadOriginalFile}
+                disabled={uploading}
+              >
+                {uploading ? "Uploading…" : "Upload full image"}
+              </button>
+            </div>
+            {errorMessage ? <p className={styles.errorBanner}>{errorMessage}</p> : null}
+          </div>
         </div>
       ) : step === "preview" && showClientLogoPreview ? (
         <div className={styles.previewShell}>
@@ -348,14 +416,14 @@ export default function ImageCropper({
                 crop={crop}
                 zoom={zoom}
                 aspect={
-                  freeAspect
+                  freeAspect || uploadFullImage
                     ? undefined
                     : previewMode === "client-logo"
                       ? 1
                       : aspectRatio ?? 1
                 }
                 objectFit={showClientLogoPreview ? "cover" : "contain"}
-                restrictPosition
+                restrictPosition={!freeAspect && !uploadFullImage}
                 minZoom={ZOOM_MIN}
                 maxZoom={ZOOM_MAX}
                 onCropChange={setCrop}

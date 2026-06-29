@@ -151,6 +151,42 @@
   min-height: 420px;
 }
 
+.fullPreviewShell {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.fullPreviewHint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  text-align: center;
+}
+
+.fullPreviewFrame {
+  width: 100%;
+  max-height: min(70vh, 560px);
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullPreviewImg {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 8px;
+}
+
 .cropWithPreview {
   display: grid;
   grid-template-columns: 1fr;

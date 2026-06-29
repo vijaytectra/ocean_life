@@ -49,9 +49,9 @@ function LogoSection({ title, description, id, storedRaw, onSave, loading }) {
       {showCropper ? (
         <div style={{ flex: 1 }}>
           <ImageCropper 
+            uploadFullImage
             onImageCropped={handleImageCropped} 
             onCancel={() => setShowCropper(false)} 
-            freeAspect
           />
         </div>
       ) : (

@@ -128,7 +128,7 @@ export default function AdminLayout({ children }) {
             </Link>
           </div>
           
-          {(hasPermission('content') || hasPermission('services') || hasPermission('blogs') || hasPermission('team') || hasPermission('clients')) && (
+          {(hasPermission('content') || hasPermission('services') || hasPermission('blogs') || hasPermission('team') || hasPermission('clients') || hasPermission('accreditations')) && (
             <div className={styles.navSection}>Content Management</div>
           )}
           
@@ -167,6 +167,13 @@ export default function AdminLayout({ children }) {
               </Link>
             </div>
           )}
+          {hasPermission('accreditations') || hasPermission('content') ? (
+            <div className={styles.navItem}>
+              <Link href="/admin/accreditations" className={navLinkClass('/admin/accreditations')} aria-current={isActiveNav('/admin/accreditations') ? 'page' : undefined}>
+                Accreditations
+              </Link>
+            </div>
+          ) : null}
           
           {(hasPermission('users') || user?.role?.name === 'Admin') && (
             <>

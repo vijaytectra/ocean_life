@@ -280,7 +280,7 @@ export default function AdminServices() {
             />
 
             {showCropper ? (
-              <ImageCropper onImageCropped={handleImageCropped} onCancel={() => setShowCropper(false)} />
+              <ImageCropper uploadFullImage onImageCropped={handleImageCropped} onCancel={() => setShowCropper(false)} />
             ) : (
               <div>
                 <button type="button" onClick={() => setShowCropper(true)} className={styles.editButton}>

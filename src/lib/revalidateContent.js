@@ -12,3 +12,8 @@ export function revalidateClientLogoPages() {
   revalidatePath("/", "layout");
   revalidatePath("/services", "layout");
 }
+
+/** Invalidate cached pages after accreditation create/update/delete. */
+export function revalidateAccreditationPages() {
+  revalidatePath("/about", "layout");
+}
