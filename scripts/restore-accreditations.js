@@ -82,15 +82,16 @@ function resolveDatabaseUrl() {
 process.env.DATABASE_URL = resolveDatabaseUrl();
 const prisma = new PrismaClient();
 
-async function main() {
-  await prisma.$executeRawUnsafe(CREATE_TABLE_SQL);
-  const count = await prisma.accreditation.count();
-  if (count > 0) {
-    console.log(`Accreditation table already has ${count} row(s) — nothing to do.`);
-    return;
+async function countRows() {
+  if (typeof prisma.accreditation?.count === "function") {
+    return prisma.accreditation.count();
   }
+  const rows = await prisma.$queryRaw`SELECT COUNT(*) AS count FROM "Accreditation"`;
+  return Number(rows[0]?.count ?? 0);
+}
 
-  for (const row of DEFAULT_ACCREDITATIONS) {
+async function insertRow(row) {
+  if (typeof prisma.accreditation?.create === "function") {
     await prisma.accreditation.create({
       data: {
         title: row.title,
@@ -99,6 +100,24 @@ async function main() {
         priority: row.priority ?? 0,
       },
     });
+    return;
+  }
+  await prisma.$executeRaw`
+    INSERT INTO "Accreditation" (title, description, image, priority, updatedAt)
+    VALUES (${row.title}, ${row.description}, ${row.image}, ${row.priority ?? 0}, datetime('now'))
+  `;
+}
+
+async function main() {
+  await prisma.$executeRawUnsafe(CREATE_TABLE_SQL);
+  const count = await countRows();
+  if (count > 0) {
+    console.log(`Accreditation table already has ${count} row(s) — nothing to do.`);
+    return;
+  }
+
+  for (const row of DEFAULT_ACCREDITATIONS) {
+    await insertRow(row);
     console.log(`created: ${row.title}`);
   }
 

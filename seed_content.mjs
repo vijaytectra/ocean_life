@@ -21,11 +21,11 @@ const Blogs = [
 ];
 
 const SiteContents = [
-  { id: 'counter-employees', type: 'text', value: '650' },
+  { id: 'counter-employees', type: 'text', value: '750' },
   { id: 'counter-projects', type: 'text', value: '60' },
   { id: 'counter-experience', type: 'text', value: '30' },
   { id: 'counter-ongoing', type: 'text', value: '550' },
-  { id: 'home-hero-title', type: 'text', value: 'Delivering Dreams' },
+  { id: 'home-hero-title', type: 'text', value: 'Delivering Excellence' },
   { id: 'show-floating-enquiry', type: 'text', value: 'true' },
   { id: 'admin-notification-email', type: 'text', value: 'salesinfra@olipl.com' },
 ];

@@ -205,8 +205,11 @@ deploy_app() {
 
     log "Syncing database schema..."
     export DATABASE_URL="file:$DB_PATH"
-    npx prisma generate
     npx prisma db push
+    npx prisma generate
+
+    log "Syncing homepage stats (employees count, hero copy)..."
+    node scripts/update-home-stats.js
 
     restore_database_if_wiped
 

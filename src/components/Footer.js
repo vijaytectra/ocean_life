@@ -8,29 +8,31 @@ import Footer1 from "./Footer1";
 import { usePathname } from "next/navigation";
 import { parseMainVideoValue, resolveMediaPublicUrl } from "@/lib/mainVideoContent";
 
+const FOOTER_LOGO = "/logo/ocean_footer.png";
+
 function Footer() {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith('/admin');
 
-  const [logo, setLogo] = useState("/foot-logo.svg");
-  const [mounted, setMounted] = useState(false);
+  const [logo, setLogo] = useState(FOOTER_LOGO);
 
   useEffect(() => {
-    setMounted(true);
     async function loadLogo() {
       try {
-        const res = await fetch("/api/content");
+        const res = await fetch("/api/content", { cache: "no-store" });
         const data = await res.json();
         const footerLogo = data.find((item) => item.id === "site-logo-footer");
-        const fallbackLogo = data.find((item) => item.id === "site-logo");
-        const logoItem = footerLogo || fallbackLogo;
-        
-        if (logoItem) {
-          const { active } = parseMainVideoValue(logoItem.value);
-          if (active) setLogo(resolveMediaPublicUrl(active));
+        if (footerLogo?.value) {
+          const { active } = parseMainVideoValue(footerLogo.value);
+          if (active) {
+            setLogo(resolveMediaPublicUrl(active));
+            return;
+          }
         }
+        setLogo(FOOTER_LOGO);
       } catch (err) {
         console.error("Logo fetch error:", err);
+        setLogo(FOOTER_LOGO);
       }
     }
     loadLogo();
@@ -43,15 +45,14 @@ function Footer() {
       <div className="container">
         <div className={Styles.rowFooter}>
           <div className={Styles.columnFooter}>
-            <Link href={"https://www.olipl.com/"}>
+            <Link href={"https://www.olipl.com/"} className={Styles.footerLogoLink}>
               <Image
                 key={logo}
                 className={Styles.footerLogo}
-                width={260}
-                height={180}
+                width={1080}
+                height={1080}
                 src={logo}
-                alt="Ocean Lifespaces logo"
-                style={{ objectFit: 'contain' }}
+                alt="Ocean Lifespaces — Delivering Excellence"
                 unoptimized
                 priority
               />

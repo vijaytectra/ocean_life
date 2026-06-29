@@ -43,7 +43,7 @@ function HomeMain() {
   gsap.registerPlugin(ScrollTrigger);
 
   const [counterTargets, setCounterTargets] = useState([
-    { id: "employees", end: 650 },
+    { id: "employees", end: 750 },
     { id: "projects", end: 60 },
     { id: "experience", end: 30 },
     { id: "ongoing", end: 550 },
@@ -60,7 +60,7 @@ function HomeMain() {
             return item ? parseInt(item.value) || defaultVal : defaultVal;
           };
           setCounterTargets([
-            { id: "employees", end: findVal("counter-employees", 650) },
+            { id: "employees", end: findVal("counter-employees", 750) },
             { id: "projects", end: findVal("counter-projects", 60) },
             { id: "experience", end: 30 },
             { id: "ongoing", end: findVal("counter-ongoing", 550) },
@@ -117,7 +117,7 @@ function HomeMain() {
               <div className={Styles.rowDream}>
                 <div className={Styles.columnDream}>
                   <h4>Exceeding Expectations, Building Excellence</h4>
-                  <h2>Delivering Dreams</h2>
+                  <h2>Delivering Excellence</h2>
                   <p>
                     With almost three decades of experience in the field of Civil
                     Construction, Interior Fitout and Infrastructure Development,

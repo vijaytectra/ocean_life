@@ -4,7 +4,7 @@ import { useCountUpOnView } from "@/hooks/useCountUpOnView";
 import styles from "./AboutHeader.module.css";
 
 const STATS = [
-  { id: "employees", end: 650, suffix: "+", label: "Employees" },
+  { id: "employees", end: 750, suffix: "+", label: "Employees" },
   { id: "projects", end: 550, suffix: "+", label: "Projects completed" },
   { id: "years", end: 30, suffix: "", label: "Years in operation" },
 ];

@@ -1,6 +1,12 @@
-import prisma from "@/lib/prisma";
 import { DEFAULT_ACCREDITATIONS } from "@/lib/defaultAccreditations";
-import { ensureAccreditationTable } from "@/lib/ensureAccreditationTable";
+import {
+  countAccreditations,
+  deleteAccreditationRow,
+  findAccreditationById,
+  findAllAccreditations,
+  insertAccreditation,
+  updateAccreditationRow,
+} from "@/lib/accreditationStore";
 
 function parsePriority(value) {
   const parsed = parseInt(String(value ?? 0), 10);
@@ -33,10 +39,7 @@ function buildPayload(data) {
 }
 
 export async function listAccreditations() {
-  await ensureAccreditationTable();
-  return prisma.accreditation.findMany({
-    orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
-  });
+  return findAllAccreditations();
 }
 
 export async function listAccreditationsForPublic() {
@@ -51,14 +54,13 @@ export async function listAccreditationsForPublic() {
 }
 
 export async function createAccreditation(data) {
-  await ensureAccreditationTable();
   const payload = buildPayload(data);
   if (!payload.title || !payload.description || !payload.image) {
     const err = new Error("Title, description, and image are required");
     err.status = 400;
     throw err;
   }
-  return prisma.accreditation.create({ data: payload });
+  return insertAccreditation(payload);
 }
 
 export async function updateAccreditation(id, data) {
@@ -68,7 +70,7 @@ export async function updateAccreditation(id, data) {
     throw err;
   }
 
-  const existing = await prisma.accreditation.findUnique({ where: { id } });
+  const existing = await findAccreditationById(id);
   if (!existing) {
     const err = new Error("Accreditation not found");
     err.status = 404;
@@ -82,10 +84,7 @@ export async function updateAccreditation(id, data) {
     throw err;
   }
 
-  return prisma.accreditation.update({
-    where: { id },
-    data: payload,
-  });
+  return updateAccreditationRow(id, payload);
 }
 
 export async function deleteAccreditation(id) {
@@ -95,12 +94,12 @@ export async function deleteAccreditation(id) {
     throw err;
   }
 
-  const existing = await prisma.accreditation.findUnique({ where: { id } });
+  const existing = await findAccreditationById(id);
   if (!existing) {
     const err = new Error("Accreditation not found");
     err.status = 404;
     throw err;
   }
 
-  await prisma.accreditation.delete({ where: { id } });
+  await deleteAccreditationRow(id);
 }

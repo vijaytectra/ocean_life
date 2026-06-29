@@ -396,7 +396,7 @@ export default function AdminSettings() {
           id="site-logo-footer"
           title="Website Footer Branding"
           description="Secondary logo shown in the footer. Can be a variation or the same as the header."
-          storedRaw={data['site-logo-footer'] || data['site-logo'] || ''}
+          storedRaw={data['site-logo-footer'] || '/logo/ocean_footer.png'}
           onSave={saveField}
           loading={loading}
         />
