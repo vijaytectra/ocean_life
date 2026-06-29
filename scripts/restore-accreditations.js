@@ -51,6 +51,18 @@ ISO 45001:2018 Certified for Occupational Health and Safety Management System.`,
   },
 ];
 
+const CREATE_TABLE_SQL = `
+CREATE TABLE IF NOT EXISTS "Accreditation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "title" TEXT NOT NULL,
+  "description" TEXT NOT NULL,
+  "image" TEXT NOT NULL,
+  "priority" INTEGER NOT NULL DEFAULT 0,
+  "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
 function resolveDatabaseUrl() {
   const raw = (process.env.DATABASE_URL || "file:./prisma/dev.db").trim();
   if (!raw.startsWith("file:")) return raw;
@@ -71,6 +83,7 @@ process.env.DATABASE_URL = resolveDatabaseUrl();
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.$executeRawUnsafe(CREATE_TABLE_SQL);
   const count = await prisma.accreditation.count();
   if (count > 0) {
     console.log(`Accreditation table already has ${count} row(s) — nothing to do.`);

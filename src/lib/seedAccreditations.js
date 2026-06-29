@@ -1,8 +1,10 @@
 import prisma from "@/lib/prisma";
 import { DEFAULT_ACCREDITATIONS } from "@/lib/defaultAccreditations";
+import { ensureAccreditationTable } from "@/lib/ensureAccreditationTable";
 
 /** Insert default accreditations when the table is empty. */
 export async function seedDefaultAccreditationsIfEmpty() {
+  await ensureAccreditationTable();
   const count = await prisma.accreditation.count();
   if (count > 0) {
     return { seeded: 0, total: count, skipped: true };

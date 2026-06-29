@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { DEFAULT_ACCREDITATIONS } from "@/lib/defaultAccreditations";
+import { ensureAccreditationTable } from "@/lib/ensureAccreditationTable";
 
 function parsePriority(value) {
   const parsed = parseInt(String(value ?? 0), 10);
@@ -32,6 +33,7 @@ function buildPayload(data) {
 }
 
 export async function listAccreditations() {
+  await ensureAccreditationTable();
   return prisma.accreditation.findMany({
     orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
   });
@@ -49,6 +51,7 @@ export async function listAccreditationsForPublic() {
 }
 
 export async function createAccreditation(data) {
+  await ensureAccreditationTable();
   const payload = buildPayload(data);
   if (!payload.title || !payload.description || !payload.image) {
     const err = new Error("Title, description, and image are required");

@@ -21,7 +21,7 @@ export function middleware(request) {
   }
 
   // Protect sensitive API routes (POST, PUT, DELETE)
-  const sensitiveApis = ['/api/blogs', '/api/content', '/api/employees', '/api/upload', '/api/clients/logos'];
+  const sensitiveApis = ['/api/blogs', '/api/content', '/api/employees', '/api/upload', '/api/clients/logos', '/api/accreditations'];
   const isSensitiveApi = sensitiveApis.some((api) => normalizedPathname.startsWith(api));
 
   if (isSensitiveApi && request.method !== 'GET') {

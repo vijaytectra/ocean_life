@@ -16,6 +16,7 @@ export default function AdminAccreditations() {
   const [isUploading, setIsUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [restoring, setRestoring] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const [modal, setModal] = useState({ isOpen: false, itemId: null });
 
   useEffect(() => {
@@ -23,12 +24,25 @@ export default function AdminAccreditations() {
   }, []);
 
   const fetchItems = async () => {
-    const res = await fetch("/api/accreditations/", {
-      cache: "no-store",
-      credentials: "include",
-    });
-    const data = await res.json();
-    if (Array.isArray(data)) setItems(data);
+    setLoadError("");
+    try {
+      const res = await fetch("/api/accreditations/", {
+        cache: "no-store",
+        credentials: "include",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || `Could not load accreditations (${res.status})`);
+      }
+      if (Array.isArray(data)) {
+        setItems(data);
+      } else {
+        throw new Error("Unexpected response from server");
+      }
+    } catch (err) {
+      console.error(err);
+      setLoadError(err.message || "Could not load accreditations.");
+    }
   };
 
   const handleImageCropped = (url) => {
@@ -158,6 +172,12 @@ export default function AdminAccreditations() {
           {isCreating ? "Cancel" : "Add Accreditation"}
         </button>
       </div>
+
+      {loadError ? (
+        <p className={styles.cardDescription} style={{ color: "#b91c1c", marginBottom: "1rem" }}>
+          {loadError}
+        </p>
+      ) : null}
 
       {items.length === 0 ? (
         <div

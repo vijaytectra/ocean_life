@@ -6,6 +6,7 @@ import {
   listAccreditationsForPublic,
   serializeAccreditations,
 } from "@/lib/accreditations";
+import { seedDefaultAccreditationsIfEmpty } from "@/lib/seedAccreditations";
 import { revalidateAccreditationPages } from "@/lib/revalidateContent";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +24,11 @@ export async function GET() {
     const session = (await cookies()).get("admin_session");
 
     if (session) {
-      const rows = await listAccreditations();
+      let rows = await listAccreditations();
+      if (rows.length === 0) {
+        await seedDefaultAccreditationsIfEmpty();
+        rows = await listAccreditations();
+      }
       return NextResponse.json(serializeAccreditations(rows), {
         headers: { "Cache-Control": "no-store, max-age=0, must-revalidate" },
       });
