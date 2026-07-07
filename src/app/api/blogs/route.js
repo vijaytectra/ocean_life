@@ -19,8 +19,7 @@ export async function GET() {
   };
 
   try {
-    const session = (await cookies()).get("admin_session");
-    const blogs = session ? await listAllBlogs() : await listPublishedBlogs();
+    const blogs = await listPublishedBlogs();
     return NextResponse.json(blogs, { headers: cacheHeaders });
   } catch (error) {
     console.error("GET /api/blogs:", error);

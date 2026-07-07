@@ -1,8 +1,6 @@
 import styles from "./Team.module.css";
-import {
-  FALLBACK_EMPLOYEES,
-  resolveEmployeeImageSrc,
-} from "@/lib/employeesShared";
+import { ABOUT_TEAM } from "@/lib/aboutPageData";
+import { resolveEmployeeImageSrc } from "@/lib/employeesShared";
 
 const PLACEHOLDER_STYLE = {
   width: "100%",
@@ -16,10 +14,9 @@ const PLACEHOLDER_STYLE = {
   fontWeight: "bold",
 };
 
-/** Server-rendered management team (no client JS required). */
-export default function Team({ initialMembers = [] }) {
-  const members =
-    initialMembers?.length > 0 ? initialMembers : FALLBACK_EMPLOYEES;
+/** Server-rendered management team — static About content, no database. */
+export default function Team({ initialMembers = ABOUT_TEAM }) {
+  const members = initialMembers?.length > 0 ? initialMembers : ABOUT_TEAM;
 
   return (
     <section className={styles.team}>

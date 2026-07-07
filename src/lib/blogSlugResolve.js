@@ -41,22 +41,6 @@ export async function resolveBlogSlug({ title, slug, excludeId }) {
 }
 
 export async function getBlogBySlugOrId(identifier) {
-  const raw = String(identifier || "").trim();
-  if (!raw) return null;
-
-  const numericId = parseInt(raw, 10);
-  const isNumericId = !Number.isNaN(numericId) && String(numericId) === raw;
-
-  if (isMysqlBlogEnabled()) {
-    if (isNumericId) {
-      const { mysqlGetBlogById } = await import("@/lib/mysqlBlog");
-      return mysqlGetBlogById(numericId);
-    }
-    return mysqlFindBlogBySlug(raw);
-  }
-
-  if (isNumericId) {
-    return prisma.blog.findUnique({ where: { id: numericId } });
-  }
-  return prisma.blog.findFirst({ where: { slug: raw } });
+  const { getStaticBlogBySlugOrId } = await import("@/lib/staticSiteData");
+  return getStaticBlogBySlugOrId(identifier);
 }

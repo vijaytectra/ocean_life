@@ -18,30 +18,9 @@ function apiError(error, fallbackMessage) {
 }
 
 export async function GET() {
-  try {
-    const session = (await cookies()).get("admin_session");
-    const rows = await listEmployees();
-
-    // Admin must see real DB rows only — fallbacks are not editable records.
-    if (session) {
-      return NextResponse.json(serializeEmployees(rows), {
-        headers: { "Cache-Control": "no-store, max-age=0, must-revalidate" },
-      });
-    }
-
-    const employees =
-      rows.length > 0 ? serializeEmployees(rows) : FALLBACK_EMPLOYEES;
-    return NextResponse.json(employees, {
-      headers: {
-        "Cache-Control": "no-store, max-age=0, must-revalidate",
-      },
-    });
-  } catch (error) {
-    console.error("GET /api/employees:", error);
-    return NextResponse.json(FALLBACK_EMPLOYEES, {
-      headers: { "Cache-Control": "no-store, max-age=0, must-revalidate" },
-    });
-  }
+  return NextResponse.json(FALLBACK_EMPLOYEES, {
+    headers: { "Cache-Control": "no-store, max-age=0, must-revalidate" },
+  });
 }
 
 export async function POST(request) {

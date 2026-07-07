@@ -1,5 +1,5 @@
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { getStaticServiceById } from "@/lib/staticSiteData";
 import { getServiceCategoryPath } from "@/lib/serviceCategoryRoutes";
 import styles from "./offering.module.css";
 
@@ -8,7 +8,7 @@ export async function generateMetadata({ params }) {
   if (Number.isNaN(id)) {
     return { title: "Service | Ocean Lifespaces" };
   }
-  const service = await prisma.service.findUnique({ where: { id } });
+  const service = getStaticServiceById(id);
   return {
     title: service ? `${service.name} | Ocean Lifespaces` : "Service | Ocean Lifespaces",
     description: service?.description?.slice(0, 160) || "",
@@ -26,7 +26,7 @@ export default async function ServiceOfferingPage({ params }) {
     );
   }
 
-  const service = await prisma.service.findUnique({ where: { id } });
+  const service = getStaticServiceById(id);
   if (!service) {
     return (
       <div className="container" style={{ padding: "80px 20px" }}>

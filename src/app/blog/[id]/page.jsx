@@ -1,7 +1,10 @@
 import { getBlogBySlugOrId } from "@/lib/blogSlugResolve";
 import { resolveBlogImageUrl, normalizeBlogImagePath } from "@/lib/blogImage";
+import { STATIC_BLOGS } from "@/lib/staticSiteData";
 
-export const dynamic = "force-dynamic";
+export function generateStaticParams() {
+  return STATIC_BLOGS.map((blog) => ({ id: blog.slug }));
+}
 
 async function loadBlog(identifier) {
   const blog = await getBlogBySlugOrId(identifier);

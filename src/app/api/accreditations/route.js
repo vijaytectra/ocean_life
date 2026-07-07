@@ -8,6 +8,7 @@ import {
 } from "@/lib/accreditations";
 import { seedDefaultAccreditationsIfEmpty } from "@/lib/seedAccreditations";
 import { revalidateAccreditationPages } from "@/lib/revalidateContent";
+import { STATIC_ACCREDITATIONS } from "@/lib/staticSiteData";
 
 export const dynamic = "force-dynamic";
 
@@ -20,28 +21,9 @@ function apiError(error, fallbackMessage) {
 }
 
 export async function GET() {
-  try {
-    const session = (await cookies()).get("admin_session");
-
-    if (session) {
-      let rows = await listAccreditations();
-      if (rows.length === 0) {
-        await seedDefaultAccreditationsIfEmpty();
-        rows = await listAccreditations();
-      }
-      return NextResponse.json(serializeAccreditations(rows), {
-        headers: { "Cache-Control": "no-store, max-age=0, must-revalidate" },
-      });
-    }
-
-    const items = await listAccreditationsForPublic();
-    return NextResponse.json(items, {
-      headers: { "Cache-Control": "no-store, max-age=0, must-revalidate" },
-    });
-  } catch (error) {
-    console.error("GET /api/accreditations:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  return NextResponse.json(STATIC_ACCREDITATIONS, {
+    headers: { "Cache-Control": "no-store, max-age=0, must-revalidate" },
+  });
 }
 
 export async function POST(request) {

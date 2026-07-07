@@ -1,5 +1,4 @@
-import prisma from "@/lib/prisma";
-import { isMysqlBlogEnabled, mysqlListBlogs } from "@/lib/mysqlBlog";
+import { STATIC_BLOGS } from "@/lib/staticSiteData";
 import { normalizeBlogImagePath } from "@/lib/blogImage";
 
 function withNormalizedImage(blog) {
@@ -15,12 +14,7 @@ export function isBlogPublished(status) {
 }
 
 async function listAllBlogs() {
-  if (isMysqlBlogEnabled()) {
-    return (await mysqlListBlogs()).map(withNormalizedImage);
-  }
-  return (await prisma.blog.findMany({
-    orderBy: { createdAt: "desc" },
-  })).map(withNormalizedImage);
+  return STATIC_BLOGS.map(withNormalizedImage);
 }
 
 export async function listPublishedBlogs() {

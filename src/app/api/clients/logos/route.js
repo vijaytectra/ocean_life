@@ -1,24 +1,17 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { revalidateClientLogoPages } from "@/lib/revalidateContent";
+import { STATIC_CLIENT_LOGOS } from "@/lib/staticSiteData";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  try {
-    const logos = await prisma.clientLogo.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-    return NextResponse.json(logos, {
-      headers: {
-        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-        Pragma: "no-cache",
-      },
-    });
-  } catch (error) {
-    console.error("Fetch logos error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  return NextResponse.json(STATIC_CLIENT_LOGOS, {
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+      Pragma: "no-cache",
+    },
+  });
 }
 
 export async function POST(request) {

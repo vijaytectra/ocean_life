@@ -1,9 +1,9 @@
 import styles from "./Accreditations.module.css";
-import { DEFAULT_ACCREDITATIONS } from "@/lib/defaultAccreditations";
+import { ABOUT_ACCREDITATIONS } from "@/lib/aboutPageData";
 
-/** Server-rendered accreditations section on the About page. */
-export default function Accreditations({ initialItems = [] }) {
-  const items = initialItems?.length > 0 ? initialItems : DEFAULT_ACCREDITATIONS;
+/** Server-rendered accreditations — static About content, no database. */
+export default function Accreditations({ initialItems = ABOUT_ACCREDITATIONS }) {
+  const items = initialItems?.length > 0 ? initialItems : ABOUT_ACCREDITATIONS;
 
   return (
     <section className={styles.accreditations} aria-labelledby="accreditations-heading">

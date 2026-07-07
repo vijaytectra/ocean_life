@@ -5,10 +5,7 @@ import DriveUs from "../../componentsAbout/DriveUs";
 import Team from "../../componentsAbout/Team";
 import Accreditations from "../../componentsAbout/Accreditations";
 import Newsletter from "../../components/Newsletter";
-import { listEmployeesForPublic } from "@/lib/employees";
-import { listAccreditationsForPublic } from "@/lib/accreditations";
-
-export const dynamic = "force-dynamic";
+import { ABOUT_ACCREDITATIONS, ABOUT_TEAM } from "@/lib/aboutPageData";
 
 export const metadata = {
   title: "About Us | Ocean Lifespaces India Pvt Ltd",
@@ -20,20 +17,15 @@ export const metadata = {
   },
 };
 
-export default async function About() {
-  const [teamMembers, accreditations] = await Promise.all([
-    listEmployeesForPublic(),
-    listAccreditationsForPublic(),
-  ]);
-
+export default function About() {
   return (
     <>
       <AboutHeader />
       <AboutVision />
       <ServiceGrid />
       <DriveUs />
-      <Team initialMembers={teamMembers} />
-      <Accreditations initialItems={accreditations} />
+      <Team initialMembers={ABOUT_TEAM} />
+      <Accreditations initialItems={ABOUT_ACCREDITATIONS} />
       <Newsletter />
     </>
   );

@@ -1,17 +1,11 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { STATIC_SITE_CONTENT } from '@/lib/staticSiteData';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  try {
-    const content = await prisma.siteContent.findMany({
-      orderBy: { id: 'asc' }
-    });
-    return NextResponse.json(content);
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch content" }, { status: 500 });
-  }
+  return NextResponse.json(STATIC_SITE_CONTENT);
 }
 
 export async function POST(request) {
