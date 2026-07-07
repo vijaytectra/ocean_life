@@ -7,21 +7,9 @@
  */
 const fs = require("fs");
 const path = require("path");
-const { PrismaClient } = require("@prisma/client");
+const { createPrisma } = require("./lib/prisma-client.cjs");
 
-// Resolve relative SQLite paths (same as src/lib/databaseUrl.js)
-function resolveDatabaseUrl() {
-  const raw = (process.env.DATABASE_URL || "file:./prisma/dev.db").trim();
-  if (!raw.startsWith("file:")) return raw;
-  let filePath = raw.slice(5).split("?")[0];
-  if (filePath !== ":memory:" && !path.isAbsolute(filePath)) {
-    filePath = path.join(process.cwd(), filePath.replace(/^\.\//, ""));
-  }
-  return `file:${filePath}`;
-}
-
-process.env.DATABASE_URL = resolveDatabaseUrl();
-const prisma = new PrismaClient();
+const prisma = createPrisma();
 
 const IMAGE_EXT = /\.(webp|png|jpe?g|svg)$/i;
 const SKIP_FILES = new Set(["client_bg.png"]);

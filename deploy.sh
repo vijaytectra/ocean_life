@@ -44,6 +44,25 @@ done
 log() { echo "==> $*"; }
 fail() { echo "ERROR: $*" >&2; exit 1; }
 
+load_env_from_file() {
+  local env_file="$APP_DIR/.env"
+  [[ -f "$env_file" ]] || return 0
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%%#*}"
+    line="$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+    [[ -z "$line" || "$line" != *=* ]] && continue
+    local key="${line%%=*}"
+    local val="${line#*=}"
+    key="$(echo "$key" | sed 's/[[:space:]]*$//')"
+    val="$(echo "$val" | sed 's/^[[:space:]]*//;s/^"//;s/"$//;s/^'"'"'//;s/'"'"'$//')"
+    export "$key=$val"
+  done < "$env_file"
+}
+
+uses_turso() {
+  [[ -n "${TURSO_DATABASE_URL:-}" ]] && [[ -n "${TURSO_AUTH_TOKEN:-}" ]]
+}
+
 # ---------------------------------------------------------------------------
 # Root-only: kill wrong PM2, fix ownership, SQLite permissions
 # ---------------------------------------------------------------------------
@@ -108,6 +127,11 @@ backup_database() {
 
 db_count() {
   local table="$1"
+  load_env_from_file
+  if uses_turso; then
+    node "$APP_DIR/scripts/db-count.cjs" "$table" 2>/dev/null || echo 0
+    return
+  fi
   if [[ ! -f "$DB_PATH" ]]; then
     echo 0
     return
@@ -120,6 +144,10 @@ db_count() {
 }
 
 protect_database_for_pull() {
+  load_env_from_file
+  if uses_turso; then
+    return
+  fi
   PREDEPLOY_DB=""
   if [[ -f "$DB_PATH" ]]; then
     PREDEPLOY_DB=$(mktemp)
@@ -129,6 +157,10 @@ protect_database_for_pull() {
 }
 
 restore_database_if_wiped() {
+  load_env_from_file
+  if uses_turso; then
+    return
+  fi
   local logo_count pre_logos bak bak_logos
 
   logo_count=$(db_count "ClientLogo")
@@ -178,6 +210,7 @@ restore_database_if_wiped() {
 # ---------------------------------------------------------------------------
 deploy_app() {
   cd "$APP_DIR"
+  load_env_from_file
 
   if [[ "$FIX_ONLY" == "false" ]]; then
     protect_database_for_pull
@@ -204,9 +237,14 @@ deploy_app() {
     npm ci
 
     log "Syncing database schema..."
-    export DATABASE_URL="file:$DB_PATH"
-    npx prisma db push
-    npx prisma generate
+    if uses_turso; then
+      log "Using Turso cloud database (data survives git push)"
+      node scripts/db-push.cjs
+    else
+      export DATABASE_URL="file:$DB_PATH"
+      npx prisma db push
+      npx prisma generate
+    fi
 
     log "Syncing homepage stats (employees count, hero copy)..."
     node scripts/update-home-stats.js
@@ -236,6 +274,7 @@ deploy_app() {
 
 verify_deployment() {
   log "Verifying deployment..."
+  load_env_from_file
 
   # PM2 must run as oceanweb
   local pm2_user
@@ -256,7 +295,11 @@ verify_deployment() {
     fail "Process $pid runs as '$proc_user', expected '$APP_USER'. Run: bash deploy.sh --fix-only"
   fi
 
-  verify_database_writable
+  if uses_turso; then
+    log "Turso cloud DB configured — skipping local SQLite write test"
+  else
+    verify_database_writable
+  fi
 
   local logo_count
   logo_count=$(db_count "ClientLogo")
@@ -265,7 +308,7 @@ verify_deployment() {
     sudo -u "$APP_USER" bash <<EOF
 set -euo pipefail
 cd "$APP_DIR"
-export DATABASE_URL="file:$DB_PATH"
+$(if uses_turso; then echo "export TURSO_DATABASE_URL=\"$TURSO_DATABASE_URL\""; echo "export TURSO_AUTH_TOKEN=\"$TURSO_AUTH_TOKEN\""; else echo "export DATABASE_URL=\"file:$DB_PATH\""; fi)
 node scripts/restore-logos.js
 EOF
   fi
@@ -277,7 +320,7 @@ EOF
     sudo -u "$APP_USER" bash <<EOF
 set -euo pipefail
 cd "$APP_DIR"
-export DATABASE_URL="file:$DB_PATH"
+$(if uses_turso; then echo "export TURSO_DATABASE_URL=\"$TURSO_DATABASE_URL\""; echo "export TURSO_AUTH_TOKEN=\"$TURSO_AUTH_TOKEN\""; else echo "export DATABASE_URL=\"file:$DB_PATH\""; fi)
 node scripts/restore-blogs.js
 EOF
   fi
@@ -289,7 +332,7 @@ EOF
     sudo -u "$APP_USER" bash <<EOF
 set -euo pipefail
 cd "$APP_DIR"
-export DATABASE_URL="file:$DB_PATH"
+$(if uses_turso; then echo "export TURSO_DATABASE_URL=\"$TURSO_DATABASE_URL\""; echo "export TURSO_AUTH_TOKEN=\"$TURSO_AUTH_TOKEN\""; else echo "export DATABASE_URL=\"file:$DB_PATH\""; fi)
 node scripts/restore-employees.js
 EOF
   fi
@@ -301,7 +344,7 @@ EOF
     sudo -u "$APP_USER" bash <<EOF
 set -euo pipefail
 cd "$APP_DIR"
-export DATABASE_URL="file:$DB_PATH"
+$(if uses_turso; then echo "export TURSO_DATABASE_URL=\"$TURSO_DATABASE_URL\""; echo "export TURSO_AUTH_TOKEN=\"$TURSO_AUTH_TOKEN\""; else echo "export DATABASE_URL=\"file:$DB_PATH\""; fi)
 node scripts/restore-accreditations.js
 EOF
   fi

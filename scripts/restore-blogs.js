@@ -3,22 +3,10 @@
  * Restore / upsert blog posts in SQLite (safe to run on server after DB wipe).
  * Usage: node scripts/restore-blogs.js
  */
-const path = require("path");
-const { PrismaClient } = require("@prisma/client");
+const { createPrisma } = require("./lib/prisma-client.cjs");
 const interiorFitOut = require("./blog-data/interior-fit-out-services");
 
-function resolveDatabaseUrl() {
-  const raw = (process.env.DATABASE_URL || "file:./prisma/dev.db").trim();
-  if (!raw.startsWith("file:")) return raw;
-  let filePath = raw.slice(5).split("?")[0];
-  if (filePath !== ":memory:" && !path.isAbsolute(filePath)) {
-    filePath = path.join(process.cwd(), filePath.replace(/^\.\//, ""));
-  }
-  return `file:${filePath}`;
-}
-
-process.env.DATABASE_URL = resolveDatabaseUrl();
-const prisma = new PrismaClient();
+const prisma = createPrisma();
 
 const DEFAULT_BLOGS = [
   {
