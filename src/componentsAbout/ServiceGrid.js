@@ -96,24 +96,32 @@ const ServiceGrid = () => {
           </div>
           <div className={Styles.navColumn}>
             <div className={Styles.arrows}>
-              <button 
-                onClick={prevSlide} 
+              <button
+                type="button"
+                onClick={prevSlide}
+                aria-label="Previous services"
                 className={`${Styles.navButton} ${currentIndex === 0 ? Styles.disabled : ""}`}
               >
-                <BsArrowLeft />
+                <BsArrowLeft aria-hidden="true" />
               </button>
-              <button 
-                onClick={nextSlide} 
+              <button
+                type="button"
+                onClick={nextSlide}
+                aria-label="Next services"
                 className={`${Styles.navButton} ${currentIndex >= services.length - itemsToShow ? Styles.disabled : ""}`}
               >
-                <BsArrowRight />
+                <BsArrowRight aria-hidden="true" />
               </button>
             </div>
-            <Link href="/services" className={Styles.learnMore}>
+            <Link
+              href="/services"
+              className={Styles.learnMore}
+              aria-label="Learn more about our services"
+            >
               <span className={Styles.orangeCircle}>
-                <BsArrowRight />
+                <BsArrowRight aria-hidden="true" />
               </span>
-              <span>Learn More</span>
+              <span>Learn More<span className="visually-hidden"> about our services</span></span>
             </Link>
           </div>
         </div>
@@ -131,7 +139,12 @@ const ServiceGrid = () => {
                       width={500}
                       height={350}
                       src={service.imgSrc}
-                      alt={service.title}
+                      /* The <h3> below is inside the same link and already
+                         names it; repeating the title here is what Lighthouse
+                         reports as redundant alt text. */
+                      alt=""
+                      sizes="(max-width: 767px) 100vw, 33vw"
+                      loading="lazy"
                       className={Styles.serviceImage}
                     />
                   </div>

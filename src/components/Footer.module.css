@@ -78,6 +78,18 @@
   flex-direction: column;
   row-gap: clamp(10px, 1vh, 1vh);
 }
+/* The address/phone/email <li> elements were previously direct children of
+   .columnFooterColumnInner with no list parent (an accessibility failure).
+   They are now wrapped in a <ul> that reproduces the exact same column flow
+   and row-gap, so spacing is unchanged. */
+.contactList {
+  display: flex;
+  flex-direction: column;
+  row-gap: clamp(10px, 1vh, 1vh);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 .columnFooterColumnInner li {
   list-style: none;
   display: grid;

@@ -1,70 +1,31 @@
-"use client";
-
-import { useRef } from "react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Styles from "./home.module.css";
 import ScrollSection from "./ScrollSection";
-import { useMainHeroVideoSrc } from "@/hooks/useMainHeroVideoSrc";
-import { guessVideoMimeType, isHeroBackgroundImageUrl } from "@/lib/mainVideoContent";
+import HeroMedia from "./HeroMedia";
 
-export default function Home() {
-  const heroVideoSrc = useMainHeroVideoSrc();
-  const heroIsImage = isHeroBackgroundImageUrl(heroVideoSrc);
-  const videoContainer = useRef(null);
-  const headingRef = useRef(null);
-  const descriptionRef = useRef(null);
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  useGSAP(() => {
-    const tl = gsap.timeline();
-
-    tl.from(headingRef.current, {
-      opacity: 0,
-      y: 20,
-      duration: 1,
-      delay: 0.5,
-    });
-
-    tl.from(descriptionRef.current, {
-      opacity: 0,
-      y: 20,
-      duration: 1,
-      delay: 0.5,
-    });
-  }, []);
-
+/**
+ * Home hero.
+ *
+ * Now a Server Component: the hero markup is fully prerendered, and the only
+ * client code left in it is <HeroMedia>, which attaches the background video
+ * after load. The heading/description intro that used to run through
+ * gsap + @gsap/react is an equivalent CSS animation (see home.module.css), so
+ * nothing in the hero blocks or competes with the first paint.
+ */
+export default function Home({ videoSrc, webm, poster }) {
   return (
     <div>
-      <section className={Styles.videoSection} ref={videoContainer}>
-        {heroIsImage ? (
-          <img key={heroVideoSrc} className={Styles.bgVideo} src={heroVideoSrc} alt="" fetchPriority="high" />
-        ) : (
-          <video
-            key={heroVideoSrc}
-            className={Styles.bgVideo}
-            autoPlay
-            muted
-            loop
-            preload="metadata"
-            playsInline
-          >
-            <source src={heroVideoSrc} type={guessVideoMimeType(heroVideoSrc)} />
-            Your browser does not support the video tag.
-          </video>
-        )}
+      <section className={Styles.videoSection}>
+        <HeroMedia src={videoSrc} webm={webm} poster={poster} />
 
         {/* Overlay content */}
         <div className={Styles.content}>
           <h1 className={Styles.h1}>
             Ocean Lifespaces <br></br>India Private Limited
           </h1>
-          <h2 className={Styles.heading} ref={headingRef}>
+          <h2 className={Styles.heading}>
             Revolutionizing Spaces Through Innovation
           </h2>
-          <p className={Styles.description} ref={descriptionRef}>
+          <p className={Styles.description}>
             Dive Into A World Of Possibilities Where Ideas Turn Into Reality
           </p>
         </div>

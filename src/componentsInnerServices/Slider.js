@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import styles from "./Slider.module.css";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
@@ -42,8 +44,13 @@ const Slider = () => {
 
   return (
     <div className={styles.sliderContainer}>
-      <button className={styles.prevButton} onClick={prevSlide}>
-        <BsArrowLeft />
+      <button
+        type="button"
+        className={styles.prevButton}
+        onClick={prevSlide}
+        aria-label="Previous project"
+      >
+        <BsArrowLeft aria-hidden="true" />
       </button>
       <div className={styles.slider}>
         <div className={styles.imageWrapper}>
@@ -51,20 +58,25 @@ const Slider = () => {
             width={475}
             height={705}
             src={images[currentIndex]}
-            alt="Slide"
+            alt="Ocean Lifespaces completed project"
             className={styles.sliderImage}
           />
           <Image
             width={475}
             height={705}
             src={images[(currentIndex + 1) % images.length]}
-            alt="Next Slide"
+            alt=""
             className={styles.sliderImage}
           />
         </div>
       </div>
-      <button className={styles.nextButton} onClick={nextSlide}>
-        <BsArrowRight />
+      <button
+        type="button"
+        className={styles.nextButton}
+        onClick={nextSlide}
+        aria-label="Next project"
+      >
+        <BsArrowRight aria-hidden="true" />
       </button>
     </div>
   );

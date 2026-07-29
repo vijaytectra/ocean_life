@@ -1,13 +1,11 @@
 // Slider.js
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
 import { BsArrowLeft, BsArrowRight, BsArrowUpRight } from "react-icons/bs";
 import Styles from "./TestimonialHome.module.css";
 import Link from "next/link";
-import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import { whenNearViewport } from "@/lib/lazyGsap";
 
 // Sample images array
 const images = [
@@ -153,8 +151,6 @@ const TestimonialHome = () => {
   const TestimonialHomeRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  gsap.registerPlugin(ScrollTrigger);
-
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
@@ -165,10 +161,53 @@ const TestimonialHome = () => {
     );
   };
 
+  // gsap, ScrollTrigger and @gsap/react were static imports here, which put
+  // ~110 KB of animation code into the page's initial chunks even though none
+  // of it runs until the section is scrolled to or an arrow is clicked. It is
+  // now fetched once, on idle, and cached in a ref for the slide transition.
+  const gsapRef = useRef(null);
+
+  useEffect(() => {
+    const section = TestimonialHomeRef.current;
+    if (!section) return;
+
+    return whenNearViewport(section, ({ gsap }) => {
+      gsapRef.current = gsap;
+
+      const ctx = gsap.context(() => {
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        });
+
+        tl.from(section.querySelectorAll("a, h2, p, img"), {
+          opacity: 0,
+          y: 50,
+          duration: 1,
+          stagger: 0.2,
+          ease: "power2.out",
+        });
+      }, section);
+
+      return () => ctx.revert();
+    });
+  }, []);
+
   useEffect(() => {
     const slider = sliderRef.current;
+    if (!slider) return;
 
-    // GSAP animation for smooth transition
+    // Until GSAP has loaded, move the track with a plain transform so the
+    // arrows work immediately.
+    const gsap = gsapRef.current;
+    if (!gsap) {
+      slider.style.transform = `translateX(${-currentIndex * 100}%)`;
+      return;
+    }
+
     gsap.to(slider, {
       xPercent: -currentIndex * 100,
       duration: 1,
@@ -176,32 +215,17 @@ const TestimonialHome = () => {
     });
   }, [currentIndex]);
 
-  useGSAP(() => {
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: TestimonialHomeRef.current,
-        start: "top 80%",
-        toggleActions: "play none none reverse",
-      },
-    });
-
-    tl.from(TestimonialHomeRef.current.querySelectorAll("a, h2, p, img"), {
-      opacity: 0,
-      y: 50,
-      duration: 1,
-      stagger: 0.2,
-      ease: "power2.out",
-    });
-  }, []);
-
   return (
-    <section className={Styles.sectionTestimonialHome} ref={TestimonialHomeRef}>
+    <section
+      className={`${Styles.sectionTestimonialHome} deferred-section`}
+      ref={TestimonialHomeRef}
+    >
       <div className="container" id="TestimonialHomeContainer">
         <div className={Styles.rowTestimonialHome}>
           <div className={Styles.columnTestimonialHome}>
             <Image
               src="/testimonialLeftImage.webp"
-              alt="Project Slider"
+              alt=""
               width={500}
               height={500}
             />
@@ -216,19 +240,19 @@ const TestimonialHome = () => {
                       height={100}
                       className={Styles.testiImage}
                       src={image.testiImage}
-                      alt={`Slide ${index}`}
+                      alt=""
                     />
                     <Image
                       width={200}
                       height={100}
                       className={Styles.quoteImage}
                       src={image.quoteImage}
-                      alt={`Slide ${index}`}
+                      alt=""
                     />
                     <p>{image.description}</p>
                     <div>
-                      <h4>{image.name}</h4>
-                      <h5>{image.designation}</h5>
+                      <p className={Styles.testiName}>{image.name}</p>
+                      <p className={Styles.testiRole}>{image.designation}</p>
                     </div>
                   </div>
                 ))}
@@ -236,10 +260,10 @@ const TestimonialHome = () => {
 
               {/* Navigation Arrows */}
               <div className={Styles.navigation}>
-                <button className={Styles.prevButton} onClick={handlePrev}>
+                <button type="button" className={Styles.prevButton} onClick={handlePrev} aria-label="Previous testimonial">
                   <BsArrowLeft />
                 </button>
-                <button className={Styles.nextButton} onClick={handleNext}>
+                <button type="button" className={Styles.nextButton} onClick={handleNext} aria-label="Next testimonial">
                   <BsArrowRight />
                 </button>
               </div>

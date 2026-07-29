@@ -30,10 +30,15 @@ export const STATIC_SITE_CONTENT = [
   },
   { id: "site-logo-footer", type: "image", value: "/logo/ocean_footer.png" },
   {
+    // Same footage as before, served straight from /public rather than through
+    // /api/images. That route reads the whole file into memory with
+    // readFileSync on every request and cannot answer range requests, so the
+    // browser could not stream or seek it — and because the hero src was
+    // resolved client-side, the page downloaded /hero-video.mp4 first and then
+    // this identical copy again after hydration (~53 MB per home page view).
     id: "main-video",
     type: "video",
-    value:
-      '{"active":"/api/images/hero-video-1778673541082-326692634.mp4","history":[]}',
+    value: '{"active":"/hero-video.mp4","history":[]}',
   },
   { id: "popup-image", type: "image", value: "" },
 ].map((row) => ({

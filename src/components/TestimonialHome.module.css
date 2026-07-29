@@ -30,11 +30,18 @@
 }
 .columnTestimonialHome h4,
 .columnTestimonialHome p,
-.columnTestimonialHome h5 {
+.columnTestimonialHome h5,
+.columnTestimonialHome .testiName,
+.columnTestimonialHome .testiRole {
   font-size: clamp(15px, 1vw, 1vw);
   font-weight: normal;
 }
-.columnTestimonialHome h4 {
+/* The reviewer's name and job title were marked up as <h4>/<h5> with no <h3>
+   above them, which is the invalid heading order Lighthouse reports. They are
+   labels, not section headings, so they are now <p> elements carrying exactly
+   the same styling. */
+.columnTestimonialHome h4,
+.columnTestimonialHome .testiName {
   color: var(--color-dark-blue);
 }
 /* Slider.module.css */

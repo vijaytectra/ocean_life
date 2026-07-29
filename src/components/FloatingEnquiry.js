@@ -1,34 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MdSupportAgent } from "react-icons/md";
 
-const FloatingEnquiry = () => {
+const FloatingEnquiry = ({ enabled = true }) => {
   const pathname = usePathname();
-  const [visible, setVisible] = useState(true);
 
-  useEffect(() => {
-    const checkSetting = async () => {
-      try {
-        const res = await fetch("/api/content/");
-        const data = await res.json();
-        if (!Array.isArray(data)) return;
-        const setting = data.find((i) => i.id === "show-floating-enquiry");
-        if (setting) {
-          setVisible(setting.value === "true");
-        } else {
-          setVisible(true);
-        }
-      } catch {
-        setVisible(true);
-      }
-    };
-    checkSetting();
-  }, []);
-
-  if (pathname?.startsWith("/admin") || pathname?.startsWith("/contact") || !visible) {
+  // `enabled` is resolved on the server. This used to be a post-hydration
+  // fetch of /api/content just to read one boolean flag.
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/contact") || !enabled) {
     return null;
   }
 

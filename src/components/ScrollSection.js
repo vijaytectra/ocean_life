@@ -1,10 +1,20 @@
+"use client";
+
 import React, { useRef, useEffect } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Styles from "./ScrollSection.module.css";
 import Link from "next/link";
-import { useGSAP } from "@gsap/react";
+import { whenNearViewport } from "@/lib/lazyGsap";
 
+/**
+ * Pinned horizontal "About" section.
+ *
+ * The behaviour is unchanged; what changed is *when* GSAP arrives. gsap,
+ * ScrollTrigger and @gsap/react used to be static imports, so ~120 KB of
+ * animation code was parsed and executed during hydration — and ScrollTrigger's
+ * pin setup reads layout synchronously, which is where the forced reflows in
+ * the trace came from. Everything now loads in one dynamic import on idle,
+ * after the page is interactive.
+ */
 function ScrollSection() {
   const sectionRef = useRef(null);
   const triggerRef = useRef(null);
@@ -16,121 +26,85 @@ function ScrollSection() {
   const circleContainerRef = useRef(null);
   const circleRefs = useRef([]);
 
-  gsap.registerPlugin(ScrollTrigger);
+  useEffect(() => {
+    const trigger = triggerRef.current;
+    if (!trigger) return;
 
-  useGSAP(() => {
-    const tl = gsap.timeline();
-
-    tl.from(contentRef.current, {
-      opacity: 0,
-      y: 200,
-      duration: 1,
-      scrollTrigger: {
+    return whenNearViewport(trigger, ({ gsap }) => {
+      const scrub = {
         trigger: mainSectionRef.current,
-        start: "top 80%",
+        start: "top top",
         end: "bottom bottom",
         scrub: 3,
-      },
-    })
-      .from(headingRef.current, {
-        opacity: 0,
-        y: 200,
-        duration: 1,
-        scrollTrigger: {
-          trigger: mainSectionRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 3,
-        },
-      })
-      .from(descriptionRef.current, {
-        opacity: 0,
-        y: 200,
-        duration: 1,
-        scrollTrigger: {
-          trigger: mainSectionRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 3,
-        },
-      })
-      .from(linkRef.current, {
-        opacity: 0,
-        y: 200,
-        duration: 1,
-        scrollTrigger: {
-          trigger: mainSectionRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 3,
-        },
-      });
-  }, []);
+      };
 
-  useEffect(() => {
-    // Set up Intersection Observer for circles
-    const observerOptions = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.1, // Trigger when 10% of the element is visible
-    };
-
-    const handleIntersect = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          // Animate circle when it comes into view
-          gsap.to(entry.target, {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-          });
-        } else {
-          // Reverse animation when exiting
-          gsap.to(entry.target, {
+      const ctx = gsap.context(() => {
+        gsap
+          .timeline()
+          .from(contentRef.current, {
             opacity: 0,
             y: 200,
             duration: 1,
+            scrollTrigger: { ...scrub, start: "top 80%" },
+          })
+          .from(headingRef.current, {
+            opacity: 0,
+            y: 200,
+            duration: 1,
+            scrollTrigger: { ...scrub },
+          })
+          .from(descriptionRef.current, {
+            opacity: 0,
+            y: 200,
+            duration: 1,
+            scrollTrigger: { ...scrub },
+          })
+          .from(linkRef.current, {
+            opacity: 0,
+            y: 200,
+            duration: 1,
+            scrollTrigger: { ...scrub },
           });
-        }
+
+        // Horizontal pin
+        gsap.fromTo(
+          sectionRef.current,
+          { translateX: 0 },
+          {
+            translateX: "-100vw",
+            ease: "none",
+            duration: 1,
+            scrollTrigger: {
+              trigger: triggerRef.current,
+              start: "top top",
+              end: "2000 top",
+              scrub: 0.6,
+              pin: true,
+            },
+          }
+        );
       });
-    };
 
-    const observer = new IntersectionObserver(handleIntersect, observerOptions);
-
-    // Observe each circle
-    circleRefs.current.forEach((circleRef) => {
-      if (circleRef) {
-        observer.observe(circleRef);
-      }
-    });
-
-    return () => {
-      observer.disconnect(); // Clean up observer on unmount
-    };
-  }, []);
-
-  useEffect(() => {
-    const pin = gsap.fromTo(
-      sectionRef.current,
-      {
-        translateX: 0,
-      },
-      {
-        translateX: "-100vw",
-        ease: "none",
-        duration: 1,
-        scrollTrigger: {
-          trigger: triggerRef.current,
-          start: "top top",
-          end: "2000 top",
-          scrub: 0.6,
-          pin: true,
+      // Circles fade in/out as they cross the viewport
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            gsap.to(entry.target, {
+              opacity: entry.isIntersecting ? 1 : 0,
+              y: entry.isIntersecting ? 0 : 200,
+              duration: 1,
+            });
+          });
         },
-      }
-    );
-    return () => {
-      pin.kill();
-    };
+        { root: null, rootMargin: "0px", threshold: 0.1 }
+      );
+      circleRefs.current.forEach((el) => el && observer.observe(el));
+
+      return () => {
+        observer.disconnect();
+        ctx.revert();
+      };
+    });
   }, []);
 
   return (
@@ -154,10 +128,10 @@ function ScrollSection() {
                   including MEP, Design & Build, Civil Construction, and Façade
                   works, delivering excellence across all sectors.
                 </p>
-                <Link href={"/about"} ref={linkRef}>
-                  <button className={Styles.cta}>
-                    <span>Learn More</span>
-                    <svg width="15px" height="10px" viewBox="0 0 13 10">
+                <Link href={"/about"} ref={linkRef} aria-label="Learn more about Ocean Lifespaces">
+                  <button type="button" className={Styles.cta}>
+                    <span>Learn More<span className="visually-hidden"> about Ocean Lifespaces</span></span>
+                    <svg width="15px" height="10px" viewBox="0 0 13 10" aria-hidden="true">
                       <path d="M1,5 L11,5"></path>
                       <polyline points="8 1 12 5 8 9"></polyline>
                     </svg>

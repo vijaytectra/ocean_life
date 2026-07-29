@@ -1,74 +1,20 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
-import { BsArrowLeft, BsArrowRight, BsArrowUpRight } from "react-icons/bs";
 import Styles from "./ProjectSlider.module.css";
 import Link from "next/link";
-import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Slider from "@/componentsInnerServices/Slider";
+import SectionReveal from "./SectionReveal";
 
-// Sample images array
-const images = [
-  "/project1.webp",
-  "/project2.webp",
-  "/project3.webp",
-  "/project4.webp",
-  "/project5.webp",
-  "/project6.webp",
-  "/project7.webp",
-  "/project8.webp",
-  "/project9.webp",
-  "/project10.webp",
-  "/project11.webp",
-  "/project12.webp",
-  "/project13.webp",
-  "/project14.webp",
-  "/project15.webp",
-  "/project16.webp",
-  "/project17.webp",
-  "/project18.webp",
-  "/project19.webp",
-  "/project20.webp",
-  "/project21.webp",
-];
-
+/**
+ * "Our Recent Projects" — now a Server Component.
+ *
+ * The only state it held (`currentIndex` plus `handleNext`/`handlePrev`) was
+ * dead code: nothing in the JSX referenced it, since the actual carousel lives
+ * in <Slider>. Removing it and moving the GSAP reveal into <SectionReveal>
+ * leaves this section as plain server-rendered markup; <Slider> remains the
+ * one client island here.
+ */
 const ProjectSlider = () => {
-  const projectSliderRef = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
-  };
-
-  useGSAP(() => {
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: projectSliderRef.current,
-        start: "top 80%",
-        toggleActions: "play none none reverse",
-      },
-    });
-
-    tl.from(projectSliderRef.current.querySelectorAll("a, h2, p, img"), {
-      opacity: 0,
-      y: 50,
-      duration: 1,
-      stagger: 0.2,
-      ease: "power2.out",
-    });
-  }, []);
-
   return (
-    <section className={Styles.sectionProjectSlider} ref={projectSliderRef}>
+    <section id="project-slider-section" className={Styles.sectionProjectSlider}>
       <div className="container">
         <div className={Styles.rowProjectSlider}>
           <div className={Styles.columnProjectSlider}>
@@ -93,10 +39,10 @@ const ProjectSlider = () => {
               and trust, driving us to set new industry standards with each
               endeavor.
             </p>
-            <Link href="/projects">
-              <button className={Styles.cta}>
+            <Link href="/projects" aria-label="View all Ocean Lifespaces projects">
+              <button className={Styles.cta} type="button">
                 <span>View All</span>
-                <svg width="15px" height="10px" viewBox="0 0 13 10">
+                <svg width="15px" height="10px" viewBox="0 0 13 10" aria-hidden="true">
                   <path d="M1,5 L11,5"></path>
                   <polyline points="8 1 12 5 8 9"></polyline>
                 </svg>
@@ -106,6 +52,23 @@ const ProjectSlider = () => {
           <Slider />
         </div>
       </div>
+
+      <SectionReveal
+        rootId="project-slider-section"
+        trigger={{ start: "top 80%", toggleActions: "play none none reverse" }}
+        steps={[
+          {
+            targets: "a, h2, p, img",
+            vars: {
+              opacity: 0,
+              y: 50,
+              duration: 1,
+              stagger: 0.2,
+              ease: "power2.out",
+            },
+          },
+        ]}
+      />
     </section>
   );
 };

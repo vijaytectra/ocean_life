@@ -1,7 +1,6 @@
 "use client";
 
-import gsap from "gsap";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Styles from "./Menu.module.css";
 import Link from "next/link";
@@ -9,8 +8,7 @@ import { usePathname } from "next/navigation";
 import { IoCloseCircle } from "react-icons/io5";
 import { RiMenu3Line } from "react-icons/ri";
 import { RxCross1 } from "react-icons/rx";
-import { useMainHeroVideoSrc } from "@/hooks/useMainHeroVideoSrc";
-import { isHeroBackgroundImageUrl, parseMainVideoValue, resolveMediaPublicUrl } from "@/lib/mainVideoContent";
+import { isHeroBackgroundImageUrl } from "@/lib/mainVideoContent";
 
 const MenuItems = [
   { name: "Home", path: "/" },
@@ -35,8 +33,15 @@ const MobileMenuItems = [
   { name: "Contact Us", path: "/contact" },
 ];
 
-function Menu() {
-  const heroVideoSrc = useMainHeroVideoSrc();
+// GSAP here only ever runs in response to a click, so it is imported lazily and
+// warmed on idle instead of shipping in the critical bundle of every page.
+let gsapPromise = null;
+const loadGsap = () => {
+  gsapPromise = gsapPromise || import("gsap").then((m) => m.gsap || m.default);
+  return gsapPromise;
+};
+
+function Menu({ logo: serverLogo, heroVideoSrc, heroPoster }) {
   const heroIsImage = isHeroBackgroundImageUrl(heroVideoSrc);
   const [isPopupVisible, setPopupVisible] = useState(false);
   const pathname = usePathname();
@@ -44,10 +49,18 @@ function Menu() {
   const popupMenuRef = useRef(null);
   const videoRef = useRef(null);
   const [scrolled, setScrolled] = useState(false);
+  // The popup's background media is the 32 MB hero clip. It used to mount with
+  // autoPlay on every page of the site — a full second copy of the video
+  // downloaded for a panel that is off-screen until the user opens the menu.
+  // It is now created only once the menu is actually opened.
+  const [mediaMounted, setMediaMounted] = useState(false);
 
-  const isAdmin = pathname?.startsWith('/admin');
+  const isAdmin = pathname?.startsWith("/admin");
 
-  const openMenu = () => {
+  const openMenu = useCallback(async () => {
+    setMediaMounted(true);
+    const gsap = await loadGsap();
+
     gsap.to(popupMenuRef.current, {
       right: "0%",
       duration: 0.5,
@@ -74,9 +87,11 @@ function Menu() {
         duration: 1,
       });
     }
-  };
+  }, []);
 
-  const closeMenu = () => {
+  const closeMenu = useCallback(async () => {
+    const gsap = await loadGsap();
+
     gsap.to(popupMenuRef.current, {
       right: "-102%",
       duration: 0.5,
@@ -93,66 +108,80 @@ function Menu() {
         duration: 0.5,
       });
     }
-  };
+  }, []);
 
-  const togglePopup = () => {
+  const togglePopup = useCallback(() => {
     if (isPopupVisible) {
       closeMenu();
     } else {
       openMenu();
     }
-  };
+  }, [isPopupVisible, openMenu, closeMenu]);
 
   useEffect(() => {
-    // Scroll event listener to check scroll position
-    const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setScrolled(true); // Add class when scrolled
-      } else {
-        setScrolled(false); // Remove class when at the top
+    // Passive + rAF-batched, so the scroll handler never forces a synchronous
+    // layout read, and setState only fires when the boolean actually flips.
+    let ticking = false;
+    let last = false;
+
+    const update = () => {
+      ticking = false;
+      const next = window.scrollY > 0;
+      if (next !== last) {
+        last = next;
+        setScrolled(next);
       }
     };
 
-    // Attach scroll event
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    };
 
-    // Cleanup the event listener when the component unmounts
+    update();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Warm GSAP on the first real user interaction rather than on idle: idle
+    // still lands inside the page-load window, where a ~110 KB parse shows up
+    // directly as blocking time.
+    const warm = () => loadGsap();
+    const warmEvents = ["pointerdown", "keydown", "touchstart", "wheel"];
+    warmEvents.forEach((e) =>
+      window.addEventListener(e, warm, { once: true, passive: true })
+    );
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      warmEvents.forEach((e) => window.removeEventListener(e, warm));
     };
   }, []);
 
-  const [logo, setLogo] = useState("/logo-web.webp");
-
-  useEffect(() => {
-    fetch("/api/content")
-      .then((res) => res.json())
-      .then((data) => {
-        const logoItem = data.find((item) => item.id === "site-logo-header") || data.find((item) => item.id === "site-logo");
-        if (logoItem) {
-          const { active } = parseMainVideoValue(logoItem.value);
-          setLogo(resolveMediaPublicUrl(active));
-        }
-      })
-      .catch((err) => console.error("Logo fetch error:", err));
-  }, []);
+  const logo = serverLogo || "/logo-web.webp";
 
   if (isAdmin) return null;
 
   return (
     <div className={`${Styles.menu} ${scrolled ? Styles.scrolled : ""}`}>
-      <Link href="/">
+      <Link href="/" aria-label="Ocean Lifespaces — go to home page">
         <Image
           className={Styles.logo}
           src={logo}
-          alt="Logo"
+          alt="Ocean Lifespaces India Private Limited"
           width={209}
           height={52}
-          style={{ objectFit: 'contain' }}
+          priority
+          sizes="209px"
+          style={{ objectFit: "contain" }}
         />
       </Link>
 
-      <div className={Styles.menuItemsContainerInner}>
+      <div
+        className={Styles.menuItemsContainerInner}
+        role="navigation"
+        aria-label="Primary"
+      >
         <ul className={Styles.menuItems}>
           {MenuItems.map((item) => {
             const isActive = pathname === item.path;
@@ -161,6 +190,7 @@ function Menu() {
                 <Link
                   className={isActive ? Styles.active : ""}
                   href={item.path}
+                  aria-current={isActive ? "page" : undefined}
                 >
                   {item.name}
                 </Link>
@@ -169,30 +199,47 @@ function Menu() {
           })}
         </ul>
 
-        <button onClick={togglePopup} className={Styles.popupButton}>
+        <button
+          type="button"
+          onClick={togglePopup}
+          className={Styles.popupButton}
+          aria-label="Open navigation menu"
+          aria-expanded={isPopupVisible}
+          aria-controls="site-popup-menu"
+        >
           <span>
-            <RiMenu3Line size={20} />
+            <RiMenu3Line size={20} aria-hidden="true" />
           </span>
         </button>
       </div>
 
-      <div className={Styles.popupMenu} ref={popupMenuRef}>
+      <div className={Styles.popupMenu} ref={popupMenuRef} id="site-popup-menu">
         <div className={Styles.mobileLogo} style={{ display: "none" }}>
-          <Link href="/">
+          <Link href="/" aria-label="Ocean Lifespaces — go to home page">
             <Image
               className={Styles.mobileLogoImage}
               src="/mobile-menu-logo-1.webp"
-              alt="Logo"
+              alt="Ocean Lifespaces India Private Limited"
               width={209}
               height={52}
+              sizes="209px"
             />
           </Link>
-          <button className={Styles.closeButtonMenu} onClick={togglePopup}>
-            <RxCross1 />
+          <button
+            type="button"
+            className={Styles.closeButtonMenu}
+            onClick={togglePopup}
+            aria-label="Close navigation menu"
+          >
+            <RxCross1 aria-hidden="true" />
           </button>
         </div>
         <div className={Styles.popupContentMenu}>
-          <div className={Styles.mobilemenu}>
+          <div
+            className={Styles.mobilemenu}
+            role="navigation"
+            aria-label="Full site navigation"
+          >
             <ul className={Styles.mobileMenuItems} ref={mobileMenuRef}>
               {MobileMenuItems.map((item) => {
                 const isActive = pathname === item.path;
@@ -202,6 +249,7 @@ function Menu() {
                       className={isActive ? Styles.mobileActive : ""}
                       href={item.path}
                       onClick={togglePopup}
+                      aria-current={isActive ? "page" : undefined}
                     >
                       {item.name}
                     </Link>
@@ -213,23 +261,41 @@ function Menu() {
 
           {/* Added the autoplay video with GSAP animation */}
           <div className={Styles.video} ref={videoRef}>
-            {heroIsImage ? (
-              <img key={heroVideoSrc} className={Styles.videoElement} src={heroVideoSrc} alt="" />
-            ) : (
-              <video
-                key={heroVideoSrc}
-                className={Styles.videoElement}
-                src={heroVideoSrc}
-                autoPlay
-                muted
-                loop
-                playsInline
-              />
-            )}
+            {mediaMounted &&
+              (heroIsImage ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  key={heroVideoSrc}
+                  className={Styles.videoElement}
+                  src={heroVideoSrc}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <video
+                  key={heroVideoSrc}
+                  className={Styles.videoElement}
+                  src={heroVideoSrc}
+                  poster={heroPoster}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="none"
+                  aria-hidden="true"
+                  tabIndex={-1}
+                />
+              ))}
           </div>
 
-          <button className={Styles.closeButtonMenu} onClick={togglePopup}>
-            Close <IoCloseCircle />
+          <button
+            type="button"
+            className={Styles.closeButtonMenu}
+            onClick={togglePopup}
+            aria-label="Close navigation menu"
+          >
+            Close <IoCloseCircle aria-hidden="true" />
           </button>
         </div>
       </div>

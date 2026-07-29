@@ -4,25 +4,19 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { IoCloseCircle } from "react-icons/io5";
 
-const POPUP_ID = "popup-image";
-
-function parsePopupUrl(data) {
-  if (!Array.isArray(data)) return "";
-  const item = data.find((i) => i.id === POPUP_ID);
-  const raw = item?.value;
-  return typeof raw === "string" ? raw.trim() : "";
-}
-
-export default function AdPopup() {
+export default function AdPopup({ imageUrl: imageUrlProp }) {
   const pathname = usePathname();
   const isPublicSite = !pathname?.startsWith("/admin");
 
   const [isVisible, setIsVisible] = useState(false);
-  const [imageUrl, setImageUrl] = useState(null);
   const showTimerRef = useRef(null);
+  // Resolved on the server; this used to be a `no-store` fetch of
+  // /api/content, one of six identical requests the home page fired for the
+  // same compile-time constant.
+  const imageUrl = imageUrlProp || null;
 
   useEffect(() => {
-    if (!isPublicSite) {
+    if (!isPublicSite || !imageUrl) {
       setIsVisible(false);
       return;
     }
@@ -38,33 +32,15 @@ export default function AdPopup() {
 
     clearTimer();
 
-    fetch("/api/content", { cache: "no-store" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (cancelled) return;
-        const url = parsePopupUrl(data);
-        if (!url) {
-          setImageUrl(null);
-          setIsVisible(false);
-          return;
-        }
-        setImageUrl(url);
-        showTimerRef.current = setTimeout(() => {
-          if (!cancelled) setIsVisible(true);
-        }, 2000);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setImageUrl(null);
-          setIsVisible(false);
-        }
-      });
+    showTimerRef.current = setTimeout(() => {
+      if (!cancelled) setIsVisible(true);
+    }, 2000);
 
     return () => {
       cancelled = true;
       clearTimer();
     };
-  }, [isPublicSite]);
+  }, [isPublicSite, imageUrl]);
 
   const closePopup = () => {
     setIsVisible(false);

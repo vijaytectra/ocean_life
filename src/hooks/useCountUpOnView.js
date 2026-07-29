@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import gsap from "gsap";
 
 /**
  * Animates numeric counters when the container enters the viewport.
@@ -22,22 +21,29 @@ export function useCountUpOnView(targets, options = {}) {
 
     setValues(Object.fromEntries(targets.map((t) => [t.id, 0])));
 
-    targets.forEach((target) => {
-      gsap.to(
-        { value: 0 },
-        {
-          value: target.end,
-          duration,
-          ease: "power1.out",
-          onUpdate: function () {
-            setValues((prev) => ({
-              ...prev,
-              [target.id]: Math.floor(this.targets()[0].value),
-            }));
-          },
-        }
+    // This used to `import gsap from "gsap"` at module scope purely to tween
+    // four numbers, which pulled the whole animation library into the initial
+    // bundle of every page using the hook. `power1.out` is `1 - (1 - t)^2`, so
+    // the same curve is reproduced here in a plain rAF loop with no dependency
+    // and no library parse cost.
+    const easeOutQuad = (t) => 1 - (1 - t) * (1 - t);
+    const totalMs = duration * 1000;
+    const start = performance.now();
+
+    const tick = (now) => {
+      const progress = Math.min((now - start) / totalMs, 1);
+      const eased = easeOutQuad(progress);
+
+      setValues(
+        Object.fromEntries(
+          targets.map((t) => [t.id, Math.floor(eased * (t.end ?? 0))])
+        )
       );
-    });
+
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
   }, [targets, duration]);
 
   useEffect(() => {

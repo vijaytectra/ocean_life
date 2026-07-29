@@ -1,13 +1,7 @@
-"use client";
-
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Styles from "./NewsAndEvents.module.css";
 import Link from "next/link";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-
-gsap.registerPlugin(ScrollTrigger);
+import SectionReveal from "./SectionReveal";
 
 const timeAgo = (date) => {
   const now = new Date();
@@ -105,70 +99,40 @@ const newsEvents = [
   },
 ];
 
+/**
+ * News & Events — now a Server Component.
+ *
+ * The cards used to be populated in a `useEffect` from the module-level
+ * `newsEvents` array, so the server rendered an empty grid and the content only
+ * appeared after hydration. Sorting is a pure function of a constant, so it is
+ * done once at module scope and the cards are prerendered. The GSAP reveal
+ * moved to <SectionReveal>, which leaves no client JavaScript in this section.
+ */
+const sortedNews = [...newsEvents].sort(
+  (a, b) => new Date(b.date) - new Date(a.date)
+);
+
 const NewsAndEvents = ({ list = 3 }) => {
-  const [latestNews, setLatestNews] = useState([]);
-  const newsEventsRef = useRef(null);
-  const headingRef = useRef(null);
-  const cardsRef = useRef([]);
-
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-  }, []);
-
-  useEffect(() => {
-    const sortedNews = [...newsEvents].sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
-    setLatestNews(sortedNews.slice(0, list));
-  }, [list]);
-
-  useLayoutEffect(() => {
-    if (
-      newsEventsRef.current &&
-      headingRef.current &&
-      cardsRef.current.length
-    ) {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: newsEventsRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      });
-
-      tl.from(headingRef.current, {
-        opacity: 0,
-        y: 50,
-        duration: 1,
-        ease: "power2.out",
-      }).from(
-        cardsRef.current,
-        {
-          opacity: 0,
-          y: 50,
-          duration: 1,
-          stagger: 0.2,
-          ease: "power2.out",
-        },
-        "-=0.5"
-      );
-    }
-  }, [latestNews]);
+  const latestNews = sortedNews.slice(0, list);
 
   return (
-    <section className={Styles.sectionNews} ref={newsEventsRef}>
+    <section
+      id="news-events-section"
+      className={`${Styles.sectionNews} deferred-section`}
+    >
       <div className="container">
-        <div className={Styles.rowNews} ref={headingRef}>
-          <h4>Latest updates & Inspiring achievements</h4>
+        <div className={Styles.rowNews}>
+          {/* Was an <h4> sitting above the <h2>, which Lighthouse flags as a
+              non-sequential heading order. It is a kicker line, not a section
+              heading, so it is a <p> carrying the same styling. */}
+          <p className={Styles.newsKicker}>
+            Latest updates &amp; Inspiring achievements
+          </p>
           <h2>News and Events</h2>
         </div>
         <div className={Styles.grid}>
-          {latestNews.map((news, index) => (
-            <div
-              key={index}
-              className={Styles.card}
-              ref={(el) => (cardsRef.current[index] = el)}
-            >
+          {latestNews.map((news) => (
+            <div key={news.link} className={Styles.card}>
               <div className={Styles.imageDiv}>
                 <Image
                   width={480}
@@ -176,6 +140,8 @@ const NewsAndEvents = ({ list = 3 }) => {
                   src={news.image}
                   alt={news.title}
                   className={Styles.blogThumb}
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  loading="lazy"
                 />
               </div>
               <div className={Styles.contentDiv}>
@@ -185,9 +151,16 @@ const NewsAndEvents = ({ list = 3 }) => {
                 </div>
                 <h3>{news.title}</h3>
                 <p className={Styles.cardExcerpt}>{news.description}</p>
-                <Link href={news.link} className={Styles.cta}>
-                  <span>Read More</span>
-                  <svg width="15px" height="10px" viewBox="0 0 13 10">
+                <Link
+                  href={news.link}
+                  className={Styles.cta}
+                  aria-label={`Read more: ${news.title}`}
+                >
+                  <span>
+                    Read More
+                    <span className="visually-hidden">: {news.title}</span>
+                  </span>
+                  <svg width="15px" height="10px" viewBox="0 0 13 10" aria-hidden="true">
                     <path d="M1,5 L11,5"></path>
                     <polyline points="8 1 12 5 8 9"></polyline>
                   </svg>
@@ -197,6 +170,28 @@ const NewsAndEvents = ({ list = 3 }) => {
           ))}
         </div>
       </div>
+
+      <SectionReveal
+        rootId="news-events-section"
+        trigger={{ start: "top 80%", toggleActions: "play none none reverse" }}
+        steps={[
+          {
+            targets: `.${Styles.rowNews}`,
+            vars: { opacity: 0, y: 50, duration: 1, ease: "power2.out" },
+          },
+          {
+            targets: `.${Styles.card}`,
+            vars: {
+              opacity: 0,
+              y: 50,
+              duration: 1,
+              stagger: 0.2,
+              ease: "power2.out",
+            },
+            position: "-=0.5",
+          },
+        ]}
+      />
     </section>
   );
 };

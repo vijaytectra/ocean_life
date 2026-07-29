@@ -1,0 +1,86 @@
+.container {
+  /* The marquee is far below the fold but holds ~140 nodes, which dominated the
+     Style & Layout bucket in the trace. `content-visibility` lets the browser
+     skip layout and paint for it until it approaches the viewport; the
+     intrinsic size keeps the page height stable so nothing shifts. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 170px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+  padding: 40px 0;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+}
+
+.track {
+  display: flex;
+  gap: 80px;
+  width: max-content;
+  align-items: center;
+  will-change: transform;
+  /* Upstream ran 160s over four copies of the list; two copies at 80s is the
+     same pixels-per-second, and -50% still lands on a seamless seam. */
+  animation: logoScroll 80s linear infinite;
+}
+
+.item {
+  flex-shrink: 0;
+  width: 160px;
+  height: 90px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.item:hover {
+  transform: scale(1.1);
+}
+
+.item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media screen and (max-width: 767px) {
+  .track {
+    gap: 40px;
+    animation-duration: 50s;
+  }
+  .item {
+    width: 100px;
+    height: 50px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}
+
+@keyframes logoScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}

@@ -2,7 +2,12 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: "Roboto", serif;
+  /* next/font generates a hashed family name and exposes it through this
+     variable. The previous `font-family: "Roboto", serif` referenced the
+     literal name, which never matches — so the woff2 was downloaded and
+     discarded and text actually rendered in the serif fallback. */
+  font-family: var(--font-roboto-sans), system-ui, -apple-system, "Segoe UI",
+    Arial, sans-serif;
 }
 
 body {
@@ -22,6 +27,36 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Below-the-fold sections opt out of layout and paint until the user scrolls
+   near them. The home page's LCP was spending ~2.3 s in "render delay" — the
+   hero could not paint because the browser was still styling and laying out
+   the ~780 elements below it. `contain-intrinsic-size: auto <h>` keeps the
+   scroll height stable, and once a section has been rendered once the browser
+   remembers its real size, so nothing shifts.
+   Deliberately NOT applied to the pinned About section or the scrubbed
+   Transform section, whose ScrollTrigger positions depend on being measured. */
+.deferred-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+/* Text that is available to screen readers and to crawlers, but not painted.
+   Used to give generic CTAs ("Learn More", "Read More") a descriptive target
+   without altering the visible label. Lighthouse's link-text audit reads the
+   rendered text rather than aria-label, so the context has to live in the DOM
+   as real — if clipped — text. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 :root {
@@ -491,7 +526,11 @@ section {
 
 .inner-blue-button span {
   position: relative;
-  font-family: "Ubuntu", sans-serif;
+  /* "Ubuntu" was never loaded by the site, so this always fell through to the
+     generic sans-serif. Pointing it at the loaded family keeps the rendered
+     result the same on machines without Ubuntu installed and removes the
+     inconsistency on machines that happen to have it. */
+  font-family: var(--font-roboto-sans), sans-serif;
   font-size: 14px;
   font-weight: 300;
   letter-spacing: 0.05em;

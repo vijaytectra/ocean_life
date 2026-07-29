@@ -1,195 +1,69 @@
-"use client";
-
-import { useRef, useEffect, useState } from "react";
-import { usePathname } from "next/navigation"; // Use usePathname for App Router
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
-import Home from "../components/Home";
+import Home from "@/components/Home";
+import DreamSection from "@/components/DreamSection";
+import ServiceGrid from "@/componentsAbout/ServiceGrid";
+import ProjectSlider from "@/components/ProjectSlider";
+import NewsAndEvents from "@/components/NewsAndEvents";
+import Transform from "@/components/Transform";
+import TestimonialHome from "@/components/TestimonialHome";
+import LogoScroll from "@/components/LogoScroll";
+import Newsletter from "@/components/Newsletter";
 import Styles from "./page.module.css";
-import ServiceSlider from "../components/ServiceSlider";
-import ServiceGrid from "../componentsAbout/ServiceGrid";
-import ProjectSlider from "../components/ProjectSlider";
-import NewsAndEvents from "../components/NewsAndEvents";
-import Transform from "../components/Transform";
-import TestimonialHome from "../components/TestimonialHome";
-import LogoScroll from "../components/LogoScroll";
-import Newsletter from "../components/Newsletter";
-import Loader from "../components/Loader";
-import { FaUsers, FaRegHandshake, FaCalendarAlt, FaBuilding } from "react-icons/fa";
-import { useCountUpOnView } from "@/hooks/useCountUpOnView";
+import {
+  getCounterTargets,
+  getClientLogoImages,
+  getHeroSources,
+} from "@/lib/siteContent";
 
-function HomeMain() {
-  const pathname = usePathname(); // Get the current path
-  const [loading, setLoading] = useState(true);
+export const metadata = {
+  title: "Ocean Lifespaces | Civil Construction Company in Chennai",
+  description:
+    "Build with confidence! Ocean Lifespaces India Pvt Ltd delivers Civil Construction Company in Chennai with innovation and trust.",
+  alternates: {
+    canonical: "https://www.olipl.com/",
+  },
+};
 
-  useEffect(() => {
-    setLoading(true); // Show loader on initial load
-
-    const handleComplete = () => {
-      setTimeout(() => {
-        setLoading(false); // Hide loader after a delay (optional)
-      }, 500); // Adjust delay as needed
-    };
-
-    // Call handleComplete when the component mounts (initial load)
-    handleComplete();
-
-    return () => {
-      handleComplete(); // Clean up when the component unmounts
-    };
-  }, [pathname]); // Re-run when the path changes
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const [counterTargets, setCounterTargets] = useState([
-    { id: "employees", end: 750 },
-    { id: "projects", end: 60 },
-    { id: "experience", end: 30 },
-    { id: "ongoing", end: 550 },
-  ]);
-
-  useEffect(() => {
-    const fetchCounters = async () => {
-      try {
-        const res = await fetch('/api/content');
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          const findVal = (key, defaultVal) => {
-            const item = data.find(i => i.id === key);
-            return item ? parseInt(item.value) || defaultVal : defaultVal;
-          };
-          setCounterTargets([
-            { id: "employees", end: findVal("counter-employees", 750) },
-            { id: "projects", end: findVal("counter-projects", 60) },
-            { id: "experience", end: 30 },
-            { id: "ongoing", end: findVal("counter-ongoing", 550) },
-          ]);
-        }
-      } catch (e) {
-        console.error("Failed to fetch counters", e);
-      }
-    };
-    fetchCounters();
-  }, []);
-
-  const { containerRef: counterRef, values: counters } = useCountUpOnView(
-    counterTargets,
-    { enabled: !loading }
-  );
-
-  const dreamSectionRef = useRef(null);
-
-  useEffect(() => {
-    if (!loading) {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: dreamSectionRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      });
-
-      tl.from(
-        dreamSectionRef.current.querySelectorAll(
-          "h4, h2, p, img, .dreamFloat, .counterBox"
-        ),
-        {
-          opacity: 0,
-          y: 50,
-          duration: 1,
-          stagger: 0.2,
-          ease: "power2.out",
-        }
-      );
-    }
-  }, [loading]);
+/**
+ * Home page — a Server Component.
+ *
+ * It was previously `"use client"` and gated every section behind
+ * `useState(true)` + `useEffect` + `setTimeout(500)`, so the prerendered HTML
+ * contained nothing but the "Loading…" spinner. Lighthouse measured LCP at
+ * 6.4 s with 93% of it spent in render delay for exactly this reason: no
+ * content could paint until the client bundle downloaded, hydrated and burned
+ * the timer. The sections below are now server-rendered, and the hero video
+ * source and counter targets are resolved at build time instead of through
+ * post-hydration fetches.
+ */
+export default function HomeMain() {
+  const counterTargets = getCounterTargets();
+  const clientLogos = getClientLogoImages();
+  const hero = getHeroSources();
 
   return (
     <main style={{ position: "relative", minHeight: "100vh" }}>
-      {loading ? (
-        <Loader />
-      ) : (
-        <>
-          <Home />
-          <section ref={dreamSectionRef} className={Styles.dreamSection}>
-            <div className="container">
-              <div className={Styles.rowDream}>
-                <div className={Styles.columnDream}>
-                  <h4>Exceeding Expectations, Building Excellence</h4>
-                  <h2>Delivering Excellence</h2>
-                  <p>
-                    With almost three decades of experience in the field of Civil
-                    Construction, Interior Fitout and Infrastructure Development,
-                    our efforts are always focussed on exceeding our client&apos;s
-                    expectations.
-                  </p>
-                  <p>
-                    With our Managing Director and CEO, Mr. S.K. Peter at the helm
-                    of the business, we have made strides in becoming one of the
-                    most sought-after companies in the field of turnkey interior
-                    fitout contracting and civil construction.
-                  </p>
-                  <p>
-                    We focus on creating world class structures and spaces, by
-                    consistently upgrading our systems, techniques, and teams, to
-                    ensure that we place the present and future needs of our
-                    clientele, above all else.
-                  </p>
-                  <div className={Styles.dreamCounter}>
-                    <div ref={counterRef} className={Styles.counterSection}>
-                      <div className={Styles.counterBox}>
-                        <FaUsers size={30} color="var(--color-orange)" style={{ marginBottom: '10px' }} />
-                        <h3>Number of Employees</h3>
-                        <p>{counters.employees}+</p>
-                      </div>
-                      <div className={Styles.counterBox}>
-                        <FaRegHandshake size={30} color="var(--color-orange)" style={{ marginBottom: '10px' }} />
-                        <h3>Client Return Rate</h3>
-                        <p>{counters.projects}%</p>
-                      </div>
-                      <div className={Styles.counterBox}>
-                        <FaCalendarAlt size={30} color="var(--color-orange)" style={{ marginBottom: '10px' }} />
-                        <h3>Years in Operation</h3>
-                        <p>{counters.experience}</p>
-                      </div>
-                      <div className={Styles.counterBox}>
-                        <FaBuilding size={30} color="var(--color-orange)" style={{ marginBottom: '10px' }} />
-                        <h3>Projects Completed</h3>
-                        <p>{counters.ongoing}+</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className={Styles.columnDream}>
-                  <Image
-                    src="/dreamImage.webp"
-                    alt="dream"
-                    width={624}
-                    height={476}
-                  />
-                  <p className={Styles.dreamFloat}>
-                    Our motto is simple. Hardwork followed by the belief that
-                    nothing is impossible!
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-          <ServiceGrid />
-          <ProjectSlider />
-          <NewsAndEvents />
-          <Transform />
-          <TestimonialHome />
-          <section className={Styles.logoScroll}>
-            <h2>Our Recent Clients</h2>
-            <LogoScroll />
-          </section>
-          <Newsletter />
-        </>
-      )}
+      {/* The poster is the LCP element. Preloading it with a high priority hint
+          makes it discoverable in the initial document instead of waiting for
+          the <video> to be parsed — Lighthouse's LCP-discovery check was
+          failing on both "priority hinted" and "discoverable in document". */}
+      <link
+        rel="preload"
+        as="image"
+        href={hero.poster}
+        fetchPriority="high"
+      />
+      <Home videoSrc={hero.src} webm={hero.webm} poster={hero.poster} />
+      <DreamSection counterTargets={counterTargets} />
+      <ServiceGrid />
+      <ProjectSlider />
+      <NewsAndEvents />
+      <Transform />
+      <TestimonialHome />
+      <section className={`${Styles.logoScroll} deferred-section`}>
+        <h2>Our Recent Clients</h2>
+        <LogoScroll logos={clientLogos} />
+      </section>
+      <Newsletter />
     </main>
   );
 }
-
-export default HomeMain;

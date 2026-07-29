@@ -1,99 +1,46 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
 import Image from "next/image";
+import Styles from "./LogoScroll.module.css";
+import { getClientLogoImages } from "@/lib/siteContent";
 
-// Extended list of logos to make the scroll smoother and more diverse
-export default function LogoScroll() {
-  const trackRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [images, setImages] = useState([]);
+/**
+ * Infinite client-logo marquee — now a Server Component.
+ *
+ * Logos come from the server instead of a post-hydration
+ * `fetch("/api/clients/logos", {cache:"no-store"})`, the responsive sizing that
+ * ran through `useState` + a resize listener is a CSS media query, and the
+ * track is duplicated twice rather than four times: the keyframes translate by
+ * -50%, so two copies are all a seamless loop needs. That halves the marquee's
+ * DOM nodes (it was the page's largest element, 192 children). Duration is
+ * halved to match, so the scroll speed is unchanged.
+ */
+export default function LogoScroll({ logos }) {
+  const images = logos?.length ? logos : getClientLogoImages();
+  if (!images.length) return null;
 
-  useEffect(() => {
-    fetch("/api/clients/logos/", { cache: "no-store", credentials: "same-origin" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setImages(data.map((l) => l.image));
-        }
-      })
-      .catch((err) => console.error("LogoScroll fetch error:", err));
-  }, []);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  const logoWidth = isMobile ? "100px" : "160px";
-  const logoHeight = isMobile ? "50px" : "90px";
-  const gap = isMobile ? "40px" : "80px";
-  const duplicatedImages = [...images, ...images, ...images, ...images];
+  const duplicated = [...images, ...images];
 
   return (
-    <div
-      className="logo-scroll-container"
-      style={{
-        overflow: "hidden",
-        width: "100%",
-        maxWidth: "100vw",
-        position: "relative",
-        padding: "40px 0",
-        maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
-        WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'
-      }}
-    >
-      <div
-        className="logo-scroll-track"
-        style={{
-          display: "flex",
-          gap: gap,
-          width: "max-content",
-          alignItems: "center",
-          animation: `scroll ${isMobile ? '100s' : '160s'} linear infinite`,
-        }}
-      >
-        {duplicatedImages.map((src, index) => (
-          <div 
-            key={index} 
-            style={{ 
-              flexShrink: 0, 
-              width: logoWidth, 
-              height: logoHeight, 
-              position: "relative",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: 'all 0.3s ease',
-              cursor: 'pointer'
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'scale(1.1)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
-          >
+    <div className={Styles.container}>
+      <div className={Styles.track}>
+        {duplicated.map((src, index) => (
+          <div key={`${src}-${index}`} className={Styles.item}>
+            {/* Fixed width/height rather than `fill`: a `fill` image builds its
+                srcset from every configured deviceSize, and at 140 logos that
+                alone was ~90 KB of srcset markup in the HTML — then again in
+                the RSC payload. A fixed-size image emits a 1x/2x pair instead,
+                which is all a 160×90 logo can use. */}
             <Image
               src={src}
-              alt={`logo-${index}`}
-              fill
-              style={{ objectFit: "contain" }}
-              sizes={logoWidth}
+              alt=""
+              aria-hidden="true"
+              width={160}
+              height={90}
+              loading="lazy"
               unoptimized={src?.startsWith("/uploads/")}
             />
           </div>
         ))}
       </div>
-      <style jsx>{`
-        @keyframes scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
     </div>
   );
 }

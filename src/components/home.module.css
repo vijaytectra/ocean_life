@@ -55,6 +55,44 @@
   font-size: clamp(15px, 1vw, 1vw);
 }
 
+/* Hero intro animation.
+   Previously a GSAP timeline (`tl.from(heading,{opacity:0,y:20,duration:1,
+   delay:0.5})` then the same for the description), which forced gsap +
+   @gsap/react + ScrollTrigger into the hero's critical path just to fade two
+   elements. The keyframes below reproduce the same motion, timing and stagger
+   on the compositor, so the hero needs no JavaScript at all. */
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.heading,
+.description {
+  will-change: opacity, transform;
+  animation: heroFadeUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.heading {
+  animation-delay: 0.5s;
+}
+
+.description {
+  animation-delay: 2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heading,
+  .description {
+    animation: none;
+  }
+}
+
 /* responsive-css */
 @media screen and (max-width: 768px) {
   .content {
